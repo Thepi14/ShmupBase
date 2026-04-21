@@ -57,12 +57,13 @@ namespace ObjectUtils
             {
                 //se o filho de go for nulo
                 if (go.transform.Find(name) == null)
-                    throw new System.Exception(name + " was not been found or it doesn't exist on the path: " + path);
-                //go é igual ao gameobject achado como filho do seu transform
-                go = go.transform.Find(name).gameObject;
+                    Debug.LogWarning(name + " was not been found or it doesn't exist on the path: " + path);
+                //se não for nulo, go é igual ao gameobject achado como filho do seu transform
+                else
+                    go = go.transform.Find(name).gameObject;
             }
             if (go == null)
-                throw new System.Exception("GameObject " + go.name + " has not been found on the end of the path: " + path);
+                Debug.LogWarning("GameObject " + go.name + " has not been found on the end of the path: " + path);
             //retornar go
             return go;
         }
@@ -87,9 +88,9 @@ namespace ObjectUtils
         {
             var go = GetGameObject(start, path);
             if (go == null)
-                throw new System.Exception("GameObject has not been found on the path.");
+                Debug.LogWarning("GameObject has not been found on the path.");
             if (go.GetComponent<T>() == null)
-                throw new System.Exception("Component has not been found on " + go.name);
+                Debug.LogWarning("Component has not been found on " + go.name);
             //retornar go
             return go.GetComponent<T>();
         }
@@ -117,9 +118,9 @@ namespace ObjectUtils
             if (parent == null)
                 throw new System.ArgumentNullException("Parent of name \'" + parent.name + "\' is null");
             if (parent.transform.Find(childName) == null)
-                throw new System.ArgumentNullException("Child of name \'" + childName + "\' was not found on the \'" + parent.name + "\' GameObject");
+                Debug.LogWarning("Child of name \'" + childName + "\' was not found on the \'" + parent.name + "\' GameObject");
             if (parent.transform.Find(childName).GetComponent<T>() == null)
-                throw new System.ArgumentNullException("Component was not been found in child of name \'" + childName + "\' of parent \'" + parent.name + "\'");
+                Debug.LogWarning("Component was not been found in child of name \'" + childName + "\' of parent \'" + parent.name + "\'");
             return parent.transform.Find(childName).GetComponent<T>();
         }
         /// <summary>
@@ -134,6 +135,7 @@ namespace ObjectUtils
         {
             return FindComponentInChild<T>(parent.gameObject, childName);
         }
+
         public static GameObject[] GetGameObjectChildren(this GameObject gameObject)
         {
             var list = new List<GameObject>();
