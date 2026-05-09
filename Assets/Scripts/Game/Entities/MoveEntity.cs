@@ -1,0 +1,77 @@
+using System.Collections;
+using UnityEngine;
+using ObjectUtils;
+
+namespace Main.EntitySystem
+{
+    public class MoveEntity : HealthEntity, IMove
+    {
+        [SerializeField]
+        protected float speed = 1f;
+        public virtual float Speed { get => speed; set => speed = value; }
+
+        [SerializeField]
+        protected bool canMove = true;
+        public virtual bool CanMove { get => canMove; set => canMove = value; }
+
+        protected override void Awake()
+        {
+            base.Awake();
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+        }
+
+        public virtual void Move(Vector2 movement, float speed = -1f)
+        {
+            if (speed < 0f)
+                speed = Speed;
+
+            transform.position += (Vector3)movement * speed;
+        }
+
+        public virtual void MoveTo(Vector2 endPosition, float speed = -1f)
+        {
+            if (speed < 0f)
+                speed = Speed;
+
+            StartCoroutine(MoveToCoroutine());
+            IEnumerator MoveToCoroutine()
+            {
+                while (Vector2.Distance((Vector2)transform.position, endPosition) > 0.01f)
+                {
+                    Move(MathEx.AngleVectors(endPosition, (Vector2)transform.position) * Time.fixedDeltaTime);
+                    yield return new WaitForFixedUpdate();
+                }
+                transform.position = endPosition;
+
+                yield return null;
+            }
+        }
+
+        public virtual void MoveLerp(Vector2 endPosition, float speed = -1f)
+        {
+            if (speed < 0f)
+                speed = Speed;
+
+            StartCoroutine(MoveLerpCoroutine());
+            IEnumerator MoveLerpCoroutine()
+            {
+                while ((Vector2)transform.position != endPosition)
+                {
+                    transform.position = MathEx.LerpFixedDelta((Vector2)transform.position, endPosition, speed);
+                    yield return new WaitForFixedUpdate();
+                }
+
+                yield return null;
+            }
+        }
+    }
+}

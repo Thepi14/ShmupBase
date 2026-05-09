@@ -4,6 +4,7 @@ using System.Linq;
 using ObjectUtils;
 using UnityEngine;
 using UnityEngine.Audio;
+using EditorTools;
 
 namespace Main.Sound
 {
@@ -12,20 +13,35 @@ namespace Main.Sound
     {
         public static SoundManager Singleton { get; private set; }
 
+        public const string SOUNDS_PATH = "Sounds/SoundEffects/";
         public const string MUSICS_PATH = "Sounds/Musics/";
-        public const string SOUNDS_PATH = "Sounds/Sounds/";
+
+#if UNITY_EDITOR
+        [Space(10f)]
+        [ShowOnly]
+        [SerializeField]
+        private string soundsPath;
+        [ShowOnly]
+        [SerializeField]
+        private string musicsPath;
+#endif
 
         public static float masterVolume, musicVolume, soundEffectVolume, UIVolume;
 
+        [Space(10f)]
         [SerializeReference]
         private AudioSource audioSource;
 
+        [Space(10f)]
         public AudioResource currentMusic;
+
+        [Space(10f)]
         public List<AudioResource> sounds;
         public List<AudioResource> musics;
 
         protected Dictionary<string, AudioResource> musicsDictionary;
 
+        [Space(10f)]
         public bool goToNextMusic = false;
         public bool playRandomMusicOnList = true;
         public bool loopMusic = false;
@@ -35,14 +51,12 @@ namespace Main.Sound
         private static float musicVolumeMultipliyer;
 
 #if UNITY_EDITOR
-        /*private void OnValidate()
+        private void OnValidate()
         {
-            musicDictionary = new Dictionary<string, AudioClipMod>();
-            foreach (AudioClip clip in musicList)
-            {
-                musicDictionary.Add(clip.Name(), clip);
-            }
-        }*/
+            audioSource = GetComponent<AudioSource>();
+            soundsPath = "Assets/Resources/" + SOUNDS_PATH;
+            musicsPath = "Assets/Resources/" + MUSICS_PATH;
+        }
 #endif
 
         public void UpdateVolumeMultiplier()
@@ -50,9 +64,9 @@ namespace Main.Sound
             musicVolumeMultipliyer = masterVolume * musicVolume;
         }
 
-        private void Start()
+        private void Awake()
         {
-            Singleton = MonoBehaviourGeneral.DeclareSingleton<SoundManager>(this, Singleton);
+            Singleton = MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad<SoundManager>(this, Singleton);
 
             audioSource = GetComponent<AudioSource>();
 

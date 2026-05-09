@@ -209,10 +209,11 @@ namespace ObjectUtils
             child.rotation = parent.rotation * rotationOffset;
         }
 
-        public static bool CheckLayerNameInMask(this LayerMask layerMask, string layerName)
-        {
-            return layerMask == (layerMask | 1 << LayerMask.NameToLayer(layerName));
-        }
+        public static bool MaskContainsLayer(this LayerMask layerMask, string layerName) => layerMask == (layerMask | 1 << LayerMask.NameToLayer(layerName));
+
+        public static bool MaskContainsLayer(this LayerMask layerMask, int layer) => layerMask == (layerMask | 1 << layer);
+
+        public static bool MaskContainsLayer(this LayerMask layerMask, LayerMask layer) => layerMask == (layerMask | 1 << layer);
     }
     public static class UIGeneral
     {
@@ -221,30 +222,43 @@ namespace ObjectUtils
         {
             return Mouse.current.position.ReadValue() * FindCanvas().scaleFactor;
         }
+
         /// <returns>Retorna a posição do mouse.</returns>
         public static Vector2 MousePosition()
         {
             return Mouse.current.position.ReadValue();
         }
+
         /// <returns>Retorna o canvas pelo nome "Canvas" (deve ter somente 1 Canvas).</returns>
         public static Canvas FindCanvas()
         {
             return GameObject.Find("Canvas").GetComponent<Canvas>();
         }
+
         /// <returns>Retorna o canvas pelo nome "DontDestroyOnLoadCanvas" (deve ter somente 1 DontDestroyOnLoadCanvas).</returns>
         public static Canvas FindDontDestroyOnLoadCanvas()
         {
             return GameObject.Find("DontDestroyOnLoadCanvas").GetComponent<Canvas>();
         }
+
         /// <summary>
         /// Fator de escala do canvas.
         /// </summary>
         public static float CanvasScaleFactor => FindCanvas().scaleFactor;
 
         private const int UILayer = 5;
-        //Returns 'true' if we touched or hovering on Unity UI element.
+
+        /// <summary>
+        /// Returns 'true' if we touched or hovering on Unity UI element.
+        /// </summary>
+        /// <returns></returns>
         public static bool IsPointerOverUIElement() => IsPointerOverUIElement(GetEventSystemRaycastResults());
-        //Returns 'true' if we touched or hovering on Unity UI element.
+
+        /// <summary>
+        /// Returns 'true' if we touched or hovering on Unity UI element.
+        /// </summary>
+        /// <param name="eventSystemRaysastResults"></param>
+        /// <returns></returns>
         private static bool IsPointerOverUIElement(List<RaycastResult> eventSystemRaysastResults)
         {
             for (int index = 0; index < eventSystemRaysastResults.Count; index++)
@@ -255,7 +269,11 @@ namespace ObjectUtils
             }
             return false;
         }
-        //Gets all event system raycast results of current mouse or touch position.
+
+        /// <summary>
+        /// Gets all event system raycast results of current mouse or touch position.
+        /// </summary>
+        /// <returns></returns>
         public static List<RaycastResult> GetEventSystemRaycastResults()
         {
             PointerEventData eventData = new PointerEventData(EventSystem.current);
@@ -325,15 +343,16 @@ namespace ObjectUtils
 
         public static Vector2 AngleVectors(Vector2 a, Vector2 b)
         {
-            return RadianToVector2(Mathf.Atan2(a.y - b.y, a.x - b.x));
+            return RadianToVector2(AngleRadian(a, b));
         }
-        public static Vector2 AngleVectors(Vector3 a, Vector3 b)
+
+        public static float AngleRadian(Vector2 a, Vector2 b)
         {
-            return RadianToVector2(Mathf.Atan2(a.z - b.z, a.x - b.x));
+            return Mathf.Atan2(a.y - b.y, a.x - b.x);
         }
-        public static float AngleRadian(Vector3 a, Vector3 b)
+        public static float AngleDegrees(Vector2 a, Vector2 b)
         {
-            return Mathf.Atan2(a.z - b.z, a.x - b.x);
+            return AngleRadian(a, b) * Mathf.Rad2Deg;
         }
 
         public static Vector3 Abs(this Vector3 v)
@@ -345,6 +364,14 @@ namespace ObjectUtils
         {
             var a = v.Abs();
             return a.x + a.y + a.z;
+        }
+        public static Vector2 LerpDelta(Vector2 a, Vector2 b, float t)
+        {
+            return Vector2.Lerp(a, b, t * Time.deltaTime);
+        }
+        public static Vector2 LerpFixedDelta(Vector2 a, Vector2 b, float t)
+        {
+            return Vector2.Lerp(a, b, t * Time.fixedDeltaTime);
         }
 
         public static Vector3 LerpDelta(Vector3 a, Vector3 b, float t)
@@ -483,8 +510,6 @@ namespace ObjectUtils
         }
 
         public static Vector3 SetZeroY(Vector3 pos) => new Vector3(pos.x, 0, pos.z);
-
-        public static bool MaskContainsLayer(this LayerMask mask, int layer) => (mask & (1 << layer)) != 0;
     }
 
     public static class MonoBehaviourGeneral
@@ -510,6 +535,17 @@ namespace ObjectUtils
 
             MonoBehaviour.DontDestroyOnLoad(monoBehaviour);
             return monoBehaviour as T;
+        }
+    }
+
+    public static class CoroutineGeneral
+    {
+        public static IEnumerator WaitFixedFrames(int frames)
+        {
+            for (int i = 0; i < frames; i++)
+            {
+                yield return new WaitForFixedUpdate();
+            }
         }
     }
 }
