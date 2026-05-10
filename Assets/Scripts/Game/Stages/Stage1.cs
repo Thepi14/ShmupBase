@@ -66,7 +66,6 @@ namespace Main.Stages
 
                         //primeira variável -> destino (player), segunda variável -> origem (inimigo)
                         bulletObj.Set(pos, MathEx.AngleDegrees(EntityManager.GetPlayer().transform.position, pos));
-                        bulletObj.customCoroutine = ExampleCoroutine;
                     }
                 }
             }

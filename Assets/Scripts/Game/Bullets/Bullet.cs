@@ -26,9 +26,13 @@ namespace Main.BulletSystem
 
         protected virtual void Start()
         {
-            BulletManager.AddBullet(this);
             if (customCoroutine != null)
                 customCoroutineInstance = StartCoroutine(customCoroutine(gameObject));
+        }
+
+        protected virtual void Awake()
+        {
+            BulletManager.AddBullet(this);
         }
 
         protected virtual void FixedUpdate()

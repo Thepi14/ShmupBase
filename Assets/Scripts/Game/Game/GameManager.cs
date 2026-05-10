@@ -5,7 +5,8 @@ namespace Main
     public class GameManager : MonoBehaviour
     {
         public static GameManager Singleton { get; private set; }
-        public static readonly Bounds bounds = new(new Vector2(), new Vector3(8f, 10f, float.PositiveInfinity));
+        public static Bounds bounds = new(new(), new(8, 10, float.PositiveInfinity));
+        public static readonly Vector2 startPlayerPosition = new(0, -3);
 
         public Camera mainCamera;
 

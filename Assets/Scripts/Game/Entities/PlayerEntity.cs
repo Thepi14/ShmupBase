@@ -1,3 +1,5 @@
+using System.Collections;
+using Main.BulletSystem;
 using UnityEngine;
 using static Main.InputManager;
 
@@ -41,6 +43,14 @@ namespace Main.EntitySystem
         public override void Damage(float damage)
         {
             base.Damage(damage);
+        }
+
+        public override IEnumerator KillCoroutine()
+        {
+            alive = false;
+            yield return new WaitForFixedUpdate();
+            BulletManager.DestroyAllBulletsEnemy();
+            transform.position = GameManager.startPlayerPosition;
         }
     }
 }

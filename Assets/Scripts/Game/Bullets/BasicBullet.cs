@@ -9,17 +9,26 @@ namespace Main.BulletSystem
         protected new Collider2D collider;
         protected SpriteRenderer spriteRenderer;
 
+        public ExitScreenFunction destroyOnExitScreen = ExitScreenFunction.Destroy;
+
         public float acceleration = 0f;
         public float angularVelocity = 0f;
 
         protected float currentAcceleration = 0f;
 
-        protected override void Start()
+        protected virtual void OnValidate()
         {
-            base.Start();
+            collider = GetComponent<Collider2D>();
+            collider.isTrigger = true;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
 
             collider = GetComponent<Collider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            collider.isTrigger = true;
         }
 
         protected override void FixedUpdate()
@@ -30,17 +39,29 @@ namespace Main.BulletSystem
             currentAcceleration += acceleration * Time.fixedDeltaTime;
 
             transform.rotation *= Quaternion.Euler(0f, 0f, angularVelocity * Time.fixedDeltaTime);
+
+            if ((byte)destroyOnExitScreen < 2 && !GameManager.bounds.Intersects(collider.bounds))
+            {
+                Kill();
+            }
         }
 
         public virtual void OnTriggerEnter2D(Collider2D collision)
         {
-            Debug.Log("hit");
+            /*Debug.Log("hit");
             if (collision == null)
-                return;
+                return;*/
             if (collision.GetComponent<IHealth>() is var iHealth && iHealth != null)
             {
                 iHealth.Damage(damage);
             }
+        }
+
+        public enum ExitScreenFunction : byte
+        {
+            Destroy,
+            Kill,
+            Nothing
         }
     }
 }

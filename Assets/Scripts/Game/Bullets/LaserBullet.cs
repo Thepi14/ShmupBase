@@ -38,17 +38,19 @@ namespace Main.BulletSystem
         protected bool completedLengthGrow = false;
         protected float growLengthDelayProgress = 0f;
 
-        protected virtual void OnValidate()
+        protected override void OnValidate()
         {
+            base.OnValidate();
+
             collider = GetComponent<CapsuleCollider2D>();
             Collider.direction = CapsuleDirection2D.Horizontal;
 
             CreateSpriteRenderer();
         }
 
-        protected override void Start()
+        protected override void Awake()
         {
-            base.Start();
+            base.Awake();
 
             Collider.direction = CapsuleDirection2D.Horizontal;
             Collider.enabled = false;
