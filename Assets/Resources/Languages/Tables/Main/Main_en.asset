@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Main_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: cb5caf2c62f033d43a985f1a73a1f3a3, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 3159333261312
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3203218264064
+    m_Localized: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4368265891840
+    m_Localized: 'Replay name:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4903769460736
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5528603316224
+    m_Localized: 'FPS: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5996385652736
+    m_Localized: Shmup Base
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7808731828224
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1828947468734464
+    m_Localized: Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1829015944941568
+    m_Localized: Down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1829072551268352
+    m_Localized: Left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1829143850242048
+    m_Localized: Right
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

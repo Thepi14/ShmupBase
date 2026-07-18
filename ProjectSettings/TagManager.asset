@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Boss
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - NonCollideableEnemy
   - BulletPlayer
   - BulletEnemy
-  - 
+  - UIBackground
   - 
   - 
   - 
@@ -40,6 +41,21 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: New Layer 6
+    uniqueID: 3499251777
+    locked: 0
+  - name: Player
+    uniqueID: 537020149
+    locked: 0
+  - name: PlayerBullet
+    uniqueID: 322860323
+    locked: 0
+  - name: Bullet
+    uniqueID: 1629284271
+    locked: 0
+  - name: Hitbox
+    uniqueID: 912039959
     locked: 0
   - name: UI
     uniqueID: 3573375311

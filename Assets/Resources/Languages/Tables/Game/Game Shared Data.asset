@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Game Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Game
+  m_TableCollectionNameGuidString: 926220aebf69a1f48b966a3180de426c
+  m_Entries:
+  - m_Id: 851404902400
+    m_Key: Highscore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1159719800832
+    m_Key: Score
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1246252486656
+    m_Key: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1351114280960
+    m_Key: Unpause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1566600843264
+    m_Key: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1700344614912
+    m_Key: Go Back To Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2031593967616
+    m_Key: Save Replay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2137223319552
+    m_Key: Save Replay?
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 6241290465551581287
+  references:
+    version: 2
+    RefIds:
+    - rid: 6241290465551581287
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1780106138283

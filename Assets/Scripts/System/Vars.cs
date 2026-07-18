@@ -1,96 +1,187 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Main.BulletSystem;
 using Main.EntitySystem;
+using Main.InputSystem;
+using Main.ReplaySystem;
 using Main.Sound;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 namespace Main
 {
     public delegate IEnumerator CustomCoroutine(GameObject gameObject);
     public static class Vars
     {
-        public static readonly int FIXED_UPDATES_PER_SECOND = 60;
-        public const short TARGET_FPS = 60;
+        public const ushort FIXED_UPDATES_PER_SECOND = 60, TARGET_FPS = 60;
+
         public static bool StartedVars { get; private set; } = false;
 
-        public static SoundManager SoundManager;
-        public static BulletManager bulletManager;
+        public static Difficulty currentDifficulty = Difficulty.None;
+        public static bool practiceMode = false;
+
         public static GameManager gameManager;
+        public static StageManager stageManager;
+
+        public static EntityManager entityManager;
+        public static BulletManager bulletManager;
+
+        public static SoundManager soundManager;
+
+        public const int 
+            STARTING_LIFES = 3,
+            STARTING_BOMBS = 3,
+            MAX_LIFES = 10,
+            MAX_BOMBS = 10;
 
         public static void StartVars()
         {
             if (StartedVars)
                 return;
-            Application.targetFrameRate = 60;
+
+            GenerateFolders();
 
             PhysicsCollisionMatrixLayerMasks.Init();
+
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+            Application.runInBackground = false;
+
+            //graphics
+            if (!Application.isMobilePlatform)
+            {
+                Screen.fullScreen = FullScreen;
+                Screen.fullScreenMode = ScreenMode;
+            }
+            else
+            {
+                Screen.fullScreen = true;
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            }
+
+            //replays
+            ReplayManagement.LoadAllReplayFiles();
+
+            //controls
+            InputManager.LockMouse(UseMouse);
 
             //GameStarter.Generate();
             //ResetVolumePrefs();
             SetSoundVolumes();
 
+#if UNITY_EDITOR
+            //ResetAllPrefs();
+#endif
+
             StartedVars = true;
         }
 
+        public static void ChangeLocale(int index)
+        {
+            LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
+            SelectedLanguage = index;
+        }
+
+        public static void GenerateFolders()
+        {
+            Directory.CreateDirectory(ReplayManagement.REPLAYS_PATH);
+        }
+
+        public static void GetManagers()
+        {
+            gameManager = GameManager.Singleton;
+            stageManager = StageManager.Singleton;
+            entityManager = EntityManager.Singleton;
+            bulletManager = BulletManager.Singleton;
+            soundManager = SoundManager.Singleton;
+        }
+
+        public static bool GameIsPaused { get => Time.timeScale == 0; set => Time.timeScale = value ? 0 : 1; }
+
+        public static void PauseGame(bool pause)
+        {
+            GameIsPaused = pause;
+        }
+
         #region PREFERENCE KEYS
-        public static string SelectedLanguage { get => GetPrefString(PrefKey.SelectedLanguage); set => SetPrefString(PrefKey.SelectedLanguage, value); }
+
+        //general
         public static bool ShowFPS { get => GetPrefBool(PrefKey.ShowFPS); set => SetPrefBool(PrefKey.ShowFPS, value); }
 
+        //audio
         public static float MasterVolume { get => GetPrefFloat(PrefKey.MasterVolume); set => SetPrefFloat(PrefKey.MasterVolume, value); }
         public static float MusicVolume { get => GetPrefFloat(PrefKey.MusicVolume); set => SetPrefFloat(PrefKey.MusicVolume, value); }
         public static float SoundEffectVolume { get => GetPrefFloat(PrefKey.SoundEffectVolume); set => SetPrefFloat(PrefKey.SoundEffectVolume, value); }
         public static float UIVolume { get => GetPrefFloat(PrefKey.UIVolume); set => SetPrefFloat(PrefKey.UIVolume, value); }
 
+        //controls
+        public static bool UseMouse { get { return GetPrefBool(PrefKey.UseMouse); } set { SetPrefBool(PrefKey.UseMouse, value); InputManager.LockMouse(!UseMouse); } }
+        public static bool UseIngameKeyboard { get => GetPrefBool(PrefKey.UseIngameKeyboard); set => SetPrefBool(PrefKey.UseIngameKeyboard, value); }
+
+        //graphics
+        public static bool FullScreen { get => GetPrefBool(PrefKey.FullScreen); set => SetPrefBool(PrefKey.FullScreen, value); }
+        public static FullScreenMode ScreenMode { get => (FullScreenMode)GetPrefInt(PrefKey.ScreenMode); set => SetPrefInt(PrefKey.ScreenMode, (int)value); }
+
+        //localization
+        public static int SelectedLanguage { get => GetPrefInt(PrefKey.SelectedLanguage); set => SetPrefInt(PrefKey.SelectedLanguage, value); }
+
+        //system
+        public static bool SaveReplaysAsJson { get => GetPrefBool(PrefKey.SaveReplaysAsJson); set => SetPrefBool(PrefKey.SaveReplaysAsJson, value); }
+        public static bool UseLocalDataPath { get => GetPrefBool(PrefKey.UseLocalDataPath); set => SetPrefBool(PrefKey.UseLocalDataPath, value); }
+
+        //persistent data
+        public static int Highscore { get => GetPrefInt(PrefKey.Highscore); set => SetPrefInt(PrefKey.Highscore, value); }
+
         public enum PrefKey : byte
         {
             None,
-            SelectedLanguage,
+
+            //general
             ShowFPS,
+
+            //audio
             MasterVolume,
             MusicVolume,
             SoundEffectVolume,
-            UIVolume
+            UIVolume,
+
+            //controls
+            UseMouse,
+            UseIngameKeyboard,
+
+            //graphics
+            FullScreen,
+            ScreenMode,
+
+            //localization
+            SelectedLanguage,
+
+            //system
+            SaveReplaysAsJson,
+            UseLocalDataPath,
+
+            //others
+            Highscore,
         }
 
-        private static string GetPlayerPref(PrefKey key)
-        {
-            switch (key)
-            {
-                case PrefKey.SelectedLanguage:
-                    return "SELECTED_LANGUAGE";
-                case PrefKey.ShowFPS:
-                    return "SHOW_FPS";
-                case PrefKey.MasterVolume:
-                    return "MASTER_VOLUME";
-                case PrefKey.MusicVolume:
-                    return "MUSIC_VOLUME";
-                case PrefKey.SoundEffectVolume:
-                    return "SOUND_EFFECTS_VOLUME";
-                case PrefKey.UIVolume:
-                    return "UI_VOLUME";
-            }
-
-            throw new KeyNotFoundException("The key " + key + " was not found for some unknown and scary reason.");
-            //return "NULL";
-        }
+        private static string GetPrefKeyString(PrefKey key) => key.ToString().Prettify().ToUpper().Replace(' ', '_');
 
         public static void ResetAllPrefs()
         {
-            ResetSystemPrefs();
             ResetGeneralPrefs();
             ResetVolumePrefs();
-        }
-
-        public static void ResetSystemPrefs()
-        {
-            SelectedLanguage = "EN";
-            ShowFPS = false;
+            ResetControlsPrefs();
+            ResetSystemPrefs();
         }
 
         public static void ResetGeneralPrefs()
         {
+            ShowFPS = false;
 
+            PlayerPrefs.Save();
         }
 
         public static void ResetVolumePrefs()
@@ -99,19 +190,41 @@ namespace Main
             MusicVolume = 0.8f;
             SoundEffectVolume = 0.8f;
             UIVolume = 0.8f;
+
+            PlayerPrefs.Save();
         }
 
-        public static bool GetPrefBool(PrefKey key) => PlayerPrefs.GetInt(GetPlayerPref(key), 0) == 1;
-        public static void SetPrefBool(PrefKey key, bool value) => PlayerPrefs.SetInt(GetPlayerPref(key), value ? 1 : 0);
-        public static int GetPrefInt(PrefKey key) => PlayerPrefs.GetInt(GetPlayerPref(key), 0);
-        public static void SetPrefInt(PrefKey key, int value) => PlayerPrefs.SetInt(GetPlayerPref(key), value);
-        public static float GetPrefFloat(PrefKey key) => PlayerPrefs.GetFloat(GetPlayerPref(key), 0f);
-        public static void SetPrefFloat(PrefKey key, float value) => PlayerPrefs.SetFloat(GetPlayerPref(key), value);
-        public static string GetPrefString(PrefKey key) => PlayerPrefs.GetString(GetPlayerPref(key), "");
-        public static void SetPrefString(PrefKey key, string value) => PlayerPrefs.SetString(GetPlayerPref(key), value);
+        public static void ResetControlsPrefs()
+        {
+            UseMouse = false;
+            UseIngameKeyboard = true;
+
+            PlayerPrefs.Save();
+        }
+
+        public static void ResetSystemPrefs()
+        {
+            SaveReplaysAsJson = true;
+            UseLocalDataPath = false;
+
+            PlayerPrefs.Save();
+        }
+
+        public const bool ALWAYS_SAVE_PREFS = true;
+
+        public static bool GetPrefBool(PrefKey key) => PlayerPrefs.GetInt(GetPrefKeyString(key), 0) == 1;
+        public static void SetPrefBool(PrefKey key, bool value, bool save = ALWAYS_SAVE_PREFS) { PlayerPrefs.SetInt(GetPrefKeyString(key), value ? 1 : 0); if (save) PlayerPrefs.Save(); }
+        public static int GetPrefInt(PrefKey key) => PlayerPrefs.GetInt(GetPrefKeyString(key), 0);
+        public static void SetPrefInt(PrefKey key, int value, bool save = ALWAYS_SAVE_PREFS) { PlayerPrefs.SetInt(GetPrefKeyString(key), value); if (save) PlayerPrefs.Save(); }
+        public static float GetPrefFloat(PrefKey key) => PlayerPrefs.GetFloat(GetPrefKeyString(key), 0f);
+        public static void SetPrefFloat(PrefKey key, float value, bool save = ALWAYS_SAVE_PREFS) { PlayerPrefs.SetFloat(GetPrefKeyString(key), value); if (save) PlayerPrefs.Save(); }
+        public static string GetPrefString(PrefKey key) => PlayerPrefs.GetString(GetPrefKeyString(key), "");
+        public static void SetPrefString(PrefKey key, string value, bool save = ALWAYS_SAVE_PREFS) { PlayerPrefs.SetString(GetPrefKeyString(key), value); if (save) PlayerPrefs.Save(); }
+
         #endregion
 
         #region LAYER
+
         public enum Layer : byte
         {
             Default,
@@ -150,6 +263,7 @@ namespace Main
             }
             return LayerMask.GetMask(newLayers);
         }
+
         #endregion
 
         #region SOUND

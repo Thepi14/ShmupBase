@@ -139,6 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 5
   alive: 1
+  immune: 0
   speed: 1
   canMove: 1
   canAttack: 0

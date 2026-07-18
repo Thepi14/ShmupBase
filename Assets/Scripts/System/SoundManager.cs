@@ -9,7 +9,7 @@ using EditorTools;
 namespace Main.Sound
 {
     [RequireComponent(typeof(AudioSource))]
-    public class SoundManager : MonoBehaviour
+    public sealed class SoundManager : MonoBehaviour
     {
         public static SoundManager Singleton { get; private set; }
 
@@ -28,8 +28,6 @@ namespace Main.Sound
 
         public static float masterVolume, musicVolume, soundEffectVolume, UIVolume;
 
-        [Space(10f)]
-        [SerializeReference]
         private AudioSource audioSource;
 
         [Space(10f)]
@@ -39,7 +37,11 @@ namespace Main.Sound
         public List<AudioResource> sounds;
         public List<AudioResource> musics;
 
-        protected Dictionary<string, AudioResource> musicsDictionary;
+        private Dictionary<string, AudioResource> soundsDictionary;
+        private Dictionary<string, AudioResource> musicsDictionary;
+
+        public int randomSeed = 0;
+        public static System.Random random;
 
         [Space(10f)]
         public bool goToNextMusic = false;
@@ -54,8 +56,11 @@ namespace Main.Sound
         private void OnValidate()
         {
             audioSource = GetComponent<AudioSource>();
+
             soundsPath = "Assets/Resources/" + SOUNDS_PATH;
             musicsPath = "Assets/Resources/" + MUSICS_PATH;
+
+            UpdateLists();
         }
 #endif
 
@@ -64,16 +69,29 @@ namespace Main.Sound
             musicVolumeMultipliyer = masterVolume * musicVolume;
         }
 
+        private void UpdateLists()
+        {
+            sounds = Resources.LoadAll<AudioResource>(SOUNDS_PATH).ToList();
+            musics = Resources.LoadAll<AudioResource>(MUSICS_PATH).ToList();
+        }
+
         private void Awake()
         {
-            Singleton = MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad<SoundManager>(this, Singleton);
+            random ??= new System.Random(randomSeed);
+
+            Singleton = MonoBehaviourGeneral.DeclareSingleton(this, Singleton);
+
+            UpdateLists();
 
             audioSource = GetComponent<AudioSource>();
 
-            sounds = Resources.LoadAll<AudioResource>(SOUNDS_PATH).ToList();
-            musics = Resources.LoadAll<AudioResource>(MUSICS_PATH).ToList();
-
+            soundsDictionary = new Dictionary<string, AudioResource>();
             musicsDictionary = new Dictionary<string, AudioResource>();
+
+            foreach (AudioResource clip in sounds)
+            {
+                soundsDictionary.Add(clip.name, clip);
+            }
             foreach (AudioResource clip in musics)
             {
                 musicsDictionary.Add(clip.name, clip);
@@ -82,34 +100,60 @@ namespace Main.Sound
             UpdateVolumeMultiplier();
         }
 
-        private void Update()
+        private void OnDisable()
+        {
+            audioSource.Pause();
+        }
+
+        private void OnEnable()
+        {
+            audioSource.Play();
+        }
+
+        private void LateUpdate()
         {
             UpdateVolumeMultiplier();
 
             if (musics.Count == 0)
                 return;
-            else if (!Application.isFocused)
+            /*else if (!Application.isFocused)
                 audioSource.Pause();
+            else if (Application.isFocused)
+                audioSource.Play();*/
 
             audioSource.loop = loopMusic;
 
-            if (musics.Count > 0 && !audioSource.isPlaying)
-                if (!loopMusic && playRandomMusicOnList && musics.Count > 1)
+            if (musics.Count > 0 && !audioSource.isPlaying && !loopMusic)
+            {
+                if (playRandomMusicOnList)
                 {
-                    if (!goToNextMusic)
-                        if (audioSource.isPlaying)
-                            return;
-                        newMusic:
-                    var nextClip = musics.GetRandom();
-                    if (nextClip == audioSource.clip)
-                        goto newMusic;
-                    PlayMusic(nextClip);
+                    var copyList = musics.ToList();
+                    copyList.Remove(currentMusic);
+                    PlayMusic(copyList.GetRandom(random));
                 }
-                else if (loopMusic && musics.Count >= 1)
+                else
                 {
-                    PlayMusic(musics.GetRandom());
-                }
+                    bool next = false;
+                    AudioResource audio = null;
+                    foreach (var music in musics)
+                    {
+                        if (next)
+                        {
+                            audio = music;
+                            break;
+                        }
+                        if (music == currentMusic)
+                            next = true;
+                        else if (music == musics.Last())
+                        {
+                            audio = musics.First();
+                            break;
+                        }
+                    }
 
+                    PlayMusic(audio);
+                }
+            }
             if (currentMusic != null)
                 audioSource.volume = currentVolume * musicVolumeMultipliyer;
 
@@ -127,11 +171,13 @@ namespace Main.Sound
                 Singleton.StartCoroutine(Singleton.FadeOutCoroutine(Singleton.currentFade));
             }
         }
+
         public static void PlayMusic(string name, float fade = 0f)
         {
             Singleton.audioSource.volume = musicVolumeMultipliyer;
             Singleton.currentMusic = Singleton.musicsDictionary[name];
             Singleton.StopCoroutine("FadeCoroutine");
+
             if (fade > 0f)
             {
                 Singleton.StartCoroutine(Singleton.FadeInCoroutine(fade));
@@ -147,6 +193,7 @@ namespace Main.Sound
             Singleton.audioSource.volume = musicVolumeMultipliyer;
             Singleton.currentMusic = clip;
             Singleton.StopCoroutine("FadeCoroutine");
+
             if (fade > 0f)
             {
                 Singleton.StartCoroutine(Singleton.FadeInCoroutine(fade));
@@ -163,6 +210,7 @@ namespace Main.Sound
             audioSource.resource = currentMusic;
             audioSource.volume = 0f;
             audioSource.Play();
+
             for (float a = 1f; a > 0f; a -= 1f / time)
             {
                 currentVolume = 1f - a;
@@ -175,6 +223,7 @@ namespace Main.Sound
         {
             time *= 100f;
             audioSource.volume = currentVolume * musicVolumeMultipliyer;
+
             for (float a = 1f; a > 0f; a -= 1f / time)
             {
                 currentVolume = a;

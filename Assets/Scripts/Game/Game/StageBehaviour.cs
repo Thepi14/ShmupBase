@@ -1,7 +1,6 @@
 using System.Collections;
 using Main.BulletSystem;
 using UnityEngine;
-using static ObjectUtils.CoroutineGeneral;
 
 namespace Main.Stages
 {
@@ -10,6 +9,10 @@ namespace Main.Stages
         public Coroutine stageCoroutine;
         public Coroutine backgroundCoroutine;
 
+        public StageBehaviour nextStage;
+
+        public byte stageIndex = 0;
+
         public int currentFrame = 0;
         public int currentFixedFrame = 0;
 
@@ -17,8 +20,8 @@ namespace Main.Stages
 
         protected virtual void Start()
         {
-            Debug.Log("Started");
             var result = BulletManager.KillAllBulletsEnemy();
+            Debug.Log("Stage started, result: " + result);
             stageCoroutine = StartCoroutine(StageCoroutine());
             backgroundCoroutine = StartCoroutine(BackgroundCoroutine());
         }
@@ -54,6 +57,20 @@ namespace Main.Stages
         protected virtual void EndStage()
         {
             ended = true;
+
+            if (Vars.practiceMode)
+            {
+                GameManager.EndGame();
+            }
+            else if (nextStage == null)
+            {
+                GameManager.EndGame();
+            }
+            else
+            {
+                Destroy(gameObject);
+                Instantiate(nextStage);
+            }
         }
     }
 }

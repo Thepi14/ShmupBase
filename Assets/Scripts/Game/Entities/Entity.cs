@@ -41,23 +41,46 @@ namespace Main.EntitySystem
 
     public interface IHealth
     {
-        public float Health { get; set; }
-        public bool Alive { get; set; }
-        public abstract void Damage(float damage);
+        public abstract float Health { get; set; }
+        public abstract bool Alive { get; set; }
+        public abstract bool Immune { get; set; }
+        public abstract float Shield { get; set; }
+
+        public virtual void Damage(float damage)
+        {
+            if (!Immune)
+            {
+                if (Shield > 0)
+                {
+                    Shield -= damage;
+                }
+                else
+                    Health -= damage;
+            }
+        }
+
+        public virtual void DamageShield(float damage)
+        {
+            if (!Immune)
+            {
+                Shield -= damage;
+            }
+        }
+
         public abstract void Kill();
     }
 
     public interface IMove
     {
-        public float Speed { get; set; }
-        public bool CanMove { get; set; }
+        public abstract float Speed { get; set; }
+        public abstract bool CanMove { get; set; }
         public abstract void Move(Vector2 movement, float speed = -1f);
     }
 
     public interface IAttack
     {
-        public bool CanAttack { get; set; }
-        public float ReloadSpeedMultiplier { get; set; }
+        public abstract bool CanAttack { get; set; }
+        public abstract float ReloadSpeedMultiplier { get; set; }
         public abstract void Attack();
         public abstract IEnumerator AttackCoroutine(GameObject gameObject);
     }

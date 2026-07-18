@@ -18,6 +18,14 @@ namespace Main.Stages
             //na classe herdada há um código de eliminação de balas, é recomendado invocar esse código
             yield return base.StageCoroutine();
 
+            var str = "";
+            for (int i = 0; i < 10; i++)
+            {
+                str += GameManager.random.Next(0, 10) + ", ";
+            }
+
+            Debug.Log(str);
+
             //chaves usadas assim podem ser usadas para isolar variáveis/funções locais
             {
                 //coisas aqui
@@ -65,12 +73,17 @@ namespace Main.Stages
                         var pos = (Vector2)enemyObj.transform.position;
 
                         //primeira variável -> destino (player), segunda variável -> origem (inimigo)
-                        bulletObj.Set(pos, MathEx.AngleDegrees(EntityManager.GetPlayer().transform.position, pos));
+                        bulletObj.Set(pos, EntityManager.AngleToPlayer(pos));
                     }
                 }
             }
 
-            yield return null;
+            yield break;
+        }
+
+        protected override IEnumerator BackgroundCoroutine()
+        {
+            yield break;
         }
     }
 }

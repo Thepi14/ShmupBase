@@ -6,10 +6,10 @@ namespace Main.BulletSystem
     [RequireComponent(typeof(Collider2D))]
     public class BasicBullet : Bullet
     {
-        protected new Collider2D collider;
-        protected SpriteRenderer spriteRenderer;
-
-        public ExitScreenFunction destroyOnExitScreen = ExitScreenFunction.Destroy;
+        [HideInInspector]
+        public new Collider2D collider;
+        [HideInInspector]
+        public SpriteRenderer spriteRenderer;
 
         public float acceleration = 0f;
         public float angularVelocity = 0f;
@@ -20,6 +20,11 @@ namespace Main.BulletSystem
         {
             collider = GetComponent<Collider2D>();
             collider.isTrigger = true;
+
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.sortingLayerName = "Bullet";
+            }
         }
 
         protected override void Awake()
@@ -34,16 +39,15 @@ namespace Main.BulletSystem
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
+            UpdatePosition();
+        }
 
-            transform.position += transform.right * (speed + currentAcceleration) * Time.fixedDeltaTime;
+        public virtual void UpdatePosition()
+        {
+            transform.position += transform.right * GetCurrentSpeedFixed();
             currentAcceleration += acceleration * Time.fixedDeltaTime;
 
             transform.rotation *= Quaternion.Euler(0f, 0f, angularVelocity * Time.fixedDeltaTime);
-
-            if ((byte)destroyOnExitScreen < 2 && !GameManager.bounds.Intersects(collider.bounds))
-            {
-                Kill();
-            }
         }
 
         public virtual void OnTriggerEnter2D(Collider2D collision)
@@ -57,11 +61,15 @@ namespace Main.BulletSystem
             }
         }
 
-        public enum ExitScreenFunction : byte
-        {
-            Destroy,
-            Kill,
-            Nothing
+        public override float GetCurrentSpeed() => speed + currentAcceleration;
+
+        public override Bounds GetBounds()
+        { 
+            var bounds = collider.bounds;
+            bounds.size *= boundsMultiplier;
+            return bounds;
         }
+
+        public override bool InsideGameCanvas() => GameManager.bounds.Intersects(GetBounds());
     }
 }

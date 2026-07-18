@@ -1,29 +1,32 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public static class PhysicsCollisionMatrixLayerMasks
+namespace Main
 {
-    private static Dictionary<int, int> _masksByLayer;
-
-    public static void Init()
+    public static class PhysicsCollisionMatrixLayerMasks
     {
-        _masksByLayer = new Dictionary<int, int>();
-        for (int i = 0; i < 32; i++)
+        private static Dictionary<int, int> _masksByLayer;
+
+        public static void Init()
         {
-            int mask = 0;
-            for (int j = 0; j < 32; j++)
+            _masksByLayer = new Dictionary<int, int>();
+            for (int i = 0; i < 32; i++)
             {
-                if (!Physics.GetIgnoreLayerCollision(i, j))
+                int mask = 0;
+                for (int j = 0; j < 32; j++)
                 {
-                    mask |= 1 << j;
+                    if (!Physics.GetIgnoreLayerCollision(i, j))
+                    {
+                        mask |= 1 << j;
+                    }
                 }
+                _masksByLayer.Add(i, mask);
             }
-            _masksByLayer.Add(i, mask);
         }
-    }
 
-    public static int MaskForLayer(int layer)
-    {
-        return _masksByLayer[layer];
+        public static int MaskForLayer(int layer)
+        {
+            return _masksByLayer[layer];
+        }
     }
 }

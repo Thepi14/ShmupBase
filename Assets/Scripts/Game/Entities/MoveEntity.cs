@@ -14,9 +14,12 @@ namespace Main.EntitySystem
         protected bool canMove = true;
         public virtual bool CanMove { get => canMove; set => canMove = value; }
 
+        protected new Rigidbody2D rigidbody;
+
         protected override void Awake()
         {
             base.Awake();
+            rigidbody = GetComponent<Rigidbody2D>();
         }
 
         protected override void Update()
@@ -31,10 +34,20 @@ namespace Main.EntitySystem
 
         public virtual void Move(Vector2 movement, float speed = -1f)
         {
+            if (canMove)
+            {
+                if (speed < 0f)
+                    speed = Speed;
+
+                transform.position += (Vector3)PredictMovement(movement, speed);
+            }
+        }
+
+        public virtual Vector2 PredictMovement(Vector2 movement, float speed = -1f)
+        {
             if (speed < 0f)
                 speed = Speed;
-
-            transform.position += (Vector3)movement * speed;
+            return movement * speed;
         }
 
         public virtual void MoveTo(Vector2 endPosition, float speed = -1f)

@@ -6,7 +6,8 @@ namespace Main.BulletSystem
     [RequireComponent(typeof(CapsuleCollider2D))]
     public class LaserBullet : BasicBullet
     {
-        protected CapsuleCollider2D Collider => collider as CapsuleCollider2D;
+        [HideInInspector]
+        public CapsuleCollider2D Collider => collider as CapsuleCollider2D;
         /// <summary>
         /// <para>ActiveOnWidthCompleted = Ativa o collider só quando a largura completa.</para>
         /// <para>ActiveOnLengthCompleted = Ativa o collider só quando o comprimento completa.</para>
@@ -157,7 +158,7 @@ namespace Main.BulletSystem
             }
         }
 
-        public enum LaserSpriteDrawMode
+        public enum LaserSpriteDrawMode : byte
         {
             /// <summary>
             /// Estica o sprite.
@@ -169,7 +170,7 @@ namespace Main.BulletSystem
             Repeat
         }
 
-        public enum ColliderActivationMode
+        public enum ColliderActivationMode : byte
         {
             /// <summary>
             /// Ativa o collider só quando a largura completa.

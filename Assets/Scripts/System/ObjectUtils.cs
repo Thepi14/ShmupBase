@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -150,9 +149,9 @@ namespace ObjectUtils
             return GetGameObjectChildren(gameObject.gameObject);
         }
 
-        public static List<GameObject> FindObjects(Vector3 point, LayerMask layerMask, Func<GameObject, bool> condition)
+        public static List<GameObject> FindObjects(Vector3 point, LayerMask layerMask, Func<GameObject, bool> condition, FindObjectsSortMode findObjectsSortMode = FindObjectsSortMode.None)
         {
-            GameObject[] sceneObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            GameObject[] sceneObjects = UnityEngine.Object.FindObjectsByType<GameObject>(findObjectsSortMode);
             List<GameObject> result = new List<GameObject>();
 
             for (int i = 0; i < sceneObjects.Length; i++)
@@ -165,9 +164,9 @@ namespace ObjectUtils
             return result;
         }
 
-        public static List<GameObject> FindNearObjects(Vector3 point, LayerMask layerMask, float distance)
+        public static List<GameObject> FindNearObjects(Vector3 point, LayerMask layerMask, float distance, FindObjectsSortMode findObjectsSortMode = FindObjectsSortMode.None)
         {
-            GameObject[] sceneObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            GameObject[] sceneObjects = UnityEngine.Object.FindObjectsByType<GameObject>(findObjectsSortMode);
             List<GameObject> result = new List<GameObject>();
 
             for (int i = 0; i < sceneObjects.Length; i++)
@@ -183,9 +182,9 @@ namespace ObjectUtils
             return result;
         }
 
-        public static List<GameObject> FindNearObjects(Vector3 point, LayerMask layerMask, float distance, Func<GameObject, bool> condition)
+        public static List<GameObject> FindNearObjects(Vector3 point, LayerMask layerMask, float distance, Func<GameObject, bool> condition, FindObjectsSortMode findObjectsSortMode = FindObjectsSortMode.None)
         {
-            GameObject[] sceneObjects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.None);
+            GameObject[] sceneObjects = UnityEngine.Object.FindObjectsByType<GameObject>(findObjectsSortMode);
             List<GameObject> result = new List<GameObject>();
 
             for (int i = 0; i < sceneObjects.Length; i++)
@@ -218,18 +217,21 @@ namespace ObjectUtils
     public static class UIGeneral
     {
         /// <returns>Retorna a posição do mouse com o fator de escala do canvas.</returns>
+        [Obsolete]
         public static Vector2 MousePositionScaled()
         {
             return Mouse.current.position.ReadValue() * FindCanvas().scaleFactor;
         }
 
         /// <returns>Retorna a posição do mouse.</returns>
+        [Obsolete]
         public static Vector2 MousePosition()
         {
             return Mouse.current.position.ReadValue();
         }
 
         /// <returns>Retorna o canvas pelo nome "Canvas" (deve ter somente 1 Canvas).</returns>
+        [Obsolete]
         public static Canvas FindCanvas()
         {
             return GameObject.Find("Canvas").GetComponent<Canvas>();
@@ -244,7 +246,9 @@ namespace ObjectUtils
         /// <summary>
         /// Fator de escala do canvas.
         /// </summary>
+        [Obsolete]
         public static float CanvasScaleFactor => FindCanvas().scaleFactor;
+
 
         private const int UILayer = 5;
 
@@ -283,13 +287,9 @@ namespace ObjectUtils
             return raysastResults;
         }
     }
-    public static class MathEx
-    {
-        public static float Pow2(float f)
-        {
-            return Mathf.Pow(f, 2);
-        }
 
+    public static class LinqEx
+    {
         public static void Add<T>(this IList<T> list, params T[] items)
         {
             foreach (T item in list)
@@ -317,14 +317,125 @@ namespace ObjectUtils
             return list;
         }
 
-        public static T GetRandom<T>(this IList<T> list)
+        public static IList<T> Shuffle<T>(this IList<T> list, System.Random random)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                byte[] box = new byte[1];
+                do random.NextBytes(box);
+                while (!(box[0] < n * (Byte.MaxValue / n)));
+                int k = (box[0] % n);
+                n--;
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+
+            return list;
+        }
+
+        public static T GetRandom<T>(this IList<T> list, System.Random random)
         {
             if (list == null)
                 throw new ArgumentNullException("list", "The provided list is null");
             if (list.Count == 0)
                 throw new ArgumentException("Cant get a random item in a list that is empty!");
 
-            return list[0];
+            return list[random.Next(0, list.Count - 1)];
+        }
+
+        public static T GetRandom<T>(this IList<T> list, Unity.Mathematics.Random random)
+        {
+            if (list == null)
+                throw new ArgumentNullException("list", "The provided list is null");
+            if (list.Count == 0)
+                throw new ArgumentException("Cant get a random item in a list that is empty!");
+
+            return list[random.NextInt(0, list.Count - 1)];
+        }
+
+        public static T MaxBy<T>(this IList<T> list, Func<T, int> predicate)
+        {
+            var biggest = int.MinValue;
+            T value = list[0];
+
+            foreach (T item in list)
+            {
+                var current = predicate(item);
+                if (current > biggest)
+                {
+                    biggest = current;
+                    value = item;
+                }
+            }
+
+            return value;
+        }
+
+        public static T MaxBy<T>(this IList<T> list, Func<T, float> predicate)
+        {
+            var biggest = float.MinValue;
+            T value = list[0];
+
+            foreach (T item in list)
+            {
+                var current = predicate(item);
+                if (current > biggest)
+                {
+                    biggest = current;
+                    value = item;
+                }
+            }
+
+            return value;
+        }
+
+        public static T MinBy<T>(this IList<T> list, Func<T, int> predicate)
+        {
+            var tinniest = int.MaxValue;
+            T value = list[0];
+
+            foreach (T item in list)
+            {
+                var current = predicate(item);
+                if (current < tinniest)
+                {
+                    tinniest = current;
+                    value = item;
+                }
+            }
+
+            return value;
+        }
+
+        public static T MinBy<T>(this IList<T> list, Func<T, float> predicate)
+        {
+            var tinniest = float.MaxValue;
+            T value = list[0];
+
+            foreach (T item in list)
+            {
+                var current = predicate(item);
+                if (current < tinniest)
+                {
+                    tinniest = current;
+                    value = item;
+                }
+            }
+
+            return value;
+        }
+    }
+
+    public static class MathEx
+    {
+        /// <summary>
+        /// Powers the value 'f' to two.
+        /// </summary>
+        public static float Pow2(float f)
+        {
+            return Mathf.Pow(f, 2);
         }
 
         /// <summary>
@@ -360,11 +471,35 @@ namespace ObjectUtils
             return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
         }
 
+        public static Vector3 Abs(this Vector2 v)
+        {
+            return new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y));
+        }
+
         public static float Absolute(this Vector3 v)
         {
             var a = v.Abs();
             return a.x + a.y + a.z;
         }
+
+        public static float Absolute(this Vector2 v)
+        {
+            var a = v.Abs();
+            return a.x + a.y;
+        }
+
+        public static float AbsoluteDivided(this Vector3 v)
+        {
+            var a = v.Abs();
+            return (a.x + a.y + a.z) / 3f;
+        }
+
+        public static float AbsoluteDivided(this Vector2 v)
+        {
+            var a = v.Abs();
+            return (a.x + a.y + a.z) * .5f;
+        }
+
         public static Vector2 LerpDelta(Vector2 a, Vector2 b, float t)
         {
             return Vector2.Lerp(a, b, t * Time.deltaTime);
@@ -509,23 +644,250 @@ namespace ObjectUtils
             }
         }
 
+        /// <summary>
+        /// Short for "Greatest Common Factor".
+        /// </summary>
+        /// <returns>Greatest common factor of a and b.</returns>
+        public static int GCF(int a, int b)
+        {
+            while (b != 0)
+            {
+                int temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        /// <summary>
+        /// Short for "Last Common Multiple".
+        /// </summary>
+        /// <returns>Last common multiple of a and b.</returns>
+        public static int LCM(int a, int b)
+        {
+            return (a / GCF(a, b)) * b;
+        }
+
+        #region PARAMETRIC FUNCTIONS
+
+        public static float CurveLength(Func<float, Vector2> curve, int precision, float start = 0f, float end = 1f)
+        {
+            float add = (end - start) / (float)precision;
+            float length = 0f;
+
+            Vector2 currentPosition = curve(start);
+
+            for (float i = start + add; i <= end; i += add)
+            {
+                var newPosition = curve(i);
+                length += Vector2.Distance(currentPosition, newPosition);
+                currentPosition = newPosition;
+            }
+
+            return length;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="angle"></param>
+        /// <param name="maxValueX"></param>
+        /// <param name="maxValueY"></param>
+        /// <returns></returns>
+        public static Vector2 Cruciform(float a, float b, float angle, float maxValueX = 100f, float maxValueY = 100f)
+        {
+            float x = a / Mathf.Cos(angle), y = b / Mathf.Sin(angle);
+            return new(Mathf.Abs(x) > maxValueX ? maxValueX : x, Mathf.Abs(y) > maxValueY ? maxValueY : y);
+        }
+
+        /// <summary>
+        /// Rotates by angle a circle with radius r outside a circle with radius R.
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 Epicycloid(float R, float r, float angle)
+        {
+            float plusRr = R + r;
+            float theta = angle * 2f * Mathf.PI;
+            float div = (plusRr / r) * theta;
+
+            return new(
+                plusRr * Mathf.Cos(theta) - r * Mathf.Cos(div),
+                plusRr * Mathf.Sin(theta) - r * Mathf.Sin(div));
+        }
+        /// <summary>
+        /// Rotates by angle a circle with radius r outside a circle with radius R.
+        /// <para>This version takes degrees as values.</para>
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 EpicycloidDeg(float R, float r, float angle) => Epicycloid(R, r, angle * Mathf.Deg2Rad);
+
+        /// <summary>
+        /// Rotates by angle a circle with radius r inside a circle with radius R.
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 Hypocycloid(float R, float r, float angle)
+        {
+            float minusRr = R - r;
+            float theta = angle * 2f * Mathf.PI * (LCM((int)r, (int)R) / R);
+            float div = (minusRr / r) * theta;
+
+            return new(
+                minusRr * Mathf.Cos(theta) + r * Mathf.Cos(div),
+                minusRr * Mathf.Sin(theta) - r * Mathf.Sin(div));
+        }
+        /// <summary>
+        /// Rotates by angle a circle with radius r inside a circle with radius R.
+        /// <para>This version takes degrees as values.</para>
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 HypocycloidDeg(float R, float r, float angle) => Hypocycloid(R, r, angle * Mathf.Deg2Rad);
+
+        /// <summary>
+        /// Rotates by angle a circle with radius r with offset d from its center outside a circle with radius R.
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="d">Offset from the center of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 Hypertrochoid(float R, float r, float d, float angle)
+        {
+            float plusRr = R + r;
+            float theta = angle * 2f * Mathf.PI;
+            float div = (plusRr / r) * theta;
+
+            return new(
+                plusRr * Mathf.Cos(theta) - d * Mathf.Cos(div),
+                plusRr * Mathf.Sin(theta) - d * Mathf.Sin(div));
+        }
+        /// <summary>
+        /// Rotates by angle a circle with radius r with offset d from its center outside a circle with radius R.
+        /// <para>This version takes degrees as values.</para>
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="d">Offset from the center of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 HypertrochoidDeg(float R, float r, float d, float angle) => Hypertrochoid(R, r, d, angle * Mathf.Deg2Rad);
+
+        /// <summary>
+        /// Rotates by angle a circle with radius r with offset d from its center inside a circle with radius R.
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="d">Offset from the center of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 Hypotrochoid(float R, float r, float d, float angle)
+        {
+            float minusRr = R - r;
+            float theta = angle * 2f * Mathf.PI * (LCM((int)r, (int)R) / R);
+            float div = (minusRr / r) * theta;
+
+            return new(
+                minusRr * Mathf.Cos(theta) + d * Mathf.Cos(div),
+                minusRr * Mathf.Sin(theta) - d * Mathf.Sin(div));
+        }
+        /// <summary>
+        /// Rotates by angle a circle with radius r with offset d from its center inside a circle with radius R.
+        /// <para>This version takes degrees as values.</para>
+        /// </summary>
+        /// <param name="R">Radius of the main circle.</param>
+        /// <param name="r">Radius of the inner circle.</param>
+        /// <param name="d">Offset from the center of the inner circle.</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 HypotrochoidDeg(float R, float r, float d, float angle) => Hypotrochoid(R, r, d, angle * Mathf.Deg2Rad);
+
+        /// <summary>
+        /// Makes A infinity symbol.
+        /// </summary>
+        /// <param name="c">Half the distance of its focis, its turned into the half width 'a' which is equal to c * Sqrt(2).</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 Lemniscate(float c, float angle)
+        {
+            float sqr2 = Mathf.Sqrt(2f);
+            float a = c * sqr2;
+            float cosAngle = Mathf.Cos(angle);
+            float sinAngle = Mathf.Sin(angle);
+            float powSinAngle = Pow2(sinAngle);
+            return new(
+                (a * cosAngle) / (1f + powSinAngle),
+                (a * sinAngle * cosAngle) / (1f + powSinAngle));
+        }
+        /// <summary>
+        /// Makes A infinity symbol.
+        /// <para>This version takes degrees as values.</para>
+        /// </summary>
+        /// <param name="c">Half the distance of its focis, its turned into the half width 'a' which is equal to c * Sqrt(2).</param>
+        /// <param name="angle">Angle to be taken into the function.</param>
+        /// <returns>The calculated 2D position from this function.</returns>
+        public static Vector2 LemniscateDeg(float c, float angle) => Lemniscate(c, angle * Mathf.Deg2Rad);
+
+        public static float CosDeg(float degrees) => Mathf.Cos(degrees * Mathf.Deg2Rad);
+        public static float SinDeg(float degrees) => Mathf.Sin(degrees * Mathf.Deg2Rad);
+
+        public static Vector2 CosSinPos(Vector2 positionRef, float angle, float radius) => new Vector2(positionRef.x + (radius * Mathf.Cos(angle)), positionRef.y + (radius * Mathf.Sin(angle)));
+        public static Vector2 CosSinPos(Vector2 positionRef, float angle, float radiusX, float radiusY) => new Vector2(positionRef.x + (radiusX * Mathf.Cos(angle)), positionRef.y + (radiusY * Mathf.Sin(angle)));
+
+        public static Vector2 CosSinPos(float angle, float radius) => CosSinPos(Vector2.zero, angle, radius);
+        public static Vector2 CosSinPos(float angle, float radiusX, float radiusY) => CosSinPos(Vector2.zero, angle, radiusX, radiusY);
+
+        public static Vector2 CosSinDegPos(Vector2 positionRef, float angle, float radius) => CosSinPos(positionRef, angle * Mathf.Deg2Rad, radius);
+        public static Vector2 CosSinDegPos(Vector2 positionRef, float angle, float radiusX, float radiusY) => CosSinPos(positionRef, angle * Mathf.Deg2Rad, radiusX, radiusY);
+
+        public static Vector2 CosSinDegPos(float angle, float radius) => CosSinDegPos(Vector2.zero, angle, radius);
+        public static Vector2 CosSinDegPos(float angle, float radiusX, float radiusY) => CosSinDegPos(Vector2.zero, angle, radiusX, radiusY);
+
+        #endregion
+
         public static Vector3 SetZeroY(Vector3 pos) => new Vector3(pos.x, 0, pos.z);
+
+        #region Bits
+
+        public static bool GetBit(this byte bitArray, byte index)
+        {
+            return ((bitArray >> index) & 1) != 0;
+        }
+
+        public static byte SetBit(this byte bitArray, byte index, bool value)
+        {
+            return bitArray ^= (byte)((-(value ? 1 : 0) ^ bitArray) & (1 << index));
+        }
+
+        #endregion
     }
 
     public static class MonoBehaviourGeneral
     {
-        public static T DeclareSingleton<T>(MonoBehaviour monoBehaviour, MonoBehaviour instance) where T : MonoBehaviour
+        public static T DeclareSingleton<T>(T @object, T instance) where T : UnityEngine.Object
         {
             if (instance != null)
             {
-                UnityEngine.Object.Destroy(monoBehaviour);
-                return instance as T;
+                UnityEngine.Object.Destroy(@object);
+                return instance;
             }
 
-            return monoBehaviour as T;
+            return @object;
         }
 
-        public static T DeclareSingletonDontDestroyOnLoad<T>(MonoBehaviour monoBehaviour, MonoBehaviour instance) where T : MonoBehaviour
+        public static T DeclareSingletonDontDestroyOnLoad<T>(T monoBehaviour, T instance) where T : MonoBehaviour
         {
             if (instance != null)
             {

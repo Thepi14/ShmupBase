@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Main.EntitySystem
 {
-    public class EntityManager : MonoBehaviour
+    public sealed class EntityManager : MonoBehaviour
     {
         public static EntityManager Singleton { get; private set; }
 
@@ -13,29 +13,25 @@ namespace Main.EntitySystem
         public static int LayerEnemy { get; private set; }
 
         [SerializeField]
-        protected List<Entity> entities = new List<Entity>();
+        private List<Entity> entities = new List<Entity>();
 
         [SerializeField]
         public PlayerEntity playerEntity;
         [SerializeField]
-        protected GameObject playerEntityPrefab;
+        private GameObject playerEntityPrefab;
 
-        public static PlayerEntity GetPlayer() => Singleton.playerEntity;
         public static PlayerEntity GeneratePlayer() => Singleton.playerEntity = Instantiate(Singleton.playerEntityPrefab).GetComponent<PlayerEntity>();
 
         private void Awake()
         {
-            Singleton = MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad<EntityManager>(this, Singleton);
+            Singleton = MonoBehaviourGeneral.DeclareSingleton(this, Singleton);
             LayerPlayer = LayerMask.GetMask("Player");
             LayerEnemy = LayerMask.GetMask("Enemy");
         }
 
-        private void Update()
-        {
+        public static float AngleToPlayer(Vector2 position) => Mathf.Atan2(GetPlayer().transform.position.y - position.y, GetPlayer().transform.position.x - position.x) * Mathf.Rad2Deg;
 
-        }
-
-        public static void KillAllPlayer() => Singleton.playerEntity.Kill();
+        public static void KillPlayer() => Singleton.playerEntity.Kill();
         public static void KillAllEnemies() => KillAllHealtyEntities(LayerEnemy);
 
         public static void KillAllHealtyEntities(LayerMask? mask = null)
@@ -59,7 +55,7 @@ namespace Main.EntitySystem
 
         public static Entity[] GetAllEntities() => Singleton.entities.ToArray();
 
-        public static void SetPlayerEntity(PlayerEntity player) => Singleton.playerEntity = player;
-        public static PlayerEntity GetPlayerEntity() => Singleton.playerEntity;
+        public static PlayerEntity GetPlayer() => Singleton.playerEntity;
+        public static void SetPlayer(PlayerEntity player) => Singleton.playerEntity = player;
     }
 }

@@ -6,14 +6,21 @@ namespace Main.BulletSystem
 {
     public abstract class Bullet : MonoBehaviour
     {
+        [Header("Default Informations")]
         public float lifetime = 5f;
+        public bool killByLifetime = false;
         public float speed = 1f;
         public float damage = 1f;
 
-        public bool killByLifetime = false;
+        [Header("Others")]
+        public ExitScreenFunction destroyOnExitScreen = ExitScreenFunction.Destroy;
+        public ClearMode clearMode = ClearMode.Clear;
+        public float boundsMultiplier = 1.1f;
+
         [HideInInspector]
         public bool dead = false;
-        protected float currentLifetime = 0f;
+        [HideInInspector]
+        public float currentLifetime = 0f;
 
         public Coroutine customCoroutineInstance;
         public CustomCoroutine customCoroutine;
@@ -43,16 +50,59 @@ namespace Main.BulletSystem
         protected virtual void VerifyKill()
         {
             currentLifetime += Time.fixedDeltaTime;
-            if (currentLifetime > lifetime && killByLifetime)
+            if ((currentLifetime > lifetime && killByLifetime) || (byte)destroyOnExitScreen < 2 && !InsideGameCanvas())
             {
                 Kill();
             }
         }
 
+        public virtual float LifeScale() => currentLifetime / lifetime;
+
         public virtual void Kill()
         {
             dead = true;
             Destroy(gameObject);
+        }
+
+        public virtual void OnDestroy()
+        {
+            BulletManager.RemoveBullet(this);
+        }
+
+        public virtual float GetCurrentSpeed() => speed;
+        public virtual float GetCurrentSpeedFixed() => GetCurrentSpeed() * Time.fixedDeltaTime;
+
+        public abstract Bounds GetBounds();
+
+        protected virtual Collider2D[] GetAllCollidersInBounds()
+        {
+            Bounds bounds = GetBounds();
+            return Physics2D.OverlapBoxAll(bounds.center, bounds.size, 0f);
+        }
+
+        public abstract bool InsideGameCanvas();
+
+        public enum ExitScreenFunction : byte
+        {
+            Destroy,
+            Kill,
+            Nothing
+        }
+
+        public enum ClearMode : byte
+        {
+            /// <summary>
+            /// Destrói a bala em qualquer chamada padrão das funções "BulletManager.DestroyAllBullets()".
+            /// </summary>
+            Clear,
+            /// <summary>
+            /// Não destrói a bala em qualquer chamada padrão das funções "BulletManager.DestroyAllBullets()", mas é destruída quando "affectExceptions" é verdadeiro.
+            /// </summary>
+            Exception,
+            /// <summary>
+            /// Não destrói a bala em absolutamente nenhuma chamada, recomendado somente quando a bala não pode ser eliminadad de jeito nenhum.
+            /// </summary>
+            NeverClear
         }
     }
 

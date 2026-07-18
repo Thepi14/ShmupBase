@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Main
 {
-    public class StageManager : MonoBehaviour
+    public sealed class StageManager : MonoBehaviour
     {
         public const string STAGE_BACKGROUNDS_PREFABS_PATH = "Prefabs/Stages/";
         public const string STAGE_DEFAULT_NAME = "Stage";
@@ -27,12 +27,12 @@ namespace Main
 
         private void Awake()
         {
-            Singleton = ObjectUtils.MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad<StageManager>(this, Singleton);
+            Singleton = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, Singleton);
         }
 
         public static void RunStage(byte id = 0)
         {
-            GameObject obj = null;
+            GameObject stagePrefab = null;
             stageID = id;
 
             switch (stageID)
@@ -41,20 +41,20 @@ namespace Main
                     Debug.Log("No Stage selected");
                     break;
                 case <= 6:
-                    obj = Resources.Load<GameObject>(STAGE_BACKGROUNDS_PREFABS_PATH + STAGE_DEFAULT_NAME + stageID);
+                    stagePrefab = Resources.Load<GameObject>(STAGE_BACKGROUNDS_PREFABS_PATH + STAGE_DEFAULT_NAME + stageID);
 
-                    if (obj == null)
+                    if (stagePrefab == null)
                     {
                         Debug.LogError(STAGE_DEFAULT_NAME + stageID + " is null.");
                         return;
                     }
-                    else if (obj.GetComponent<StageBehaviour>() == null)
+                    else if (stagePrefab.GetComponent<StageBehaviour>() == null)
                     {
                         Debug.LogError(STAGE_DEFAULT_NAME + stageID + "s StageBehaviour is null.");
                         return;
                     }
 
-                    stage = Instantiate(obj).GetComponent<StageBehaviour>();
+                    stage = Instantiate(stagePrefab).GetComponent<StageBehaviour>();
 
                     break;
                 default:

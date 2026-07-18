@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Main.BulletSystem
 {
-    public class BulletManager : MonoBehaviour
+    public sealed class BulletManager : MonoBehaviour
     {
         public static BulletManager Singleton { get; private set; }
 
@@ -12,20 +12,15 @@ namespace Main.BulletSystem
         public static int LayerBulletEnemy { get; private set; }
 
         [SerializeField]
-        protected List<Bullet> bullets = new List<Bullet>();
+        private List<Bullet> bullets = new List<Bullet>();
         [SerializeField]
-        protected List<Bullet> iGravityBullets = new List<Bullet>();
+        private List<Bullet> iGravityBullets = new List<Bullet>();
 
         private void Awake()
         {
-            Singleton = MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad<BulletManager>(this, Singleton);
+            Singleton = MonoBehaviourGeneral.DeclareSingleton<BulletManager>(this, Singleton);
             LayerBulletPlayer = LayerMask.GetMask("BulletPlayer");
             LayerBulletEnemy = LayerMask.GetMask("BulletEnemy");
-        }
-
-        private void Update()
-        {
-
         }
 
         #region BULLETS
@@ -50,26 +45,29 @@ namespace Main.BulletSystem
             }
         }
 
-        public static bool KillAllBulletsPlayer() => KillAllBullets(LayerBulletPlayer);
-        public static bool DestroyAllBulletsPlayer() => DestroyAllBullets(LayerBulletPlayer);
-        public static bool DestroyImmediateAllBulletsPlayer() => DestroyImmediateAllBullets(LayerBulletPlayer);
+        private static bool CanDestroyBullet(Bullet bullet, bool affectExceptions) => bullet.clearMode == Bullet.ClearMode.Clear || (bullet.clearMode == Bullet.ClearMode.Exception && affectExceptions);
 
-        public static bool KillAllBulletsEnemy() => KillAllBullets(LayerBulletEnemy);
-        public static bool DestroyAllBulletsEnemy() => DestroyAllBullets(LayerBulletEnemy);
-        public static bool DestroyImmediateAllBulletsEnemy() => DestroyImmediateAllBullets(LayerBulletEnemy);
+        public static bool KillAllBulletsPlayer(bool affectExceptions = false) => KillAllBullets(LayerBulletPlayer);
+        public static bool DestroyAllBulletsPlayer(bool affectExceptions = false) => DestroyAllBullets(LayerBulletPlayer);
+        public static bool DestroyImmediateAllBulletsPlayer(bool affectExceptions = false) => DestroyImmediateAllBullets(LayerBulletPlayer);
+
+        public static bool KillAllBulletsEnemy(bool affectExceptions = false) => KillAllBullets(LayerBulletEnemy);
+        public static bool DestroyAllBulletsEnemy(bool affectExceptions = false) => DestroyAllBullets(LayerBulletEnemy);
+        public static bool DestroyImmediateAllBulletsEnemy(bool affectExceptions = false) => DestroyImmediateAllBullets(LayerBulletEnemy);
 
         /// <summary>
         /// Mata todas as balas.
         /// </summary>
         /// <param name="mask">Máscara de layers que serão incluídas na operação, se esse valor for nulo todas as layers serão incluídas.</param>
         /// <returns>Retorna true se ele matou alguma bala, false se nenhuma.</returns>
-        public static bool KillAllBullets(LayerMask? mask = null)
+        public static bool KillAllBullets(LayerMask? mask = null, bool affectExceptions = false)
         {
             bool killAny = false;
             foreach (Bullet bullet in GetAllBullets(mask))
             {
+                if (!CanDestroyBullet(bullet, affectExceptions))
+                    continue;
                 killAny = true;
-                RemoveBullet(bullet);
                 bullet.Kill();
             }
 
@@ -81,14 +79,15 @@ namespace Main.BulletSystem
         /// </summary>
         /// <param name="mask">Máscara de layers que serão incluídas na operação, se esse valor for nulo todas as layers serão incluídas.</param>
         /// <returns>Retorna true se ele destruiu alguma bala, false se nenhuma.</returns>
-        public static bool DestroyAllBullets(LayerMask? mask = null)
+        public static bool DestroyAllBullets(LayerMask? mask = null, bool affectExceptions = false)
         {
             bool destroyedAny = false;
             foreach (Bullet bullet in GetAllBullets(mask))
             {
+                if (!CanDestroyBullet(bullet, affectExceptions))
+                    continue;
                 destroyedAny = true;
-                RemoveBullet(bullet);
-                Destroy(bullet);
+                Destroy(bullet.gameObject);
             }
 
             return destroyedAny;
@@ -99,14 +98,15 @@ namespace Main.BulletSystem
         /// </summary>
         /// <param name="mask">Máscara de layers que serão incluídas na operação, se esse valor for nulo todas as layers serão incluídas.</param>
         /// <returns>Retorna true se ele destruiu alguma bala, false se nenhuma.</returns>
-        public static bool DestroyImmediateAllBullets(LayerMask? mask = null)
+        public static bool DestroyImmediateAllBullets(LayerMask? mask = null, bool affectExceptions = false)
         {
             bool destroyedAny = false;
             foreach (Bullet bullet in GetAllBullets(mask))
             {
+                if (!CanDestroyBullet(bullet, affectExceptions))
+                    continue;
                 destroyedAny = true;
-                RemoveBullet(bullet);
-                DestroyImmediate(bullet);
+                DestroyImmediate(bullet.gameObject);
             }
 
             return destroyedAny;
