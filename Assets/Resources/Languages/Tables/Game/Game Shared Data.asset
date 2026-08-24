@@ -47,6 +47,10 @@ MonoBehaviour:
     m_Key: Save Replay?
     m_Metadata:
       m_Items: []
+  - m_Id: 30437020219199488
+    m_Key: Continue
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

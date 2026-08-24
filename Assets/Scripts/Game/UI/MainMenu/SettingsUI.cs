@@ -14,10 +14,8 @@ using static Main.Vars;
 
 namespace Main.UI
 {
-    public class SettingsUI : PanelBehaviour
+    public class SettingsUI : GenericPanelBehaviour
     {
-        public RectTransform subPanel;
-
         [Header("Exits")]
         [Space(20f)]
         [SerializeField]
@@ -61,6 +59,8 @@ namespace Main.UI
 
         [SerializeField]
         private Toggle toggleFPS;
+        [SerializeField]
+        private Toggle saveAsJson;
 
         [Header("Sound")]
         [Space(20f)]
@@ -114,8 +114,6 @@ namespace Main.UI
 
         [SerializeField]
         private GameObject rebindPrefab;
-        [SerializeField]
-        private bool generatePrefabsOnRuntime = false;
 
         [SerializeField]
         private Selectable firstSelectableControlBinder;
@@ -154,18 +152,20 @@ namespace Main.UI
                 exitButtonDown.onClick.AddListener(() => { SetOpenPanel(false); });
 
             //selection
-            generalButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); SelectWhenMouseInactive(toggleFPS); });
-            soundButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); SelectWhenMouseInactive(masterVolume); });
-            controlsButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); SelectWhenMouseInactive(firstSelectableControlBinder); });
-            graphicsButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); SelectWhenMouseInactive(qualityButtonList[0]); });
+            generalButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); toggleFPS.SelectIfMouseInactive(); });
+            soundButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); masterVolume.SelectIfMouseInactive(); });
+            controlsButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); firstSelectableControlBinder.SelectIfMouseInactive(); });
+            graphicsButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); qualityButtonList[0].SelectIfMouseInactive(); });
             languageButton.onClick.AddListener(() => { OpenSubPanel(languageSubPanel); SelectLastLocaleButton(); });
 
             SetOnSelectOnButtonsLayout(!UseMouse);
 
             //general
             toggleFPS.isOn = ShowFPS;
+            saveAsJson.isOn = SaveReplaysAsJson;
 
             toggleFPS.onValueChanged.AddListener((value) => { ShowFPS = value; });
+            saveAsJson.onValueChanged.AddListener((value) => { SaveReplaysAsJson = value; });
 
             //sound
             masterVolume.value = MasterVolume;
@@ -240,14 +240,6 @@ namespace Main.UI
             //graphicsButton.gameObject.SetActive(false);
 
             //languageButton.navigation.selectOnDown = languageButtons[0];
-        }
-
-        public void SelectWhenMouseInactive(Selectable selectable)
-        {
-            if (!UseMouse)
-            {
-                selectable.Select();
-            }
         }
 
         protected override void Start()
@@ -336,6 +328,7 @@ namespace Main.UI
         {
             StartCoroutine(StartLocalizationButtons());
             languageButtons = new();
+            GameObject firstLanguageButton = null;
 
             IEnumerator StartLocalizationButtons()
             {
@@ -357,6 +350,9 @@ namespace Main.UI
                     buttonObj.GetComponent<Button>().onClick.AddListener(() => { SelectLocale(j); });
                     RawImage img = buttonObj.GetGameObjectComponent<RawImage>("Flag");
                     Texture2D texture = Resources.Load<Texture2D>(RESOURCE_FLAG_PATH + locale.Identifier.Code);
+
+                    if (j == 0)
+                        firstLanguageButton = buttonObj;
 
                     img.texture = texture;
                     var heightMul = img.rectTransform.sizeDelta.y;
@@ -380,7 +376,7 @@ namespace Main.UI
             }
         }
 
-        public void SelectLastLocaleButton() => SelectWhenMouseInactive(languageButtons[selected]);
+        public void SelectLastLocaleButton() => languageButtons[selected].SelectIfMouseInactive();
 
         [HideInInspector]
         public bool languageSelectionActive = false;
@@ -418,14 +414,9 @@ namespace Main.UI
         {
             base.SetOpenPanel(open);
 
-            if (background != null)
-                background.enabled = open;
-
-            subPanel.gameObject.SetActive(open);
-
             if (open)
             {
-                generalButton.Select();
+                generalButton.SelectIfMouseInactive();
                 OpenSubPanel(generalSubPanel);
             }
         }

@@ -1,6 +1,7 @@
 using Main.InputSystem;
 using Main.ReplaySystem;
 using Main.Sound;
+using Main.Stages;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -10,10 +11,10 @@ namespace Main.UI
 {
     public class MainMenuUI : PanelBehaviour
     {
-        public Button startButton, replayButton, settingsButton, exitButton;
+        public Button startButton, replaysButton, settingsButton, exitButton;
 
         public RectTransform subPanel;
-        public PanelBehaviour settingsPanel;
+        public PanelBehaviour settingsPanel, replaysPanel;
 
         protected override void Awake()
         {
@@ -27,12 +28,13 @@ namespace Main.UI
 
             SoundManager.PlayMusic("Flower");
 
-            startButton.onClick.AddListener(() => { ReplayManagement.replayMode = false; SceneManager.LoadScene(1); });
-            replayButton.onClick.AddListener(() => { ReplayManagement.replayMode = true; ReplayManagement.replayFileName = ReplayManagement.replaysPaths[0]; SceneManager.LoadScene(1); });
+            startButton.onClick.AddListener(() => { ReplayManagement.replayMode = false; StageManager.LoadStageScene(1, Difficulty.Normal); });
+            replaysButton.onClick.AddListener(() => { replaysPanel.SetOpenPanel(true); });
             settingsButton.onClick.AddListener(() => { settingsPanel.SetOpenPanel(true); });
+
             exitButton.onClick.AddListener(() => { Application.Quit(); });
 
-            Vars.PauseGame(false);
+            TimeManager.Pause(false);
         }
 
         protected void LateUpdate()
@@ -46,7 +48,7 @@ namespace Main.UI
 
             if (open)
             {
-                startButton.Select();
+                startButton.SelectIfMouseInactive();
                 currentPanel = this;
             }
         }

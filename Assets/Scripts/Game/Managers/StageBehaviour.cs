@@ -1,4 +1,5 @@
 using System.Collections;
+using EditorTools;
 using Main.BulletSystem;
 using UnityEngine;
 
@@ -9,19 +10,26 @@ namespace Main.Stages
         public Coroutine stageCoroutine;
         public Coroutine backgroundCoroutine;
 
-        public StageBehaviour nextStage;
-
-        public byte stageIndex = 0;
+        /// <summary>
+        /// Prefab that is instantiated when this one ends.
+        /// </summary>
+        public GameObject nextStage;
+        /// <summary>
+        /// Gives information about the previous stage, null if its first stage or practice stage. (do not write manually!)
+        /// </summary>
+        public StageBehaviour previousStage;
 
         public int currentFrame = 0;
         public int currentFixedFrame = 0;
 
+        public bool finalStage = false;
+        [ShowOnly]
         public bool ended = false;
 
         protected virtual void Start()
         {
             var result = BulletManager.KillAllBulletsEnemy();
-            Debug.Log("Stage started, result: " + result);
+            //Debug.Log("Stage started, result: " + result);
             stageCoroutine = StartCoroutine(StageCoroutine());
             backgroundCoroutine = StartCoroutine(BackgroundCoroutine());
         }
@@ -39,7 +47,7 @@ namespace Main.Stages
         protected virtual IEnumerator StageCoroutine()
         {
             yield return null;
-            Debug.Log("(Stage Coroutine invoked)");
+            //Debug.Log("(Stage Coroutine invoked)");
         }
 
         protected virtual IEnumerator BackgroundCoroutine()
@@ -57,19 +65,23 @@ namespace Main.Stages
         protected virtual void EndStage()
         {
             ended = true;
+            GameManager.stageEndedEvent.Invoke();
 
-            if (Vars.practiceMode)
+            if (StageManager.currentGameMode == GameMode.Practice || finalStage || nextStage == null)
             {
-                GameManager.EndGame();
-            }
-            else if (nextStage == null)
-            {
-                GameManager.EndGame();
+                GameManager.CompleteGame();
+
+                if (finalStage && StageManager.currentGameMode == GameMode.MainGame && !GameManager.Continued())
+                {
+                    GameManager.StartEnding();
+                }
             }
             else
             {
-                Destroy(gameObject);
-                Instantiate(nextStage);
+                var obj = Instantiate(nextStage);
+                obj.GetComponent<StageBehaviour>().previousStage = this;
+                gameObject.SetActive(false);
+                //Destroy(gameObject);
             }
         }
     }

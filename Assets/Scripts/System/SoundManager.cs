@@ -13,22 +13,18 @@ namespace Main.Sound
     {
         public static SoundManager Singleton { get; private set; }
 
-        public const string SOUNDS_PATH = "Sounds/SoundEffects/";
-        public const string MUSICS_PATH = "Sounds/Musics/";
+        public const string SOUNDS_PATH = "Sounds/SoundEffects/", MUSICS_PATH = "Sounds/Musics/";
 
 #if UNITY_EDITOR
-        [Space(10f)]
+#pragma warning disable 0414
         [ShowOnly]
         [SerializeField]
-        private string soundsPath;
-        [ShowOnly]
-        [SerializeField]
-        private string musicsPath;
+        private string soundsPath, musicsPath;
+#pragma warning restore 0414
 #endif
 
+        [Space(10f)]
         public static float masterVolume, musicVolume, soundEffectVolume, UIVolume;
-
-        private AudioSource audioSource;
 
         [Space(10f)]
         public AudioResource currentMusic;
@@ -48,6 +44,11 @@ namespace Main.Sound
         public bool playRandomMusicOnList = true;
         public bool loopMusic = false;
 
+        [Space(10f)]
+        public List<AudioSource> currentAudioSources = new();
+
+        private AudioSource mainAudioSource;
+
         private float currentFade = 5f;
         private float currentVolume = 1f;
         private static float musicVolumeMultipliyer;
@@ -55,7 +56,7 @@ namespace Main.Sound
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            audioSource = GetComponent<AudioSource>();
+            mainAudioSource = GetComponent<AudioSource>();
 
             soundsPath = "Assets/Resources/" + SOUNDS_PATH;
             musicsPath = "Assets/Resources/" + MUSICS_PATH;
@@ -75,6 +76,11 @@ namespace Main.Sound
             musics = Resources.LoadAll<AudioResource>(MUSICS_PATH).ToList();
         }
 
+        public static void RemoveNullsSoundSources()
+        {
+            Singleton.currentAudioSources.RemoveAll((AudioSource ar) => ar == null);
+        }
+
         private void Awake()
         {
             random ??= new System.Random(randomSeed);
@@ -83,7 +89,8 @@ namespace Main.Sound
 
             UpdateLists();
 
-            audioSource = GetComponent<AudioSource>();
+            mainAudioSource = GetComponent<AudioSource>();
+            currentAudioSources = new();
 
             soundsDictionary = new Dictionary<string, AudioResource>();
             musicsDictionary = new Dictionary<string, AudioResource>();
@@ -102,17 +109,18 @@ namespace Main.Sound
 
         private void OnDisable()
         {
-            audioSource.Pause();
+            mainAudioSource.Pause();
         }
 
         private void OnEnable()
         {
-            audioSource.Play();
+            mainAudioSource.Play();
         }
 
         private void LateUpdate()
         {
             UpdateVolumeMultiplier();
+            RemoveNullsSoundSources();
 
             if (musics.Count == 0)
                 return;
@@ -121,9 +129,9 @@ namespace Main.Sound
             else if (Application.isFocused)
                 audioSource.Play();*/
 
-            audioSource.loop = loopMusic;
+            mainAudioSource.loop = loopMusic;
 
-            if (musics.Count > 0 && !audioSource.isPlaying && !loopMusic)
+            if (musics.Count > 0 && !mainAudioSource.isPlaying && !loopMusic)
             {
                 if (playRandomMusicOnList)
                 {
@@ -155,7 +163,7 @@ namespace Main.Sound
                 }
             }
             if (currentMusic != null)
-                audioSource.volume = currentVolume * musicVolumeMultipliyer;
+                mainAudioSource.volume = currentVolume * musicVolumeMultipliyer;
 
             goToNextMusic = false;
         }
@@ -174,7 +182,7 @@ namespace Main.Sound
 
         public static void PlayMusic(string name, float fade = 0f)
         {
-            Singleton.audioSource.volume = musicVolumeMultipliyer;
+            Singleton.mainAudioSource.volume = musicVolumeMultipliyer;
             Singleton.currentMusic = Singleton.musicsDictionary[name];
             Singleton.StopCoroutine("FadeCoroutine");
 
@@ -190,7 +198,7 @@ namespace Main.Sound
 
         public static void PlayMusic(AudioResource clip, float fade = 0f)
         {
-            Singleton.audioSource.volume = musicVolumeMultipliyer;
+            Singleton.mainAudioSource.volume = musicVolumeMultipliyer;
             Singleton.currentMusic = clip;
             Singleton.StopCoroutine("FadeCoroutine");
 
@@ -207,30 +215,30 @@ namespace Main.Sound
         private IEnumerator FadeInCoroutine(float time)
         {
             time *= 100f;
-            audioSource.resource = currentMusic;
-            audioSource.volume = 0f;
-            audioSource.Play();
+            mainAudioSource.resource = currentMusic;
+            mainAudioSource.volume = 0f;
+            mainAudioSource.Play();
 
             for (float a = 1f; a > 0f; a -= 1f / time)
             {
                 currentVolume = 1f - a;
                 yield return new WaitForSeconds(0.01f);
             }
-            audioSource.volume = currentVolume * musicVolumeMultipliyer;
+            mainAudioSource.volume = currentVolume * musicVolumeMultipliyer;
         }
 
         private IEnumerator FadeOutCoroutine(float time)
         {
             time *= 100f;
-            audioSource.volume = currentVolume * musicVolumeMultipliyer;
+            mainAudioSource.volume = currentVolume * musicVolumeMultipliyer;
 
             for (float a = 1f; a > 0f; a -= 1f / time)
             {
                 currentVolume = a;
                 yield return new WaitForSeconds(0.01f);
             }
-            audioSource.volume = 0f;
-            audioSource.Stop();
+            mainAudioSource.volume = 0f;
+            mainAudioSource.Stop();
         }
 
         public static void PlaySound(AudioResource clip, SoundType type, Vector3? position = null)
@@ -254,6 +262,8 @@ namespace Main.Sound
             source.volume = volumeMultipliyer;
             source.Play();
 
+            Singleton.currentAudioSources.Add(source);
+
             if (position == null)
                 obj.transform.parent = Singleton.transform;
             else
@@ -264,7 +274,13 @@ namespace Main.Sound
             IEnumerator SoundDestroyTimer()
             {
                 while (source.isPlaying)
+                {
+                    if (TimeManager.GameIsPaused)
+                        source.Pause();
+                    else
+                        source.UnPause();
                     yield return new WaitForEndOfFrame();
+                }
                 Destroy(obj);
             }
         }

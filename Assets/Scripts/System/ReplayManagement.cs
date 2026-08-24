@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Main.InputSystem;
+using Main.Stages;
 using ObjectUtils;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -14,20 +15,20 @@ namespace Main.ReplaySystem
     public static class ReplayManagement
     {
         public static List<Replay> replays;
-        public static List<string> replaysPaths;
+        public static List<string> replaysFilesPaths;
 
         public static readonly string REPLAYS_PATH = Application.persistentDataPath + "\\Replays\\", STANDALONE_REPLAYS_PATH = Application.dataPath + "\\Replays\\";
 
         public static bool replayMode = false;
-        public static string replayFileName = "";
+        public static string replayFilePath = "";
 
-        public const string DEFAULT_REPLAY_EXTENTIOM = ".csreplay", JSON_REPLAY_EXTENTION = ".jreplay";
+        public const string DEFAULT_REPLAY_EXTENTIOM = ".sbreplay", JSON_REPLAY_EXTENTION = ".sbjreplay";
 
         public static string GetReplaysPath() => Vars.UseLocalDataPath ? STANDALONE_REPLAYS_PATH : REPLAYS_PATH;
 
         #region Load Files
 
-        public static int GetHighestScore()
+        public static long GetHighestScore()
         {
             return replays.Max(replay => replay.highScore);
         }
@@ -73,13 +74,12 @@ namespace Main.ReplaySystem
 
         public static Replay[] LoadAllReplayFiles()
         {
-            replaysPaths = new List<string>();
-            replaysPaths.AddRange(Directory.GetFiles(GetReplaysPath(), "*" + DEFAULT_REPLAY_EXTENTIOM));
-            replaysPaths.AddRange(Directory.GetFiles(GetReplaysPath(), "*" + JSON_REPLAY_EXTENTION));
+            replaysFilesPaths = new List<string>();
+            replays = new List<Replay>();
+            replaysFilesPaths.AddRange(Directory.GetFiles(GetReplaysPath(), "*" + DEFAULT_REPLAY_EXTENTIOM));
+            replaysFilesPaths.AddRange(Directory.GetFiles(GetReplaysPath(), "*" + JSON_REPLAY_EXTENTION));
 
-            List<Replay> replays = new List<Replay>();
-
-            foreach (var path in replaysPaths)
+            foreach (var path in replaysFilesPaths)
             {
                 replays.Add(LoadReplayFile(path));
             }
@@ -96,7 +96,7 @@ namespace Main.ReplaySystem
             name = name.Filter(symbols: false, punctuation: false);
             while (name.EndsWith(' ') || name.EndsWith('.'))
                 name = name.Remove(name.Length - 1);
-            Debug.Log("Compatible file name: " + name);
+            //Debug.Log("Compatible file name: " + name);
             return name;
         }
 
@@ -126,12 +126,10 @@ namespace Main.ReplaySystem
             }
             path += DEFAULT_REPLAY_EXTENTIOM;
 
-            var data = replay.SerializeReplay();
-
             BinaryFormatter bf = new BinaryFormatter();
             FileStream stream = new FileStream(GetReplaysPath() + path, FileMode.Create);
 
-            bf.Serialize(stream, data);
+            bf.Serialize(stream, replay);
             stream.Close();
         }
 
@@ -158,22 +156,39 @@ namespace Main.ReplaySystem
     [Serializable]
     public record Replay
     {
+        /// <summary>
+        /// Data e horário do início do replay.
+        /// </summary>
+        public DateTime dateTime;
         public string name;
+        /// <summary>
+        /// Duração total do replay, em frames, sem contar pausas.
+        /// </summary>
+        public int framesDuration = 0;
+        /// <summary>
+        /// Duração total do replay, formatado, sem contar pausas, não é serializado, calculado pela duração em frames.
+        /// </summary>
+        [DoNotSerialize]
+        public TimeSpan duration;
+        /// <summary>
+        /// Tempo bruto para terminar o replay, contando pausa, sem uso prático.
+        /// </summary>
+        public DateTime rawEndTime;
 
-        public int highScore = 0;
-        public int startLifes = Vars.STARTING_LIFES;
-        public int startBombs = Vars.STARTING_BOMBS;
-
-        public int lostLifes = 0;
-        public int usedBombs = 0;
+        public long highScore = 0;
 
         /// <summary>
         /// Seed do jogo para basear os números pseudo aleatórios.
         /// </summary>
         public int seed;
 
-        public int framesDuration = 0;
         public Difficulty difficulty = Difficulty.None;
+
+        public int startLifes = Vars.STARTING_LIFES;
+        public int startBombs = Vars.STARTING_BOMBS;
+
+        public int lostLifes = 0;
+        public int usedBombs = 0;
 
         /// <summary>
         /// O que o player fez frame por frame.
@@ -185,24 +200,27 @@ namespace Main.ReplaySystem
             this.seed = seed;
         }
 
-        public Replay SerializeReplay()
+        public float ReplaySecondsDuration()
         {
-            for (int i = 0; i < playerInput.Length; i++)
-            {
-                playerInput[i] = playerInput[i].ConvertSerializable();
-            }
-            return this;
+            return framesDuration / TimeManager.FIXED_UPDATES_PER_SECOND;
         }
-    }
 
-    [Serializable]
-    public enum Difficulty : byte
-    {
-        None,
-        Easy,
-        Normal,
-        Hard,
-        Lunatic,
-        Extra,
+        public int ReplayMinutesDuration()
+        {
+            return ((int)ReplaySecondsDuration()) / 60;
+        }
+
+        public int ReplayHoursDuration()
+        {
+            return Mathf.FloorToInt(ReplayMinutesDuration() / 60f);
+        }
+
+        public TimeSpan ReplayDuration()
+        {
+            float rawSeconds = ReplaySecondsDuration();
+            int milliseconds = (int)((rawSeconds % 1) * 100), seconds = Mathf.FloorToInt(rawSeconds), minutes = ReplayMinutesDuration() % 60, hours = ReplayHoursDuration();
+            duration = new TimeSpan(hours / 24, hours, minutes, seconds, milliseconds);
+            return duration;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using EditorTools;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,8 @@ namespace Main.UI
         public static PanelBehaviour currentPanel;
         protected Image background;
 
+        [ShowOnly]
+        public bool opened = false;
         public bool main = false;
 
         protected virtual void Awake()

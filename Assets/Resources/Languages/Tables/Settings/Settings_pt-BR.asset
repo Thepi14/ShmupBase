@@ -102,6 +102,10 @@ MonoBehaviour:
     m_Localized: Tela cheia
     m_Metadata:
       m_Items: []
+  - m_Id: 29701026356383744
+    m_Localized: Salvar Replays como JSON
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -1,8 +1,3 @@
-// --------------------------------------------------------------------------------------------------------------------
-/// <copyright file="ObjectUtils.cs">
-///   Created by Pi14.
-/// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -218,9 +213,9 @@ namespace ObjectUtils
     {
         /// <returns>Retorna a posição do mouse com o fator de escala do canvas.</returns>
         [Obsolete]
-        public static Vector2 MousePositionScaled()
+        public static Vector2 MousePositionScaled(Canvas canvas)
         {
-            return Mouse.current.position.ReadValue() * FindCanvas().scaleFactor;
+            return Mouse.current.position.ReadValue() * canvas.scaleFactor;
         }
 
         /// <returns>Retorna a posição do mouse.</returns>
@@ -230,36 +225,16 @@ namespace ObjectUtils
             return Mouse.current.position.ReadValue();
         }
 
-        /// <returns>Retorna o canvas pelo nome "Canvas" (deve ter somente 1 Canvas).</returns>
-        [Obsolete]
-        public static Canvas FindCanvas()
-        {
-            return GameObject.Find("Canvas").GetComponent<Canvas>();
-        }
-
-        /// <returns>Retorna o canvas pelo nome "DontDestroyOnLoadCanvas" (deve ter somente 1 DontDestroyOnLoadCanvas).</returns>
-        public static Canvas FindDontDestroyOnLoadCanvas()
-        {
-            return GameObject.Find("DontDestroyOnLoadCanvas").GetComponent<Canvas>();
-        }
-
-        /// <summary>
-        /// Fator de escala do canvas.
-        /// </summary>
-        [Obsolete]
-        public static float CanvasScaleFactor => FindCanvas().scaleFactor;
-
-
         private const int UILayer = 5;
 
         /// <summary>
-        /// Returns 'true' if we touched or hovering on Unity UI element.
+        /// Returns 'true' if touched or hovering on Unity UI element.
         /// </summary>
         /// <returns></returns>
         public static bool IsPointerOverUIElement() => IsPointerOverUIElement(GetEventSystemRaycastResults());
 
         /// <summary>
-        /// Returns 'true' if we touched or hovering on Unity UI element.
+        /// Returns 'true' if touched or hovering on Unity UI element.
         /// </summary>
         /// <param name="eventSystemRaysastResults"></param>
         /// <returns></returns>
@@ -441,6 +416,8 @@ namespace ObjectUtils
         /// <summary>
         /// Clamps value from 0 to 1.
         /// </summary>
+        [Obsolete ("Use Mathf.Clamp01 instead.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static float Clamp(float f) => f < 0 ? 0 : f > 1 ? 1 : f;
 
         public static Vector2 RadianToVector2(float radian)
@@ -902,6 +879,7 @@ namespace ObjectUtils
 
     public static class CoroutineGeneral
     {
+        [Obsolete("O sistema de \'pausa\' da unity é duvidoso ent isso aqui está sem cabimento.")]
         public static IEnumerator WaitFixedFrames(int frames)
         {
             for (int i = 0; i < frames; i++)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Main.BulletSystem;
 using Main.EntitySystem;
 using Main.InputSystem;
@@ -10,28 +11,21 @@ using Main.Sound;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
+using UnityEngine.UI;
 
 namespace Main
 {
     public delegate IEnumerator CustomCoroutine(GameObject gameObject);
     public static class Vars
     {
-        public const ushort FIXED_UPDATES_PER_SECOND = 60, TARGET_FPS = 60;
+        //General
+        public const ushort TARGET_FPS = 60;
 
         public static bool StartedVars { get; private set; } = false;
 
-        public static Difficulty currentDifficulty = Difficulty.None;
-        public static bool practiceMode = false;
+        //Game
 
-        public static GameManager gameManager;
-        public static StageManager stageManager;
-
-        public static EntityManager entityManager;
-        public static BulletManager bulletManager;
-
-        public static SoundManager soundManager;
-
-        public const int 
+        public const int
             STARTING_LIFES = 3,
             STARTING_BOMBS = 3,
             MAX_LIFES = 10,
@@ -46,11 +40,11 @@ namespace Main
 
             PhysicsCollisionMatrixLayerMasks.Init();
 
+            //graphics
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 60;
             Application.runInBackground = false;
 
-            //graphics
             if (!Application.isMobilePlatform)
             {
                 Screen.fullScreen = FullScreen;
@@ -66,11 +60,14 @@ namespace Main
             ReplayManagement.LoadAllReplayFiles();
 
             //controls
-            InputManager.LockMouse(UseMouse);
+            InputManager.LockMouse(!UseMouse);
 
-            //GameStarter.Generate();
-            //ResetVolumePrefs();
+            //time
+            TimeManager.Start();
+
+            //others
             SetSoundVolumes();
+            UseCommasOnScores = true;
 
 #if UNITY_EDITOR
             //ResetAllPrefs();
@@ -88,22 +85,6 @@ namespace Main
         public static void GenerateFolders()
         {
             Directory.CreateDirectory(ReplayManagement.REPLAYS_PATH);
-        }
-
-        public static void GetManagers()
-        {
-            gameManager = GameManager.Singleton;
-            stageManager = StageManager.Singleton;
-            entityManager = EntityManager.Singleton;
-            bulletManager = BulletManager.Singleton;
-            soundManager = SoundManager.Singleton;
-        }
-
-        public static bool GameIsPaused { get => Time.timeScale == 0; set => Time.timeScale = value ? 0 : 1; }
-
-        public static void PauseGame(bool pause)
-        {
-            GameIsPaused = pause;
         }
 
         #region PREFERENCE KEYS
@@ -124,6 +105,7 @@ namespace Main
         //graphics
         public static bool FullScreen { get => GetPrefBool(PrefKey.FullScreen); set => SetPrefBool(PrefKey.FullScreen, value); }
         public static FullScreenMode ScreenMode { get => (FullScreenMode)GetPrefInt(PrefKey.ScreenMode); set => SetPrefInt(PrefKey.ScreenMode, (int)value); }
+        public static bool UseCommasOnScores { get => GetPrefBool(PrefKey.UseCommasOnScores); set => SetPrefBool(PrefKey.UseCommasOnScores, value); }
 
         //localization
         public static int SelectedLanguage { get => GetPrefInt(PrefKey.SelectedLanguage); set => SetPrefInt(PrefKey.SelectedLanguage, value); }
@@ -155,6 +137,7 @@ namespace Main
             //graphics
             FullScreen,
             ScreenMode,
+            UseCommasOnScores,
 
             //localization
             SelectedLanguage,
@@ -204,7 +187,7 @@ namespace Main
 
         public static void ResetSystemPrefs()
         {
-            SaveReplaysAsJson = true;
+            SaveReplaysAsJson = false;
             UseLocalDataPath = false;
 
             PlayerPrefs.Save();
@@ -263,6 +246,14 @@ namespace Main
             }
             return LayerMask.GetMask(newLayers);
         }
+
+        #endregion
+
+        #region UI
+
+        public static string FormatAsScoreString(long value) => UseCommasOnScores ? value.ToString("000,000,000,000") : value.ToString("000000000000");
+
+        public static void SelectIfMouseInactive(this Selectable selectable) { if (!UseMouse) { selectable.Select(); } }
 
         #endregion
 

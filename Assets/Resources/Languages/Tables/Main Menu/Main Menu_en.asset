@@ -50,6 +50,22 @@ MonoBehaviour:
     m_Localized: Language
     m_Metadata:
       m_Items: []
+  - m_Id: 29715301263200256
+    m_Localized: Replays
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30395636204425216
+    m_Localized: Highscore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30395846171283456
+    m_Localized: Date
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30397905520021504
+    m_Localized: Duration
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

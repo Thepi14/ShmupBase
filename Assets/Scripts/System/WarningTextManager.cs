@@ -1,4 +1,5 @@
 using System.Collections;
+using EditorTools;
 using ObjectUtils;
 using TMPro;
 using UnityEngine;
@@ -20,12 +21,13 @@ namespace Main.UI
         public static WarningTextManager WarningTextManagerInstance { get; private set; }
         public TMP_Text warningText;
         private const float TIME_SCALE = 0.01f;
+        [ShowOnly]
         private string currentMsg = "";
         private int msgRepetition = 0;
 
         private void Awake()
         {
-            WarningTextManagerInstance = MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad<WarningTextManager>(this, WarningTextManagerInstance);
+            WarningTextManagerInstance = MonoBehaviourGeneral.DeclareSingleton(this, WarningTextManagerInstance);
 
             warningText.color = Color.clear;
         }

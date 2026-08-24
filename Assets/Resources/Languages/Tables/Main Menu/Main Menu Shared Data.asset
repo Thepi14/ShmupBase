@@ -47,6 +47,26 @@ MonoBehaviour:
     m_Key: Language
     m_Metadata:
       m_Items: []
+  - m_Id: 29715301263200256
+    m_Key: Replays
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30395636204425216
+    m_Key: ReplayHighscore
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30395846171283456
+    m_Key: Date
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30397905520021504
+    m_Key: Duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 30398506345680896
+    m_Key: New Entry
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

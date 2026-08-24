@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Main.BulletSystem;
 using Main.EntitySystem;
-using static ObjectUtils.CoroutineGeneral;
-using ObjectUtils;
+using static Main.TimeManager;
 
 namespace Main.Stages
 {
@@ -62,17 +61,13 @@ namespace Main.Stages
                 //depois de meio segundo, começar uma função genérica de atirar no player
                 IEnumerator ExampleCoroutine(GameObject thisEntityObj)
                 {
-                    //por algum motivo inexplicável, o código de baixo funciona, mas devolve bugs infinitos de referência nula, mesmo funcionando.
                     var entity = enemyObj;
-                    ///var entity = thisEntityObj.GetComponent<BasicEntity>();
                     yield return WaitFixedFrames(30);
                     while (entity.Alive)
                     {
                         yield return WaitFixedFrames(20);
                         var bulletObj = Instantiate(bullet).GetComponent<Bullet>();
                         var pos = (Vector2)enemyObj.transform.position;
-
-                        //primeira variável -> destino (player), segunda variável -> origem (inimigo)
                         bulletObj.Set(pos, EntityManager.AngleToPlayer(pos));
                     }
                 }

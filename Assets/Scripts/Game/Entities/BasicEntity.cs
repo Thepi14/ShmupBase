@@ -1,4 +1,5 @@
 using System.Collections;
+using EditorTools;
 using UnityEngine;
 
 namespace Main.EntitySystem
@@ -10,6 +11,7 @@ namespace Main.EntitySystem
 
         public bool attacking = false;
         public float initialAttackDelay = 1f;
+        [ShowOnly]
         protected float timeAlive = 0f;
 
         protected override void FixedUpdate()

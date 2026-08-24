@@ -1,4 +1,5 @@
 using Main.InputSystem;
+using Main.ReplaySystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,9 +11,12 @@ namespace Main.UI
 {
     public class GameUI : PanelBehaviour
     {
+        public static GameUI Instance;
+
         [Header("Main Panel")]
         [SerializeField]
         private RectTransform mainSubPanel;
+        private SaveReplayUI saveReplayUI = SaveReplayUI.Instance;
 
         [SerializeField]
         private TMP_Text highScoreText;
@@ -31,10 +35,7 @@ namespace Main.UI
         [SerializeField]
         private RectTransform pauseSubPanel;
         [SerializeField]
-        private Button unpauseButton, restartButton, goBackToMainMenuButton;
-
-        [SerializeField]
-        private bool commas = true;
+        private Button unpauseButton, continueButton, saveReplayButton, restartButton, goBackToMainMenuButton;
 
         private void OnValidate()
         {
@@ -46,6 +47,7 @@ namespace Main.UI
         protected override void Awake()
         {
             base.Awake();
+            Instance = this;
             main = true;
 
             //main panel
@@ -56,12 +58,16 @@ namespace Main.UI
             highscoreString.StringChanged += FormatHighScoreText;
 
             //pause panel
-            unpauseButton.onClick.AddListener(() => { SetOpenPanel(false); Debug.Log("unpaused UI"); });
-            restartButton.onClick.AddListener(() => { SceneManager.LoadScene(1); });
-            goBackToMainMenuButton.onClick.AddListener(() => { SceneManager.LoadScene(0); });
+            unpauseButton.onClick.AddListener(() => SetOpenPanel(false));
+            continueButton.onClick.AddListener(() => { GameManager.Continue(); SetOpenPanel(false); });
+            saveReplayButton.onClick.AddListener(() => saveReplayUI.SetOpenPanel(true));
+            restartButton.onClick.AddListener(() => SceneManager.LoadScene(1));
+            goBackToMainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(0));
 
-            GameManager.gameEndedEvent.AddListener(() => SetOpenPanel(false));
-            InputManager.UIEscapeEvent.AddListener(() => { SetOpenPanel(!Vars.GameIsPaused); Debug.Log("paused UI"); });
+            //GameManager.gameEndedEvent.AddListener(() => SetOpenPanel(true));
+            GameManager.unpauseEvent.AddListener(() => SetOpenPanel(false));
+            GameManager.playerDiedLastLifeEvent.AddListener(() => SetOpenPanel(true));
+            InputManager.UIEscapeEvent.AddListener(() => SetOpenPanel(!TimeManager.GameIsPaused));
         }
 
         protected override void Start()
@@ -74,25 +80,22 @@ namespace Main.UI
 
         private void LateUpdate()
         {
-            if (!GameManager.Singleton.gameEnded)
-            {
-                UpdateScore();
-                UpdateHighscore();
+            UpdateScore();
+            UpdateHighscore();
 
-                /*if (InputManager.UIEscape)
-                {
-                    Vars.PauseGame(!Vars.GameIsPaused);
-                }*/
-            }
+            /*if (InputManager.UIEscape)
+            {
+                Vars.PauseGame(!Vars.GameIsPaused);
+            }*/
         }
 
-        public string GetScoreString() => commas ? string.Format("{0:n}", GameManager.Singleton.score) : GameManager.Singleton.score.ToString();
-        public string GetHighscoreString() => commas ? string.Format("{0:n}", GameManager.Singleton.highScore) : GameManager.Singleton.highScore.ToString();
+        public string GetScoreString() => Vars.FormatAsScoreString(GameManager.Singleton.score);
+        public string GetHighscoreString() => Vars.FormatAsScoreString(GameManager.Singleton.highScore);
 
         public void UpdateScore()
         {
             scoreString.Arguments[0] = GetScoreString();
-            highscoreString.RefreshString();
+            scoreString.RefreshString();
         }
 
         public void UpdateHighscore()
@@ -113,13 +116,40 @@ namespace Main.UI
 
         public override void SetOpenPanel(bool open)
         {
-            base.SetOpenPanel(open);
-            Vars.PauseGame(open);
+            bool
+                gameCompleted = GameManager.Singleton.gameCompleted,
+                replayMode = ReplayManagement.replayMode,
+                continueEnabled = GameManager.CanContinue(),
+                continued = GameManager.Continued(),
+                playerDied = GameManager.PlayerDied();
+
+            bool
+                canUnpause = continueEnabled && !playerDied && !gameCompleted,
+                canContinue = !replayMode && playerDied && continueEnabled && !gameCompleted,
+                canSaveReplay = !replayMode && playerDied && !continued;
+
+            if (!canUnpause && !open)
+                return;
+            else if (!canContinue && !open && playerDied)
+                return;
+
+                base.SetOpenPanel(open);
+            TimeManager.Pause(open);
             pauseSubPanel.gameObject.SetActive(open);
+            InputManager.LockMouse(!(open && Vars.UseMouse));
 
             if (open)
             {
-                unpauseButton.Select();
+                unpauseButton.gameObject.SetActive(canUnpause);
+                continueButton.gameObject.SetActive(canContinue);
+                saveReplayButton.gameObject.SetActive(canSaveReplay);
+
+                if (canUnpause)
+                    unpauseButton.SelectIfMouseInactive();
+                if (canContinue)
+                    continueButton.SelectIfMouseInactive();
+                if (canSaveReplay)
+                    saveReplayButton.SelectIfMouseInactive();
             }
         }
     }

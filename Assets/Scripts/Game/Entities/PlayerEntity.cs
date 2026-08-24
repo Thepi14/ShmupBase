@@ -1,5 +1,6 @@
 using System.Collections;
 using Main.BulletSystem;
+using Main.InputSystem;
 using Main.ReplaySystem;
 using UnityEngine;
 using static Main.InputSystem.InputManager;
@@ -8,14 +9,11 @@ namespace Main.EntitySystem
 {
     public class PlayerEntity : AttackEntity
     {
-        public override float Speed { get => speed * (slow ? slowSpeedMultiplier : 1f); set => speed = value; }
+        public override float Speed { get => speed * (input.slow ? slowSpeedMultiplier : 1f); set => speed = value; }
         public float slowSpeedMultiplier = 0.5f;
 
         [Header("Controls")]
-        public Vector2 moveDirection;
-        public bool attack;
-        public bool bomb;
-        public bool slow;
+        public PlayerInput input;
 
         public virtual void OnValidate()
         {
@@ -39,29 +37,19 @@ namespace Main.EntitySystem
             base.FixedUpdate();
             UpdateControls();
 
-            if (GameManager.bounds.Contains((Vector2)transform.position + PredictMovement(moveDirection * Time.fixedDeltaTime, speed)))
-                Move(moveDirection * Time.fixedDeltaTime);
+            if (GameManager.bounds.Contains((Vector2)transform.position + PredictMovement(input.moveInput * Time.fixedDeltaTime, speed)))
+                Move(input.moveInput * Time.fixedDeltaTime);
         }
 
         protected virtual void UpdateControls()
         {
+            /*
             if (GameManager.Singleton.gameEnded)
                 return;
+            */
+            input = GameManager.GetCurrentPlayerInput();
 
-            if (ReplayManagement.replayMode)
-            {
-                var controls = GameManager.GetCurrentPlayerInput();
-            }
-            else
-            {
-                var controls = playerInput;
-                moveDirection = controls.moveInput;
-                attack = controls.attack;
-                bomb = controls.bomb;
-                slow = controls.slow;
-            }
-
-            Debug.Log("Replay: " + ReplayManagement.replayMode + ", Controls: " + playerInput.ToString());
+            //Debug.Log("Replay: " + ReplayManagement.replayMode + ", Controls: " + playerInput.ToString());
         }
 
         public override IEnumerator KillCoroutine()
@@ -72,8 +60,8 @@ namespace Main.EntitySystem
             canMove = false;
             startImmunityTimer = 3f;
 
-            if (!GameManager.Singleton.gameEnded)
-            {
+            /*if (!GameManager.Singleton.gameEnded)
+            {*/
                 yield return new WaitForFixedUpdate();
 
                 BulletManager.DestroyAllBulletsEnemy();
@@ -81,7 +69,7 @@ namespace Main.EntitySystem
                 transform.position = GameManager.startPlayerPosition;
                 alive = true;
                 canMove = true;
-            }
+            //}
 
             yield break;
         }

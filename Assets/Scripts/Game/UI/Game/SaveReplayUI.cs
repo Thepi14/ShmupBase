@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Main.ReplaySystem;
 using ObjectUtils;
@@ -18,14 +19,6 @@ namespace Main.UI
         [SerializeField]
         private RectTransform title;
 
-        [Header("Question Sub Panel")]
-        [SerializeField]
-        private RectTransform questionSubPanel;
-        [SerializeField]
-        private Button saveReplayButton;
-        [SerializeField]
-        private Button dontSaveReplayButton;
-
         [Header("Replay Name Sub Panel")]
         [SerializeField]
         private RectTransform nameSelectionSubPanel;
@@ -41,51 +34,50 @@ namespace Main.UI
         //private char[] allAscii;
         [SerializeField]
         private Button keyboardBackspaceButton, keyboardSaveButton;
+        [SerializeField]
+        private List<Button> keyButtons;
 
         protected override void Awake()
         {
             base.Awake();
             Instance = this;
 
-            dontSaveReplayButton.onClick.AddListener(() => { SetOpenPanel(false); SceneManager.LoadScene(0); });
-            saveReplayButton.onClick.AddListener(() => { questionSubPanel.gameObject.SetActive(false); nameSelectionSubPanel.gameObject.SetActive(true);
-                if (!Vars.UseIngameKeyboard)
-                {
-                    keyboardGrid.gameObject.SetActive(false);
-                    replayNameInput.Select();
-                }
-                else
-                {
-                    replayNameInput.interactable = false;
-                    replayNameInput.readOnly = true;
-                    replayNameInput.shouldActivateOnSelect = false;
-                    keyboardGrid.transform.GetChild(0).GetComponent<Button>().Select();
-                }
-            });
-
-            byte startOffset = 33, asciiSize = 94;
-            //allAscii = new char[94];
-
-            for (int i = startOffset; i < asciiSize + startOffset; i++)
+            if (!Vars.UseIngameKeyboard)
             {
-                //allAscii[i - startOffset] = (char)i;
-                var newChar = (char)i;
-                var newCharButton = Instantiate(charButtonPrefab);
-                newCharButton.transform.SetParent(keyboardGrid.transform);
-                newCharButton.GetComponent<Button>().onClick.AddListener(() => { replayNameInput.text += newChar; });
-                newCharButton.FindComponentInChild<TMP_Text>("CharText").text += newChar;
+                keyboardGrid.gameObject.SetActive(false);
+                replayNameInput.SelectIfMouseInactive();
+
+                replayNameInput.onSubmit.AddListener((string text) => { SubmitName(text); SceneManager.LoadScene(0); });
             }
+            else
+            {
+                replayNameInput.interactable = false;
+                replayNameInput.readOnly = true;
+                replayNameInput.shouldActivateOnSelect = false;
+                keyboardGrid.transform.GetChild(0).GetComponent<Button>().SelectIfMouseInactive();
 
-            keyboardBackspaceButton.transform.SetAsLastSibling();
-            keyboardSaveButton.transform.SetAsLastSibling();
+                byte startOffset = 33, asciiSize = 94;
+                //allAscii = new char[94];
+                keyButtons = new();
 
-            keyboardBackspaceButton.onClick.AddListener(() => { replayNameInput.text.Remove(replayNameInput.text.Length - 1); });
-            keyboardSaveButton.onClick.AddListener(() => { SubmitName(replayNameInput.text); SceneManager.LoadScene(0); });
+                for (int i = startOffset; i < asciiSize + startOffset; i++)
+                {
+                    //allAscii[i - startOffset] = (char)i;
+                    var newChar = (char)i;
+                    var newCharButton = Instantiate(charButtonPrefab);
+                    newCharButton.transform.SetParent(keyboardGrid.transform);
+                    newCharButton.GetComponent<Button>().onClick.AddListener(() => { replayNameInput.text += newChar; });
+                    newCharButton.FindComponentInChild<TMP_Text>("CharText").text += newChar;
 
-            replayNameInput.onSubmit.AddListener((string text) => { SubmitName(text); SceneManager.LoadScene(0); });
-            //GetCompatibleFileNameForReplay("abc 123 <>:\"/\\|?* . .");
+                    keyButtons.Add(newCharButton.GetComponent<Button>());
+                }
 
-            GameManager.gameEndedEvent.AddListener(() => SetOpenPanel(true));
+                keyboardBackspaceButton.transform.SetAsLastSibling();
+                keyboardSaveButton.transform.SetAsLastSibling();
+
+                keyboardBackspaceButton.onClick.AddListener(() => { replayNameInput.text.Remove(replayNameInput.text.Length - 1); });
+                keyboardSaveButton.onClick.AddListener(() => { SubmitName(replayNameInput.text); SceneManager.LoadScene(0); });
+            }
         }
 
         protected override void Start()
@@ -112,16 +104,12 @@ namespace Main.UI
         {
             base.SetOpenPanel(open);
             title.gameObject.SetActive(open);
-            questionSubPanel.gameObject.SetActive(open);
+            nameSelectionSubPanel.gameObject.SetActive(open);
 
             if (open)
             {
-                saveReplayButton.Select();
+                keyButtons[0].SelectIfMouseInactive();
                 background.enabled = true;
-            }
-            else
-            {
-                nameSelectionSubPanel.gameObject.SetActive(open);
             }
         }
     }

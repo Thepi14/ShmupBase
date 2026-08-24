@@ -1,8 +1,11 @@
 using System;
+using EditorTools;
+using Main.ReplaySystem;
 using ObjectUtils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace Main.InputSystem
 {
@@ -30,12 +33,21 @@ namespace Main.InputSystem
         private void Awake()
         {
             InputManagerInstance = MonoBehaviourGeneral.DeclareSingletonDontDestroyOnLoad(this, InputManagerInstance);
+            SceneManager.activeSceneChanged += OnSceneWasSwitched;
 
             playerInputSystem = new PlayerInputSystem();
             playerInputSystem.Enable();
 
+            //UI
             UIEscapeEvent = new();
 
+            playerInputSystem.UI.Escape.started += ctx => { UIEscapeEvent.Invoke(); };
+
+            SetControlsEvents();
+        }
+
+        public void SetControlsEvents()
+        {
             //GAME
 
             playerInputSystem.Player.Move.started += ctx => moveInput = ctx.ReadValue<Vector2>();
@@ -52,15 +64,18 @@ namespace Main.InputSystem
             //playerInput.Player.Slow.performed += ctx => slow = true;
             playerInputSystem.Player.Slow.canceled += ctx => slow = false;
 
-            //UI
-            playerInputSystem.UI.Escape.started += ctx => { UIEscapeEvent.Invoke(); };
-
             //playerInputSystem.UI.Escape.started += ctx => LockMouse(!mouseLocked);
+        }
+
+        private void OnSceneWasSwitched(Scene arg0, Scene arg1)
+        {
+            SetControlsEvents();
+            playerInputSystem.Enable();
         }
 
         private void Start()
         {
-            lastSelect = new GameObject();
+            //lastSelect = new GameObject();
         }
 
         private void FixedUpdate()
@@ -72,6 +87,8 @@ namespace Main.InputSystem
                 bomb = bomb,
                 slow = slow,
             };
+
+            //Debug.Log("Replay: " + ReplayManagement.replayMode + ", Controls: " + playerInput.ToString());
         }
 
         private void LateUpdate()
@@ -79,7 +96,7 @@ namespace Main.InputSystem
             //Stopping mouse shenaningans
             if (mouseLocked)
             {
-                if (EventSystem.current.currentSelectedGameObject == null)
+                if (EventSystem.current.currentSelectedGameObject == null && lastSelect != null)
                 {
                     EventSystem.current.SetSelectedGameObject(lastSelect);
                 }
@@ -93,17 +110,17 @@ namespace Main.InputSystem
         public static void LockMouse(bool locked)
         {
             InputManagerInstance.mouseLocked = locked;
-            if (InputManagerInstance.mouseLocked)
+            if (locked)
             {
-                playerInputSystem.UI.Navigate.Reset();
-                playerInputSystem.UI.Navigate.Disable();
+                playerInputSystem.UI.Navigate.Enable();
 
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
             else
             {
-                playerInputSystem.UI.Navigate.Enable();
+                playerInputSystem.UI.Navigate.Reset();
+                playerInputSystem.UI.Navigate.Disable();
 
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -127,62 +144,18 @@ namespace Main.InputSystem
     [Serializable]
     public struct PlayerInput
     {
-        //NON SERIALIZED
-
         //actions
-        [NonSerialized]
+        [ShowOnly]
         public bool attack;
-        [NonSerialized]
+        [ShowOnly]
         public bool bomb;
-        [NonSerialized]
+        [ShowOnly]
         public bool slow;
 
         //move
-        [NonSerialized]
         public Vector2 moveInput;
 
-        //SERIALIZED
-
-        //actions
-        [HideInInspector]
-        public byte c;
-
-        //move
-        [HideInInspector]
-        public sbyte x;
-        [HideInInspector]
-        public sbyte y;
-
-        public PlayerInput ConvertSerializable()
-        {
-            c = 0;
-
-            c = c.SetBit(0, attack);
-            c = c.SetBit(1, bomb);
-            c = c.SetBit(2, slow);
-
-            x = (sbyte)Mathf.RoundToInt(moveInput.x);
-            y = (sbyte)Mathf.RoundToInt(moveInput.y);
-
-            /*Debug.Log(Convert.ToString(c, 2).PadLeft(8, '0') + ", x: " + x + ", y: " + y);
-            Debug.Log(new Vector2(x, y).normalized.ToString());
-
-            Debug.Log(c.GetBit(0) + ", " + c.GetBit(1) + ", " + c.GetBit(2));*/
-
-            return this;
-        }
-
-        public PlayerInput ConvertToReadableObject()
-        {
-            attack = c.GetBit(0);
-            bomb = c.GetBit(1);
-            slow = c.GetBit(2);
-
-            moveInput = new Vector2Int { x = x, y = y };
-
-            return this;
-        }
-
+        //TODO: criar um stringBuilder pra isso pq isso aqui é horrível
         public override string ToString()
         {
             string str = "";

@@ -99,6 +99,10 @@ MonoBehaviour:
     m_Key: Full screen
     m_Metadata:
       m_Items: []
+  - m_Id: 29701026356383744
+    m_Key: Save Replays as JSON
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

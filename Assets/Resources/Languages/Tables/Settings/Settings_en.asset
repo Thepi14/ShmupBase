@@ -102,6 +102,10 @@ MonoBehaviour:
     m_Localized: Full screen
     m_Metadata:
       m_Items: []
+  - m_Id: 29701026356383744
+    m_Localized: Save Replays as JSON
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1914130290398785036}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2487788, y: -0.643702, z: 428.4695}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -45,8 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c20f915064c80f44a406baa3e60dd4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextStage: {fileID: 0}
+  previousStage: {fileID: 0}
   currentFrame: 0
   currentFixedFrame: 0
+  finalStage: 0
   ended: 0
   scenario: {fileID: 0}
   enemy: {fileID: 6551061036041011188, guid: 40a901f1d2b08a3498a9a963a7f9b47a, type: 3}
@@ -76,13 +79,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1936310764619513338}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
-  m_LocalPosition: {x: 5.53, y: 6.9, z: -2.1102905}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: -4.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1142692275667803802}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!108 &1446737721933378015
 Light:
   m_ObjectHideFlags: 0
@@ -175,7 +178,7 @@ Transform:
   m_GameObject: {fileID: 6531920617431307679}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.1, y: -0.2, z: -0.3}
+  m_LocalPosition: {x: -0.1, y: -0.2, z: -0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -188,7 +191,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6531920617431307679}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 1453804892915656548, guid: 6e8b5937c4f411947bcb11f20379bb87, type: 3}
 --- !u!23 &2062757333477762779
 MeshRenderer:
   m_ObjectHideFlags: 0

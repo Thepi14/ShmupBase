@@ -1,0 +1,29 @@
+using UnityEngine;
+
+namespace Main.UI
+{
+    public class GenericPanelBehaviour : PanelBehaviour
+    {
+        public RectTransform subPanel;
+
+        protected override void Start()
+        {
+            base.Start();
+        }
+
+        public override void SetOpenPanel(bool open)
+        {
+            if (open)
+                foreach (PanelBehaviour panel in panels)
+                    if (panel != this)
+                        panel.SetOpenPanel(panel.main);
+
+            base.SetOpenPanel(open);
+
+            if (background != null)
+                background.enabled = open;
+
+            subPanel.gameObject.SetActive(open);
+        }
+    }
+}
