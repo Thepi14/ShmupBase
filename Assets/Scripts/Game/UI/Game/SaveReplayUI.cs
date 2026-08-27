@@ -84,8 +84,10 @@ namespace Main.UI
         {
             base.Start();
 
-            SetOpenPanel(false);
             background.enabled = false;
+
+            //TODO: put this piece of code in a more intuive place
+            GameUI.Instance.SetOpenPanel(false);
         }
 
         public void SubmitName(string text)

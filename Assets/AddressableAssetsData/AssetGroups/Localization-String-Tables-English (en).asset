@@ -22,6 +22,12 @@ MonoBehaviour:
     - Locale-en
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d7828b529358a345bc992574795635e
+    m_Address: Musics_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a4b3550af9ceb9146b3ad49d3ea86382
     m_Address: Settings_en
     m_ReadOnly: 1

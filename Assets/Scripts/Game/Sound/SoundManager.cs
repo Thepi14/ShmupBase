@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using EditorTools;
 using ObjectUtils;
 using UnityEngine;
 using UnityEngine.Audio;
-using EditorTools;
+using UnityEngine.UI;
+
+//using TagLib;
 
 namespace Main.Sound
 {
@@ -27,14 +31,15 @@ namespace Main.Sound
         public static float masterVolume, musicVolume, soundEffectVolume, UIVolume;
 
         [Space(10f)]
-        public AudioResource currentMusic;
+        public MusicContainer currentMusic;
+        public int musicID = -1;
 
         [Space(10f)]
         public List<AudioResource> sounds;
-        public List<AudioResource> musics;
+        public List<MusicContainer> musics;
 
         private Dictionary<string, AudioResource> soundsDictionary;
-        private Dictionary<string, AudioResource> musicsDictionary;
+        private Dictionary<string, MusicContainer> musicsDictionary;
 
         public int randomSeed = 0;
         public static System.Random random;
@@ -52,6 +57,7 @@ namespace Main.Sound
         private float currentFade = 5f;
         private float currentVolume = 1f;
         private static float musicVolumeMultipliyer;
+        private static bool keepPlayingWhenUnfocused = false;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -73,7 +79,19 @@ namespace Main.Sound
         private void UpdateLists()
         {
             sounds = Resources.LoadAll<AudioResource>(SOUNDS_PATH).ToList();
-            musics = Resources.LoadAll<AudioResource>(MUSICS_PATH).ToList();
+            musics = Resources.LoadAll<MusicContainer>(MUSICS_PATH).ToList();
+
+            soundsDictionary = new Dictionary<string, AudioResource>();
+            musicsDictionary = new Dictionary<string, MusicContainer>();
+
+            foreach (AudioResource clip in sounds)
+            {
+                soundsDictionary.Add(clip.name, clip);
+            }
+            foreach (MusicContainer clip in musics)
+            {
+                musicsDictionary.Add(char.IsNumber(clip.name.ToCharArray()[0]) ? clip.name.Remove(0, 1) : clip.name, clip);
+            }
         }
 
         public static void RemoveNullsSoundSources()
@@ -91,18 +109,6 @@ namespace Main.Sound
 
             mainAudioSource = GetComponent<AudioSource>();
             currentAudioSources = new();
-
-            soundsDictionary = new Dictionary<string, AudioResource>();
-            musicsDictionary = new Dictionary<string, AudioResource>();
-
-            foreach (AudioResource clip in sounds)
-            {
-                soundsDictionary.Add(clip.name, clip);
-            }
-            foreach (AudioResource clip in musics)
-            {
-                musicsDictionary.Add(clip.name, clip);
-            }
 
             UpdateVolumeMultiplier();
         }
@@ -124,10 +130,13 @@ namespace Main.Sound
 
             if (musics.Count == 0)
                 return;
-            /*else if (!Application.isFocused)
-                audioSource.Pause();
-            else if (Application.isFocused)
-                audioSource.Play();*/
+            else if (keepPlayingWhenUnfocused)
+            {
+               if (!Application.isFocused)
+                    mainAudioSource.Pause();
+                else if (Application.isFocused)
+                    mainAudioSource.Play();
+            }
 
             mainAudioSource.loop = loopMusic;
 
@@ -142,7 +151,7 @@ namespace Main.Sound
                 else
                 {
                     bool next = false;
-                    AudioResource audio = null;
+                    MusicContainer audio = null;
                     foreach (var music in musics)
                     {
                         if (next)
@@ -180,24 +189,15 @@ namespace Main.Sound
             }
         }
 
-        public static void PlayMusic(string name, float fade = 0f)
-        {
-            Singleton.mainAudioSource.volume = musicVolumeMultipliyer;
-            Singleton.currentMusic = Singleton.musicsDictionary[name];
-            Singleton.StopCoroutine("FadeCoroutine");
+        public static void PlayMusic(int index, float fade = 0f, bool replayIfPlaying = false) => PlayMusic(Singleton.musics[index], fade, replayIfPlaying);
 
-            if (fade > 0f)
-            {
-                Singleton.StartCoroutine(Singleton.FadeInCoroutine(fade));
-            }
-            else
-            {
-                Singleton.StartCoroutine(Singleton.FadeInCoroutine(Singleton.currentFade));
-            }
-        }
+        public static void PlayMusic(string name, float fade = 0f, bool replayIfPlaying = false) => PlayMusic(Singleton.musicsDictionary[name], fade, replayIfPlaying);
 
-        public static void PlayMusic(AudioResource clip, float fade = 0f)
+        public static void PlayMusic(MusicContainer clip, float fade = 0f, bool replayIfPlaying = false)
         {
+            if (clip == Singleton.currentMusic && !replayIfPlaying)
+                return;
+
             Singleton.mainAudioSource.volume = musicVolumeMultipliyer;
             Singleton.currentMusic = clip;
             Singleton.StopCoroutine("FadeCoroutine");
@@ -215,7 +215,7 @@ namespace Main.Sound
         private IEnumerator FadeInCoroutine(float time)
         {
             time *= 100f;
-            mainAudioSource.resource = currentMusic;
+            mainAudioSource.resource = currentMusic.audioClip;
             mainAudioSource.volume = 0f;
             mainAudioSource.Play();
 
@@ -241,7 +241,7 @@ namespace Main.Sound
             mainAudioSource.Stop();
         }
 
-        public static void PlaySound(AudioResource clip, SoundType type, Vector3? position = null)
+        public static void PlaySound(AudioResource clip, SoundType type, Vector3? position = null, bool scaleWithTime = true, PlayMode playMode = PlayMode.Default)
         {
             if (clip == null)
             {
@@ -275,17 +275,21 @@ namespace Main.Sound
             {
                 while (source.isPlaying)
                 {
-                    if (TimeManager.GameIsPaused)
+                    if (scaleWithTime)
+                        source.pitch = Time.timeScale;
+
+                    if (TimeManager.GameIsPaused && (playMode == PlayMode.DoNotPlayOnPause || !(playMode == PlayMode.Default && type == SoundType.UI)))
                         source.Pause();
                     else
                         source.UnPause();
+
                     yield return new WaitForEndOfFrame();
                 }
                 Destroy(obj);
             }
         }
 
-        public static void PlaySound(string name, SoundType type, Vector3? position = null)
+        public static void PlaySound(string name, SoundType type, Vector3? position = null, bool scaleWithTime = true, PlayMode playMode = PlayMode.Default)
         {
             AudioResource clip = null;
             foreach (var sound in Singleton.sounds)
@@ -297,15 +301,22 @@ namespace Main.Sound
                 }
             }
 
-            PlaySound(clip, type, position);
+            PlaySound(clip, type, position, scaleWithTime, playMode);
         }
 
         public enum SoundType
         {
-            Any = 0,
-            Music = 1,
-            SoundEffect = 2,
-            UI = 3,
+            Any,
+            Music,
+            SoundEffect,
+            UI
+        }
+
+        public enum PlayMode
+        {
+            Default,
+            PlayOnPause,
+            DoNotPlayOnPause
         }
     }
 }

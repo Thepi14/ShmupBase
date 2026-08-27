@@ -35,6 +35,7 @@ namespace Main.UI
 
         public virtual void SetOpenPanel(bool open)
         {
+            opened = open;
             if (open)
             {
                 currentPanel = this;

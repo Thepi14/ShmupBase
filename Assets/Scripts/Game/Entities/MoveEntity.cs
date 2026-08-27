@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using ObjectUtils;
+using UnityEngine.Events;
+using EditorTools;
 
 namespace Main.EntitySystem
 {
@@ -16,10 +18,17 @@ namespace Main.EntitySystem
 
         protected new Rigidbody2D rigidbody;
 
+        [HideInInspector]
+        public UnityEvent moveEvent;
+
+        [ShowOnly]
+        public Vector2 previousPosition;
+
         protected override void Awake()
         {
             base.Awake();
             rigidbody = GetComponent<Rigidbody2D>();
+            SetPreviousPosition();
         }
 
         protected override void Update()
@@ -32,14 +41,22 @@ namespace Main.EntitySystem
             base.FixedUpdate();
         }
 
+        protected void SetPreviousPosition()
+        {
+            previousPosition = transform.position;
+        }
+
         public virtual void Move(Vector2 movement, float speed = -1f)
         {
+            SetPreviousPosition();
+            
             if (canMove)
             {
                 if (speed < 0f)
                     speed = Speed;
 
                 transform.position += (Vector3)PredictMovement(movement, speed);
+                moveEvent.Invoke();
             }
         }
 

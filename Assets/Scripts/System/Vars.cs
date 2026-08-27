@@ -23,14 +23,6 @@ namespace Main
 
         public static bool StartedVars { get; private set; } = false;
 
-        //Game
-
-        public const int
-            STARTING_LIFES = 3,
-            STARTING_BOMBS = 3,
-            MAX_LIFES = 10,
-            MAX_BOMBS = 10;
-
         public static void StartVars()
         {
             if (StartedVars)

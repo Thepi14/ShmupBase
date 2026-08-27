@@ -25,6 +25,18 @@ namespace EditorTools
                 case SerializedPropertyType.String:
                     valueStr = prop.stringValue;
                     break;
+                case SerializedPropertyType.Enum:
+                    valueStr = prop.enumNames[prop.enumValueIndex];
+                    break;
+                case SerializedPropertyType.Vector2:
+                    valueStr = prop.vector2Value.ToString();
+                    break;
+                case SerializedPropertyType.Vector3:
+                    valueStr = prop.vector3Value.ToString();
+                    break;
+                case SerializedPropertyType.Bounds:
+                    valueStr = prop.boundsValue.ToString();
+                    break;
                 default:
                     valueStr = "(not supported)";
                     break;

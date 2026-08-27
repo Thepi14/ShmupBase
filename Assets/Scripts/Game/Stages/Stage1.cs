@@ -68,7 +68,7 @@ namespace Main.Stages
                         yield return WaitFixedFrames(20);
                         var bulletObj = Instantiate(bullet).GetComponent<Bullet>();
                         var pos = (Vector2)enemyObj.transform.position;
-                        bulletObj.Set(pos, EntityManager.AngleToPlayer(pos));
+                        bulletObj.Set(pos, PlayerEntity.AngleToPlayer(pos));
                     }
                 }
             }

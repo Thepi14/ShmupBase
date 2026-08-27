@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using Main.EntitySystem;
 using Main.InputSystem;
 using Main.Stages;
 using ObjectUtils;
@@ -184,11 +185,7 @@ namespace Main.ReplaySystem
 
         public Difficulty difficulty = Difficulty.None;
 
-        public int startLifes = Vars.STARTING_LIFES;
-        public int startBombs = Vars.STARTING_BOMBS;
-
         public int lostLifes = 0;
-        public int usedBombs = 0;
 
         /// <summary>
         /// O que o player fez frame por frame.

@@ -59,6 +59,10 @@ MonoBehaviour:
     m_Key: Right
     m_Metadata:
       m_Items: []
+  - m_Id: 32251269509795840
+    m_Key: No Description
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

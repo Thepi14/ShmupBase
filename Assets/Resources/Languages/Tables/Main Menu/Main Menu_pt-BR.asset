@@ -66,6 +66,10 @@ MonoBehaviour:
     m_Localized: "Dura\xE7\xE3o"
     m_Metadata:
       m_Items: []
+  - m_Id: 32226989136924672
+    m_Localized: "M\xFAsicas"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

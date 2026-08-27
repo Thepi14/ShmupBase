@@ -6,17 +6,12 @@ namespace Main.UI
     {
         public RectTransform subPanel;
 
-        protected override void Start()
-        {
-            base.Start();
-        }
-
         public override void SetOpenPanel(bool open)
         {
             if (open)
                 foreach (PanelBehaviour panel in panels)
-                    if (panel != this)
-                        panel.SetOpenPanel(panel.main);
+                    if (panel != this && !panel.main)
+                        panel.SetOpenPanel(false);
 
             base.SetOpenPanel(open);
 

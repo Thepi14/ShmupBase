@@ -61,16 +61,15 @@ namespace ObjectUtils
             //retornar go
             return go;
         }
+
         /// <summary>
         /// Acha um GameObject por hierarquia nos transforms como se fosse um arquivo em pastas.
         /// </summary>
         /// <param name="start">Gameobject de referência.</param>
         /// <param name="path">Caminho do GameObject separados por '\' ou '/'.</param>
         /// <returns>O GameObject no caminho inserido.</returns>
-        public static GameObject GetGameObject(this Component start, string path)
-        {
-            return GetGameObject(start.gameObject, path);
-        }
+        public static GameObject GetGameObject(this Component start, string path) => GetGameObject(start.gameObject, path);
+
         /// <summary>
         /// Acha o componente designado de um GameObject por hierarquia nos transforms como se fosse um arquivo em pastas.
         /// </summary>
@@ -88,6 +87,7 @@ namespace ObjectUtils
             //retornar go
             return go.GetComponent<T>();
         }
+
         /// <summary>
         /// Acha o componente designado de um GameObject por hierarquia nos transforms como se fosse um arquivo em pastas.
         /// </summary>
@@ -95,10 +95,8 @@ namespace ObjectUtils
         /// <param name="start">Gameobject de referência.</param>
         /// <param name="path">Caminho do GameObject separados por '\' ou '/'.</param>
         /// <returns>O componente do GameObject no caminho inserido.</returns>
-        public static T GetGameObjectComponent<T>(this Component start, string path)
-        {
-            return GetGameObjectComponent<T>(start.gameObject, path);
-        }
+        public static T GetGameObjectComponent<T>(this Component start, string path) => GetGameObjectComponent<T>(start.gameObject, path);
+
         /// <summary>
         /// Acha um componente em um filho de um GameObject parente.
         /// </summary>
@@ -125,10 +123,7 @@ namespace ObjectUtils
         /// <param name="childName">Nome do filho.</param>
         /// <returns>O componente do GameObject filho do parent escolhido com o nome inserido.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public static T FindComponentInChild<T>(this Component parent, string childName)
-        {
-            return FindComponentInChild<T>(parent.gameObject, childName);
-        }
+        public static T FindComponentInChild<T>(this Component parent, string childName) => FindComponentInChild<T>(parent.gameObject, childName);
 
         public static GameObject[] GetGameObjectChildren(this GameObject gameObject)
         {
@@ -139,10 +134,18 @@ namespace ObjectUtils
             }
             return list.ToArray();
         }
-        public static GameObject[] GetGameObjectChildren(this Component gameObject)
+
+        public static GameObject[] GetGameObjectChildren(this Component gameObject) => GetGameObjectChildren(gameObject.gameObject);
+
+        public static void DestroyGameObjecyChildren(this GameObject gameObject)
         {
-            return GetGameObjectChildren(gameObject.gameObject);
+            foreach (GameObject gameObjectChild in GetGameObjectChildren(gameObject))
+            {
+                UnityEngine.Object.Destroy(gameObject);
+            }
         }
+
+        public static void DestroyGameObjectChildren(this Component gameObject) => DestroyGameObjecyChildren(gameObject.gameObject);
 
         public static List<GameObject> FindObjects(Vector3 point, LayerMask layerMask, Func<GameObject, bool> condition, FindObjectsSortMode findObjectsSortMode = FindObjectsSortMode.None)
         {

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Main.EntitySystem
 {
@@ -12,6 +13,9 @@ namespace Main.EntitySystem
         [SerializeField]
         protected float reloadSpeedMultiplier = 1f;
         public virtual float ReloadSpeedMultiplier { get => reloadSpeedMultiplier; set => reloadSpeedMultiplier = value; }
+
+        [HideInInspector]
+        public UnityEvent attackedEvent = new();
 
         protected override void Awake()
         {
@@ -30,12 +34,14 @@ namespace Main.EntitySystem
 
         public virtual void Attack()
         {
+            attackedEvent.Invoke();
             StartCoroutine(AttackCoroutine(gameObject));
         }
 
         public virtual IEnumerator AttackCoroutine(GameObject gameObject)
         {
-            throw new System.NotImplementedException();
+            Debug.LogWarning($"This {gameObject.name} entityBehaviour does not have a AttackCoroutine overrided and defined.");
+            yield break;
         }
     }
 }

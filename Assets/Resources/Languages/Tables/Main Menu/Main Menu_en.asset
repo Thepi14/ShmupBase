@@ -66,6 +66,10 @@ MonoBehaviour:
     m_Localized: Duration
     m_Metadata:
       m_Items: []
+  - m_Id: 32226989136924672
+    m_Localized: Musics
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

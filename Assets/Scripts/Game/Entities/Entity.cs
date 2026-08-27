@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Main.EntitySystem
 {
@@ -8,6 +9,8 @@ namespace Main.EntitySystem
     {
         public Coroutine customCoroutineInstance;
         public CustomCoroutine customCoroutine;
+
+        public UnityEvent entityCreatedEvent = new();
 
         protected virtual void Start()
         {
@@ -46,26 +49,9 @@ namespace Main.EntitySystem
         public abstract bool Immune { get; set; }
         public abstract float Shield { get; set; }
 
-        public virtual void Damage(float damage)
-        {
-            if (!Immune)
-            {
-                if (Shield > 0)
-                {
-                    Shield -= damage;
-                }
-                else
-                    Health -= damage;
-            }
-        }
+        public abstract void Damage(float damage);
 
-        public virtual void DamageShield(float damage)
-        {
-            if (!Immune)
-            {
-                Shield -= damage;
-            }
-        }
+        public abstract void DamageShield(float damage);
 
         public abstract void Kill();
     }

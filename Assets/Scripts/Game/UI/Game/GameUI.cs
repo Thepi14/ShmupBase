@@ -1,3 +1,4 @@
+using Main.EntitySystem;
 using Main.InputSystem;
 using Main.ReplaySystem;
 using TMPro;
@@ -66,16 +67,13 @@ namespace Main.UI
 
             //GameManager.gameEndedEvent.AddListener(() => SetOpenPanel(true));
             GameManager.unpauseEvent.AddListener(() => SetOpenPanel(false));
-            GameManager.playerDiedLastLifeEvent.AddListener(() => SetOpenPanel(true));
+            PlayerEntity.PlayerLostAllLifesEvent.AddListener(() => SetOpenPanel(true));
             InputManager.UIEscapeEvent.AddListener(() => SetOpenPanel(!TimeManager.GameIsPaused));
         }
 
         protected override void Start()
         {
             base.Start();
-
-            InputManager.LockMouse(true);
-            SetOpenPanel(false);
         }
 
         private void LateUpdate()
@@ -121,19 +119,17 @@ namespace Main.UI
                 replayMode = ReplayManagement.replayMode,
                 continueEnabled = GameManager.CanContinue(),
                 continued = GameManager.Continued(),
-                playerDied = GameManager.PlayerDied();
+                playerLostLastLife = PlayerEntity.PlayerLostLastLife();
 
             bool
-                canUnpause = continueEnabled && !playerDied && !gameCompleted,
-                canContinue = !replayMode && playerDied && continueEnabled && !gameCompleted,
-                canSaveReplay = !replayMode && playerDied && !continued;
+                canUnpause = continueEnabled && !playerLostLastLife && !gameCompleted,
+                canContinue = !replayMode && playerLostLastLife && continueEnabled && !gameCompleted,
+                canSaveReplay = !replayMode && playerLostLastLife && !continued;
 
-            if (!canUnpause && !open)
-                return;
-            else if (!canContinue && !open && playerDied)
-                return;
+            if (!canUnpause && opened && !open)
+                open = true;
 
-                base.SetOpenPanel(open);
+            base.SetOpenPanel(open);
             TimeManager.Pause(open);
             pauseSubPanel.gameObject.SetActive(open);
             InputManager.LockMouse(!(open && Vars.UseMouse));

@@ -9,27 +9,24 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class MainMenuUI : PanelBehaviour
+    public class MainMenuUI : GenericPanelBehaviour
     {
-        public Button startButton, replaysButton, settingsButton, exitButton;
-
-        public RectTransform subPanel;
-        public PanelBehaviour settingsPanel, replaysPanel;
+        public Button startButton, replaysButton, musicsButton, settingsButton, exitButton;
+        public PanelBehaviour musicsPanel, replaysPanel, settingsPanel;
 
         protected override void Awake()
         {
             Vars.StartVars();
-            base.Awake();
             main = true;
+            base.Awake();
 
             ReplayManagement.LoadAllReplayFiles();
 
             InputManager.LockMouse(!Vars.UseMouse);
 
-            SoundManager.PlayMusic("Flower");
-
             startButton.onClick.AddListener(() => { ReplayManagement.replayMode = false; StageManager.LoadStageScene(1, Difficulty.Normal); });
             replaysButton.onClick.AddListener(() => { replaysPanel.SetOpenPanel(true); });
+            musicsButton.onClick.AddListener(() => { musicsPanel.SetOpenPanel(true); });
             settingsButton.onClick.AddListener(() => { settingsPanel.SetOpenPanel(true); });
 
             exitButton.onClick.AddListener(() => { Application.Quit(); });
@@ -44,12 +41,12 @@ namespace Main.UI
 
         public override void SetOpenPanel(bool open)
         {
-            subPanel.gameObject.SetActive(open);
+            base.SetOpenPanel(open);
 
             if (open)
             {
                 startButton.SelectIfMouseInactive();
-                currentPanel = this;
+                SoundManager.PlayMusic("Flower");
             }
         }
     }

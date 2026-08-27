@@ -147,14 +147,19 @@ namespace Main.UI
 
             //exit
             if (exitButton != null)
-                exitButton.onClick.AddListener(() => { SetOpenPanel(false); });
+                exitButton.onClick.AddListener(() => ReturnToMain());
             if (exitButtonDown != null)
-                exitButtonDown.onClick.AddListener(() => { SetOpenPanel(false); });
+                exitButtonDown.onClick.AddListener(() => ReturnToMain());
 
             //selection
             generalButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); toggleFPS.SelectIfMouseInactive(); });
             soundButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); masterVolume.SelectIfMouseInactive(); });
-            controlsButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); firstSelectableControlBinder.SelectIfMouseInactive(); });
+
+            if (Application.isMobilePlatform)
+                controlsButton.gameObject.SetActive(false);
+            else
+                controlsButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); firstSelectableControlBinder.SelectIfMouseInactive(); });
+
             graphicsButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); qualityButtonList[0].SelectIfMouseInactive(); });
             languageButton.onClick.AddListener(() => { OpenSubPanel(languageSubPanel); SelectLastLocaleButton(); });
 
@@ -203,35 +208,8 @@ namespace Main.UI
             SetUpScreenToggles();
 
             //controls
-            useMouseToggle.isOn = UseMouse;
-            useIngameKeyboardToggle.isOn = UseIngameKeyboard;
-
-            useMouseToggle.onValueChanged.AddListener((value) => { UseMouse = value; SetOnSelectOnButtonsLayout(!value); });
-            useIngameKeyboardToggle.onValueChanged.AddListener((value) => { UseIngameKeyboard = value; });
-
-            /*if (generatePrefabsOnRuntime)
-            {
-                foreach (var control in controlsLayout.GetGameObjectChildren())
-                    Destroy(control);
-
-                foreach (var bind in InputManager.playerInputSystem.asset.actionMaps[0])
-                {
-                    var newRebinder = Instantiate(rebindPrefab);
-                    newRebinder.GetComponent<RectTransform>().SetParent(controlsLayout);
-                    newRebinder.name = bind.name;
-
-                    newRebinder.GetComponent<RebindActionUI>().actionReference.Set(bind);
-                }
-            }*/
-            
-            foreach (var control in controlsLayout.GetGameObjectChildren())
-                rebinders.Add(control.GetComponent<RebindActionUI>());
-
-            resetControlsButton.onClick.AddListener(() =>
-            {
-                foreach (var rebinder in rebinders)
-                    rebinder.ResetToDefault();
-            });
+            if (!Application.isMobilePlatform)
+                SetupControlSubPanel();
 
             //localization
             SetLocalizationButtons();
@@ -240,13 +218,6 @@ namespace Main.UI
             //graphicsButton.gameObject.SetActive(false);
 
             //languageButton.navigation.selectOnDown = languageButtons[0];
-        }
-
-        protected override void Start()
-        {
-            base.Start();
-
-            CloseAllSubPanels();
         }
 
         #region General
@@ -315,7 +286,38 @@ namespace Main.UI
 
         #region Controls
 
+        public void SetupControlSubPanel()
+        {
+            useMouseToggle.isOn = UseMouse;
+            useIngameKeyboardToggle.isOn = UseIngameKeyboard;
 
+            useMouseToggle.onValueChanged.AddListener((value) => { UseMouse = value; SetOnSelectOnButtonsLayout(!value); });
+            useIngameKeyboardToggle.onValueChanged.AddListener((value) => { UseIngameKeyboard = value; });
+
+            /*if (generatePrefabsOnRuntime)
+            {
+                foreach (var control in controlsLayout.GetGameObjectChildren())
+                    Destroy(control);
+
+                foreach (var bind in InputManager.playerInputSystem.asset.actionMaps[0])
+                {
+                    var newRebinder = Instantiate(rebindPrefab);
+                    newRebinder.GetComponent<RectTransform>().SetParent(controlsLayout);
+                    newRebinder.name = bind.name;
+
+                    newRebinder.GetComponent<RebindActionUI>().actionReference.Set(bind);
+                }
+            }*/
+
+            foreach (var control in controlsLayout.GetGameObjectChildren())
+                rebinders.Add(control.GetComponent<RebindActionUI>());
+
+            resetControlsButton.onClick.AddListener(() =>
+            {
+                foreach (var rebinder in rebinders)
+                    rebinder.ResetToDefault();
+            });
+        }
 
         #endregion
 

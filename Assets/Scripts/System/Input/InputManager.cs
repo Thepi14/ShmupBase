@@ -153,6 +153,7 @@ namespace Main.InputSystem
         public bool slow;
 
         //move
+        [ShowOnly]
         public Vector2 moveInput;
 
         //TODO: criar um stringBuilder pra isso pq isso aqui é horrível

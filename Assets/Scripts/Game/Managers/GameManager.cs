@@ -8,6 +8,7 @@ using Main.Stages;
 using Main.UI;
 using UnityEngine;
 using UnityEngine.Events;
+using static Main.EntitySystem.PlayerEntity;
 
 namespace Main
 {
@@ -16,29 +17,19 @@ namespace Main
         public static GameManager Singleton { get; private set; }
 
         public static readonly Bounds bounds = new(new(), new(8, 10, float.PositiveInfinity));
-        public static readonly Vector2 startPlayerPosition = new(0, -3);
 
         [Header("General")]
         [Space(10f)]
         [Header("Score")]
         public long highScore;
         public long score;
-        [Space(10f)]
-        [Header("Player")]
-        public int lifes;
-        [ShowOnly]
-        public int lostLifes = 0;
-        [Space(10f)]
-        public int bombs;
-        [ShowOnly]
-        public int usedBombs = 0;
-        [Space(10f)]
         /// <summary>
         /// (Guts)
         /// </summary>
+        [Space(10f)]
         public int graze;
         [Space(10f)]
-        public int maxContinutes = 3;
+        public int maxContinues = 3;
         public int continues = 0;
         public static bool Continued() => Singleton.continues > 0;
         [Space(10f)]
@@ -57,21 +48,19 @@ namespace Main
         private PlayerInput currentPlayerInput;
         public List<PlayerInput> playerInput = new();
 
-        public static UnityEvent unpauseEvent, stageEndedEvent, gameEndedEvent, endingEvent, playerDiedEvent, playerDiedLastLifeEvent;
+        public static UnityEvent 
+            unpauseEvent = new(), 
+            stageEndedEvent = new(), 
+            gameEndedEvent = new(), 
+            endingEvent = new();
 
         private void Awake()
         {
 #if UNITY_EDITOR
             Vars.StartVars();
 #endif
-
             Singleton = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, Singleton);
-            unpauseEvent = new UnityEvent();
-            stageEndedEvent = new UnityEvent();
-            gameEndedEvent = new UnityEvent();
-            endingEvent = new UnityEvent();
-            playerDiedEvent = new UnityEvent();
-            playerDiedLastLifeEvent = new UnityEvent();
+            playerInput.Clear();
 
             if (ReplayManagement.replayMode)
             {
@@ -79,8 +68,6 @@ namespace Main
 
                 seed = replay.seed;
                 highScore = replay.highScore;
-                lifes = replay.startLifes;
-                bombs = replay.startBombs;
 
                 StageManager.currentDifficulty = replay.difficulty;
             }
@@ -91,8 +78,6 @@ namespace Main
                 replay.dateTime = DateTime.Now;
 
                 highScore = Vars.Highscore;
-                lifes = Vars.STARTING_LIFES;
-                bombs = Vars.STARTING_BOMBS;
 
                 replay.difficulty = StageManager.currentDifficulty;
             }
@@ -105,19 +90,18 @@ namespace Main
             //useless indeed
             UnityEngine.Random.InitState(seed);
 
-            EntityManager.GeneratePlayer();
+            GeneratePlayer();
         }
 
         private void Start()
         {
-            GameUI.Instance.SetOpenPanel(false);
+
         }
 
         public static void CompleteGame()
         {
             Singleton.gameCompleted = true;
             gameEndedEvent.Invoke();
-            TimeManager.Pause(true);
         }
 
         public static void StartEnding()
@@ -125,7 +109,7 @@ namespace Main
             endingEvent.Invoke();
         }
 
-        public static bool CanContinue() => Singleton.continues < Singleton.maxContinutes && !ReplayManagement.replayMode;
+        public static bool CanContinue() => Singleton.continues < Singleton.maxContinues && !ReplayManagement.replayMode;
 
         public static void Continue()
         {
@@ -133,37 +117,8 @@ namespace Main
             if (!CanContinue())
                 return;
 
-            AddLifes(Vars.STARTING_LIFES);
-            SetBombs(Vars.STARTING_BOMBS);
+            SetLifes(playerEntity.startingLifes);
             unpauseEvent.Invoke();
-        }
-
-        public static bool PlayerDied() => Singleton.lifes == 0;
-
-        public static void AddLifes(byte amount = 1) => Singleton.lifes = Mathf.Clamp(Singleton.lifes + amount, 0, Vars.MAX_BOMBS);
-
-        public static void LoseLife(bool invokeEvents = true)
-        {
-            Singleton.lifes = Mathf.Clamp(Singleton.lifes - 1, 0, Vars.MAX_LIFES);
-            Singleton.lostLifes++;
-
-            if (Singleton.lifes == 0)
-            {
-                if (invokeEvents)
-                    playerDiedLastLifeEvent.Invoke();
-                //CompleteGame();
-            }
-            else if (invokeEvents)
-                playerDiedEvent.Invoke();
-        }
-
-        public static void AddBombs(byte amount = 1) => Singleton.bombs = Mathf.Clamp(Singleton.bombs + amount, 0, Vars.MAX_BOMBS);
-        public static void SetBombs(byte amount) => Singleton.bombs = Mathf.Clamp(amount, 0, Vars.MAX_BOMBS);
-
-        public static void LoseBomb()
-        {
-            Singleton.usedBombs++;
-            Singleton.bombs = Mathf.Clamp(Singleton.bombs - 1, 0, Vars.MAX_BOMBS);
         }
 
         private void FixedUpdate()

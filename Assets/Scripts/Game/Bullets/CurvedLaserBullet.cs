@@ -139,7 +139,7 @@ namespace Main.BulletSystem
             {
                 if (CollidesWithPlayer())
                 {
-                    ((IHealth)EntityManager.GetPlayer()).Damage(damage);
+                    PlayerEntity.playerEntity.Damage(damage);
                 }
             }
             else
@@ -237,7 +237,7 @@ namespace Main.BulletSystem
         public virtual bool IsWithinDistance(Vector2 position) => Vector2.Distance(GetBorderPoint(position, out float width), position) < width;
         public virtual bool IsWithinDistanceToPlayer()
         {
-            var position = EntityManager.GetPlayer().transform.position;
+            var position = PlayerEntity.playerEntity.transform.position;
             return Vector2.Distance(GetBorderPoint(position, out float width), position) < width;
         }
 
@@ -247,14 +247,14 @@ namespace Main.BulletSystem
             var closest = collider.ClosestPoint(point);
             return Vector2.Distance(point, closest) < width;
         }
-        public virtual bool CollidesWithPlayer() => CollidesWith(EntityManager.GetPlayer().collider);
+        public virtual bool CollidesWithPlayer() => CollidesWith(PlayerEntity.playerEntity.collider);
 
-        public virtual Vector2 GetBorderPointToPlayer(out float width) => GetBorderPoint(EntityManager.GetPlayer().transform.position, out width);
+        public virtual Vector2 GetBorderPointToPlayer(out float width) => GetBorderPoint(PlayerEntity.playerEntity.transform.position, out width);
 
         public virtual Vector2 GetClosestPositionFromPlayer()
         {
             var borderPointPosition = GetBorderPointToPlayer(out float width);
-            return borderPointPosition + (MathEx.AngleVectors(EntityManager.GetPlayer().transform.position, borderPointPosition) * width);
+            return borderPointPosition + (MathEx.AngleVectors(PlayerEntity.playerEntity.transform.position, borderPointPosition) * width);
         }
 
         public virtual float GetWidth(int index) => (lineRendererUseType == LineRendererUseType.UseLineRendererCurve ? lineRenderer.widthCurve.Evaluate(index / (float)storedPositions.Count) : (widthValueFunction(this, index) * width)) * transform.localScale.AbsoluteDivided();

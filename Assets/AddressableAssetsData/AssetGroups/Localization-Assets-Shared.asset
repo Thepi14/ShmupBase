@@ -40,6 +40,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ed50219b40034d64585839b616e204c2
+    m_Address: Assets/Resources/Languages/Tables/Musics/Musics Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 2d12adc6c62c55b4aa423cbea5c38ef7, type: 2}
   m_SchemaSet:

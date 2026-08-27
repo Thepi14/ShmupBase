@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Main.EntitySystem
 {
@@ -23,6 +24,19 @@ namespace Main.EntitySystem
 
         public float startImmunityTime = 0f;
         protected float startImmunityTimer = 0f;
+
+        [HideInInspector]
+        public UnityEvent diedEvent = new();
+        /// <summary>
+        /// T0 = Damage, T1 = Entity Health.
+        /// </summary>
+        [HideInInspector]
+        public UnityEvent<float, float> damagedEvent = new();
+        /// <summary>
+        /// T0 = Damage, T1 = Entity Shield.
+        /// </summary>
+        [HideInInspector]
+        public UnityEvent<float, float> shieldDamagedEvent = new();
 
         [HideInInspector]
         public SpriteRenderer spriteRenderer;
@@ -74,6 +88,32 @@ namespace Main.EntitySystem
             }
         }
 
+        public virtual void Damage(float damage)
+        {
+            if (!Immune)
+            {
+                if (Shield > 0)
+                {
+                    shieldDamagedEvent.Invoke(damage, health);
+                    Shield -= damage;
+                }
+                else
+                {
+                    damagedEvent.Invoke(damage, health);
+                    Health -= damage;
+                }
+            }
+        }
+
+        public virtual void DamageShield(float damage)
+        {
+            if (!Immune)
+            {
+                shieldDamagedEvent.Invoke(damage, health);
+                Shield -= damage;
+            }
+        }
+
         public virtual void Kill()
         {
             StartCoroutine(KillCoroutine());
@@ -82,6 +122,7 @@ namespace Main.EntitySystem
         public virtual IEnumerator KillCoroutine()
         {
             alive = false;
+            diedEvent.Invoke();
             yield return new WaitForFixedUpdate();
             Destroy(gameObject);
         }

@@ -28,7 +28,7 @@ namespace Main.UI
             base.Awake();
 
             if (exitButton != null)
-                exitButton.onClick.AddListener(() => { SetOpenPanel(false); });
+                exitButton.onClick.AddListener(() => ReturnToMain());
         }
 
         public void SetupReplaysList()
