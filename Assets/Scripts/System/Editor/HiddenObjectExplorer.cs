@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 ///
 /// author: Bunny83
 /// forum thread: https://discussions.unity.com/t/cant-remove-gameobject-from-scene-in-editor-not-appear-in-heirarchy-not-selectable-ghost-object/101058/2
@@ -90,3 +91,4 @@ public class HiddenObjectExplorer : EditorWindow
         GUILayout.EndScrollView();
     }
 }
+#endif

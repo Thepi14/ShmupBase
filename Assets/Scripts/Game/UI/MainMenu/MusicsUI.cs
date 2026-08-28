@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Main.Sound;
 using ObjectUtils;
 using TMPro;
@@ -25,6 +26,8 @@ namespace Main.UI
         [SerializeField]
         private Button exitButton;
 
+        private Button selectedMusicButton;
+
         protected override void Awake()
         {
             base.Awake();
@@ -36,21 +39,59 @@ namespace Main.UI
         {
             musicButtons = new List<Button>();
 
+            Navigation musicButtonNavigation = new();
+            musicButtonNavigation.mode = Navigation.Mode.Explicit;
+
+            Button previousButton = null;
+
             foreach (var music in SoundManager.Singleton.musics)
             {
-                var buttonObj = Instantiate(musicButtonPrefab);
+                var buttonObj = Instantiate(musicButtonPrefab).GetComponent<Button>();
                 buttonObj.transform.SetParent(musicContent);
                 buttonObj.GetGameObjectComponent<LocalizeStringEvent>("MusicNameText").StringReference = music.musicName;
                 buttonObj.GetGameObjectComponent<TextMeshProUGUI>("DurationText").text = TimeSpan.FromSeconds(music.audioClip.length).ToString(@"mm\:ss");
+                buttonObj.GetComponent<Outline>().enabled = false;
 
-                buttonObj.GetComponent<Button>().onClick.AddListener(() => 
+                buttonObj.onClick.AddListener(() => 
                 {
                     SoundManager.PlayMusic(music);
                     description.StringReference = music.musicDescription;
+                    buttonObj.GetComponent<Outline>().enabled = true;
+
+                    selectedMusicButton.GetComponent<Outline>().enabled = false;
+                    selectedMusicButton = buttonObj;
                 });
 
-                musicButtons.Add(buttonObj.GetComponent<Button>());
+                if (musicButtons.Count == 0)
+                {
+                    musicButtonNavigation.selectOnUp = exitButton;
+                }
+                else
+                {
+                    //previous section
+                    musicButtonNavigation.selectOnDown = buttonObj;
+                    previousButton.navigation = musicButtonNavigation;
+
+                    //current section
+                    musicButtonNavigation = new();
+                    musicButtonNavigation.mode = Navigation.Mode.Explicit;
+
+                    musicButtonNavigation.selectOnUp = previousButton;
+                }
+
+                musicButtons.Add(buttonObj);
+                previousButton = buttonObj;
             }
+
+            exitButton.navigation = new Navigation()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnDown = musicButtons.First(),
+                selectOnUp = musicButtons.Last()
+            };
+
+            musicButtonNavigation.selectOnDown = musicButtons.First();
+            previousButton.navigation = musicButtonNavigation;
         }
 
         public override void SetOpenPanel(bool open)
@@ -61,6 +102,9 @@ namespace Main.UI
             {
                 musicButtons[0].SelectIfMouseInactive();
                 description.StringReference = noDescriptionText;
+
+                selectedMusicButton = musicButtons.First();
+                selectedMusicButton.GetComponent<Outline>().enabled = true;
             }
         }
     }

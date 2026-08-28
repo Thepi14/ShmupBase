@@ -85,16 +85,25 @@ namespace Main.InputSystem
                 moveInput = moveInput,
                 attack = attack,
                 bomb = bomb,
-                slow = slow,
+                slow = slow
             };
 
             //Debug.Log("Replay: " + ReplayManagement.replayMode + ", Controls: " + playerInput.ToString());
         }
 
+        private bool keyBoardMode;
+
         private void LateUpdate()
         {
+#if UNITY_EDITOR
+            keyBoardMode = mouseLocked || Application.isEditor;
+#else
+            keyBoardMode = mouseLocked;
+#endif
             //Stopping mouse shenaningans
-            if (mouseLocked)
+            EventSystem.current.sendNavigationEvents = keyBoardMode;
+
+            if (keyBoardMode)
             {
                 if (EventSystem.current.currentSelectedGameObject == null && lastSelect != null)
                 {
@@ -104,6 +113,10 @@ namespace Main.InputSystem
                 {
                     lastSelect = EventSystem.current.currentSelectedGameObject;
                 }
+            }
+            else
+            {
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
 

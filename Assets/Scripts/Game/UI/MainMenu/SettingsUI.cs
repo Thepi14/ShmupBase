@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Main.InputSystem;
 using Main.UI;
 using ObjectUtils;
@@ -16,6 +17,10 @@ namespace Main.UI
 {
     public class SettingsUI : GenericPanelBehaviour
     {
+        [Header("Status")]
+        [Space(20f)]
+        public Selectable currentSectionButtonSelected;
+
         [Header("Exits")]
         [Space(20f)]
         [SerializeField]
@@ -30,15 +35,15 @@ namespace Main.UI
 
         [Space(20f)]
         [SerializeField]
-        private Button generalButton;
+        private Button generalCategoryButton;
         [SerializeField]
-        private Button soundButton;
+        private Button soundCategoryButton;
         [SerializeField]
-        private Button graphicsButton;
+        private Button graphicsCategoryButton;
         [SerializeField]
-        private Button controlsButton;
+        private Button controlsCategoryButton;
         [SerializeField]
-        private Button languageButton;
+        private Button languageCategoryButton;
 
         [Space(20f)]
         [SerializeField]
@@ -152,16 +157,16 @@ namespace Main.UI
                 exitButtonDown.onClick.AddListener(() => ReturnToMain());
 
             //selection
-            generalButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); toggleFPS.SelectIfMouseInactive(); });
-            soundButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); masterVolume.SelectIfMouseInactive(); });
+            generalCategoryButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); UpdateCategoryNavigation(generalCategoryButton); });
+            soundCategoryButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); UpdateCategoryNavigation(soundCategoryButton); });
 
             if (Application.isMobilePlatform)
-                controlsButton.gameObject.SetActive(false);
+                controlsCategoryButton.gameObject.SetActive(false);
             else
-                controlsButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); firstSelectableControlBinder.SelectIfMouseInactive(); });
+                controlsCategoryButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); UpdateCategoryNavigation(controlsCategoryButton); });
 
-            graphicsButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); qualityButtonList[0].SelectIfMouseInactive(); });
-            languageButton.onClick.AddListener(() => { OpenSubPanel(languageSubPanel); SelectLastLocaleButton(); });
+            graphicsCategoryButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); UpdateCategoryNavigation(graphicsCategoryButton); });
+            languageCategoryButton.onClick.AddListener(() => { OpenSubPanel(languageSubPanel); UpdateCategoryNavigation(languageCategoryButton); });
 
             SetOnSelectOnButtonsLayout(!UseMouse);
 
@@ -201,11 +206,11 @@ namespace Main.UI
             foreach (Button button in qualityButtonList)
             {
                 int j = i;
-                button.onClick.AddListener(() => { QualitySettings.SetQualityLevel(j, true); });
+                button.onClick.AddListener(() => { QualitySettings.SetQualityLevel(j, true); SetAllCategoryNavigation(); });
                 i++;
             }
 
-            SetUpScreenToggles();
+            SetupScreenToggles();
 
             //controls
             if (!Application.isMobilePlatform)
@@ -214,17 +219,21 @@ namespace Main.UI
             //localization
             SetLocalizationButtons();
 
-            //others
-            //graphicsButton.gameObject.SetActive(false);
+            //post configuration
+            StartCoroutine(UpdateAllCategoryNavigationCoroutine());
+        }
 
-            //languageButton.navigation.selectOnDown = languageButtons[0];
+        IEnumerator UpdateAllCategoryNavigationCoroutine()
+        {
+            yield return LocalizationSettings.InitializationOperation;
+            SetAllCategoryNavigation();
         }
 
         #region General
 
 
 
-        #endregion
+            #endregion
 
         #region Sound
 
@@ -238,7 +247,7 @@ namespace Main.UI
         
         #region Graphics
 
-        public void SetUpScreenToggles()
+        public void SetupScreenToggles()
         {
             //if mobile then there is no screen configuration buttons
             if (!Application.isMobilePlatform)
@@ -280,6 +289,11 @@ namespace Main.UI
                 fullScreenToggle.gameObject.SetActive(false);
                 screenTypeToggleGroup.gameObject.SetActive(false);
             }
+        }
+
+        public int GetLastQualityIndex()
+        {
+            return QualitySettings.GetQualityLevel();
         }
 
         #endregion
@@ -330,7 +344,6 @@ namespace Main.UI
         {
             StartCoroutine(StartLocalizationButtons());
             languageButtons = new();
-            GameObject firstLanguageButton = null;
 
             IEnumerator StartLocalizationButtons()
             {
@@ -338,6 +351,11 @@ namespace Main.UI
                 yield return LocalizationSettings.InitializationOperation;
 
                 ChangeLocale(SelectedLanguage);
+
+                Navigation languageButtonNavigation = new Navigation();
+                languageButtonNavigation.mode = Navigation.Mode.Explicit;
+
+                Button previousButton = null;
 
                 // Generate list of available Locales
                 selected = 0;
@@ -348,13 +366,10 @@ namespace Main.UI
                     if (LocalizationSettings.SelectedLocale == locale)
                         selected = j;
 
-                    GameObject buttonObj = Instantiate(languageButtonPrefab);
-                    buttonObj.GetComponent<Button>().onClick.AddListener(() => { SelectLocale(j); });
+                    Button buttonObj = Instantiate(languageButtonPrefab).GetComponent<Button>();
+                    buttonObj.onClick.AddListener(() => { SelectLocale(j); });
                     RawImage img = buttonObj.GetGameObjectComponent<RawImage>("Flag");
                     Texture2D texture = Resources.Load<Texture2D>(RESOURCE_FLAG_PATH + locale.Identifier.Code);
-
-                    if (j == 0)
-                        firstLanguageButton = buttonObj;
 
                     img.texture = texture;
                     var heightMul = img.rectTransform.sizeDelta.y;
@@ -366,19 +381,40 @@ namespace Main.UI
 
                     buttonObj.transform.SetParent(languageContent);
 
+                    if (languageButtons.Count == 0)
+                    {
+                        languageButtonNavigation.selectOnUp = languageCategoryButton;
+                    }
+                    else
+                    {
+                        //previous section
+                        languageButtonNavigation.selectOnDown = buttonObj;
+                        previousButton.navigation = languageButtonNavigation;
+
+                        //current section
+                        languageButtonNavigation = new();
+                        languageButtonNavigation.mode = Navigation.Mode.Explicit;
+
+                        languageButtonNavigation.selectOnUp = previousButton;
+                    }
+
                     languageButtons.Add(buttonObj.GetComponent<Button>());
+                    previousButton = buttonObj;
                 }
 
-                Navigation languageButtonNavigation = new Navigation();
-                languageButtonNavigation.mode = Navigation.Mode.Explicit;
-                languageButtonNavigation.selectOnLeft = controlsButton;
-                languageButtonNavigation.selectOnRight = generalButton;
-                languageButtonNavigation.selectOnDown = languageButtons[0];
-                languageButton.navigation = languageButtonNavigation;
+                /*languageSectionButton.navigation = new Navigation()
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnDown = languageButtons.First(),
+                    selectOnUp = languageButtons.Last()
+                };*/
+
+                languageButtonNavigation.selectOnDown = languageButtons.First();
+                previousButton.navigation = languageButtonNavigation;
             }
         }
 
-        public void SelectLastLocaleButton() => languageButtons[selected].SelectIfMouseInactive();
+        public Button GetLastLocaleButton() => languageButtons[selected];
 
         [HideInInspector]
         public bool languageSelectionActive = false;
@@ -406,10 +442,67 @@ namespace Main.UI
 
         #endregion
 
+        #region Categories
+
         public void SetOnSelectOnButtonsLayout(bool enable)
         {
             foreach (var button in categoryButtonsLayout.GetGameObjectChildren())
                 button.GetComponent<EventTrigger>().enabled = enable;
+        }
+
+        public void UpdateCategoryNavigation(Button categoryButton)
+        {
+            currentSectionButtonSelected = categoryButton;
+
+            Navigation exitNavigation = exitButton.navigation;
+
+            exitNavigation.selectOnUp = currentSectionButtonSelected;
+            exitNavigation.selectOnDown = currentSectionButtonSelected;
+            exitNavigation.selectOnRight = currentSectionButtonSelected;
+            exitNavigation.selectOnLeft = currentSectionButtonSelected;
+
+            exitButton.navigation = exitNavigation;
+
+            SetAllCategoryNavigation();
+
+            if (InputManager.InputManagerInstance.mouseLocked)
+                EventSystem.current.SetSelectedGameObject(GetFirstSelectable(categoryButton).gameObject);
+        }
+
+        private Dictionary<Button, Selectable> buttonFirstSelectablePairs;
+
+        public void SetAllCategoryNavigation()
+        {
+            buttonFirstSelectablePairs = new();
+
+            SetCategoryNavigation(generalCategoryButton, toggleFPS);
+            SetCategoryNavigation(soundCategoryButton, masterVolume);
+            SetCategoryNavigation(controlsCategoryButton, firstSelectableControlBinder);
+            SetCategoryNavigation(graphicsCategoryButton, qualityButtonList[GetLastQualityIndex()]);
+            SetCategoryNavigation(languageCategoryButton, GetLastLocaleButton());
+        }
+
+        public Selectable GetFirstSelectable(Button categoryButton)
+        {
+            return buttonFirstSelectablePairs[categoryButton];
+        }
+
+        public void SetCategoryNavigation(Button categoryButton, Selectable firstSelectable)
+        {
+            Navigation currentNavigation = categoryButton.navigation;
+
+            Navigation newNavigation = new Navigation()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnLeft = currentNavigation.selectOnLeft,
+                selectOnRight = currentNavigation.selectOnRight,
+                selectOnUp = exitButton,
+                selectOnDown = firstSelectable
+            };
+
+            categoryButton.navigation = newNavigation;
+
+            buttonFirstSelectablePairs.Add(categoryButton, firstSelectable);
         }
 
         public override void SetOpenPanel(bool open)
@@ -418,7 +511,7 @@ namespace Main.UI
 
             if (open)
             {
-                generalButton.SelectIfMouseInactive();
+                generalCategoryButton.SelectIfMouseInactive();
                 OpenSubPanel(generalSubPanel);
             }
         }
@@ -437,5 +530,7 @@ namespace Main.UI
             graphicsSubPanel.gameObject.SetActive(false);
             languageSubPanel.gameObject.SetActive(false);
         }
+
+        #endregion
     }
 }
