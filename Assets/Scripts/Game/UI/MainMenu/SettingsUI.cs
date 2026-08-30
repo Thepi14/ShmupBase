@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Main.InputSystem;
 using Main.UI;
 using ObjectUtils;
@@ -17,9 +18,11 @@ namespace Main.UI
 {
     public class SettingsUI : GenericPanelBehaviour
     {
+        public static SettingsUI instance;
+
         [Header("Status")]
         [Space(20f)]
-        public Selectable currentSectionButtonSelected;
+        public Selectable currentCategoryButtonSelected;
 
         [Header("Exits")]
         [Space(20f)]
@@ -109,7 +112,7 @@ namespace Main.UI
         [SerializeField]
         private Toggle fullScreenWindowToggle;
         [SerializeField]
-        private Toggle maximizedWindowToggle;
+        private Toggle maximizeWindowToggle;
         //windows only
         [SerializeField]
         private Toggle fullScreenExclusiveToggle;
@@ -121,14 +124,34 @@ namespace Main.UI
         private GameObject rebindPrefab;
 
         [SerializeField]
+        private GridLayoutGroup controlRebindGridGroup;
+        [SerializeField]
+        private Grid<Selectable> controlRebindSelectablesGrid;
+
+        [SerializeField]
+        private Selectable _currentSelectedControlRebindSelectable;
+        public static Selectable CurrentSelectedControlRebindSelectable
+        { 
+            get
+            {
+                return instance._currentSelectedControlRebindSelectable;
+            }
+            set
+            {
+                instance._currentSelectedControlRebindSelectable = value;
+                instance.UpdateSelectedRebinderSelectable();
+            }
+        }
+        [SerializeField]
         private Selectable firstSelectableControlBinder;
+        [SerializeField]
+        private Selectable selectableBelowControlLayout;
+
         [SerializeField]
         private Toggle useMouseToggle;
         [SerializeField]
         private Toggle useIngameKeyboardToggle;
 
-        [SerializeField]
-        private RectTransform controlsLayout;
         [SerializeField]
         private List<RebindActionUI> rebinders;
         [SerializeField]
@@ -150,6 +173,8 @@ namespace Main.UI
         {
             base.Awake();
 
+            instance = this;
+
             //exit
             if (exitButton != null)
                 exitButton.onClick.AddListener(() => ReturnToMain());
@@ -157,16 +182,16 @@ namespace Main.UI
                 exitButtonDown.onClick.AddListener(() => ReturnToMain());
 
             //selection
-            generalCategoryButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); UpdateCategoryNavigation(generalCategoryButton); });
-            soundCategoryButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); UpdateCategoryNavigation(soundCategoryButton); });
+            generalCategoryButton.onClick.AddListener(() => { OpenSubPanel(generalSubPanel); UpdateCategoryNavigation(generalCategoryButton); SelectFirstSelectable(generalCategoryButton); });
+            soundCategoryButton.onClick.AddListener(() => { OpenSubPanel(soundSubPanel); UpdateCategoryNavigation(soundCategoryButton); SelectFirstSelectable(soundCategoryButton); });
 
             if (Application.isMobilePlatform)
                 controlsCategoryButton.gameObject.SetActive(false);
             else
-                controlsCategoryButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); UpdateCategoryNavigation(controlsCategoryButton); });
+                controlsCategoryButton.onClick.AddListener(() => { OpenSubPanel(controlsSubPanel); UpdateCategoryNavigation(controlsCategoryButton); SelectFirstSelectable(controlsCategoryButton); });
 
-            graphicsCategoryButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); UpdateCategoryNavigation(graphicsCategoryButton); });
-            languageCategoryButton.onClick.AddListener(() => { OpenSubPanel(languageSubPanel); UpdateCategoryNavigation(languageCategoryButton); });
+            graphicsCategoryButton.onClick.AddListener(() => { OpenSubPanel(graphicsSubPanel); UpdateCategoryNavigation(graphicsCategoryButton); SelectFirstSelectable(graphicsCategoryButton); });
+            languageCategoryButton.onClick.AddListener(() => { OpenSubPanel(languageSubPanel); UpdateCategoryNavigation(languageCategoryButton); SelectFirstSelectable(languageCategoryButton); });
 
             SetOnSelectOnButtonsLayout(!UseMouse);
 
@@ -206,11 +231,12 @@ namespace Main.UI
             foreach (Button button in qualityButtonList)
             {
                 int j = i;
-                button.onClick.AddListener(() => { QualitySettings.SetQualityLevel(j, true); SetAllCategoryNavigation(); });
+                button.onClick.AddListener(() => { QualitySettings.SetQualityLevel(j, true); SetAllCategoryNavigation(); UpdateSelectedGraphicsQuality(); });
                 i++;
             }
 
             SetupScreenToggles();
+            UpdateSelectedGraphicsQuality();
 
             //controls
             if (!Application.isMobilePlatform)
@@ -233,7 +259,7 @@ namespace Main.UI
 
 
 
-            #endregion
+        #endregion
 
         #region Sound
 
@@ -241,6 +267,11 @@ namespace Main.UI
         {
             SetPrefFloat(key, value);
             SetSoundVolumes();
+        }
+
+        public void SelectSoundCategoryButton()
+        {
+            EventSystem.current.SetSelectedGameObject(soundCategoryButton.gameObject);
         }
 
         #endregion
@@ -266,10 +297,10 @@ namespace Main.UI
 
                 fullScreenWindowToggle.SetIsOnWithoutNotify(ScreenMode == FullScreenMode.FullScreenWindow);
                 fullScreenExclusiveToggle.SetIsOnWithoutNotify(ScreenMode == FullScreenMode.ExclusiveFullScreen);
-                maximizedWindowToggle.SetIsOnWithoutNotify(ScreenMode == FullScreenMode.MaximizedWindow);
+                maximizeWindowToggle.SetIsOnWithoutNotify(ScreenMode == FullScreenMode.MaximizedWindow);
 
                 fullScreenWindowToggle.onValueChanged.AddListener((value) => { if (value) { Screen.fullScreenMode = FullScreenMode.FullScreenWindow; ScreenMode = FullScreenMode.FullScreenWindow; } });
-                maximizedWindowToggle.onValueChanged.AddListener((value) => { if (value) { Screen.fullScreenMode = FullScreenMode.MaximizedWindow; ScreenMode = FullScreenMode.MaximizedWindow; } });
+                maximizeWindowToggle.onValueChanged.AddListener((value) => { if (value) { Screen.fullScreenMode = FullScreenMode.MaximizedWindow; ScreenMode = FullScreenMode.MaximizedWindow; } });
 
                 //windows only
                 if (Application.platform == RuntimePlatform.WindowsPlayer)
@@ -296,6 +327,65 @@ namespace Main.UI
             return QualitySettings.GetQualityLevel();
         }
 
+        public void UpdateSelectedGraphicsQuality()
+        {
+            foreach (var button in qualityButtonList)
+                button.GetComponent<Outline>().enabled = false;
+
+            qualityButtonList[GetLastQualityIndex()].GetComponent<Outline>().enabled = true;
+
+            UpdateQualitySelectionNavigation();
+        }
+
+        public void UpdateQualitySelectionNavigation()
+        {
+            Selectable current = qualityButtonList[GetLastQualityIndex()];
+
+            Navigation oldNavigation = graphicsCategoryButton.navigation,
+                newNavigation = new()
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnUp = oldNavigation.selectOnUp,
+                    selectOnLeft = oldNavigation.selectOnLeft,
+                    selectOnRight = oldNavigation.selectOnRight,
+                    selectOnDown = current
+                };
+            graphicsCategoryButton.navigation = newNavigation;
+
+            oldNavigation = fullScreenToggle.navigation;
+            newNavigation = new()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnLeft = oldNavigation.selectOnLeft,
+                selectOnRight = oldNavigation.selectOnRight,
+                selectOnDown = oldNavigation.selectOnDown,
+                selectOnUp = current
+            };
+            fullScreenToggle.navigation = newNavigation;
+
+            oldNavigation = fullScreenWindowToggle.navigation;
+            newNavigation = new()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnLeft = oldNavigation.selectOnLeft,
+                selectOnRight = oldNavigation.selectOnRight,
+                selectOnDown = oldNavigation.selectOnDown,
+                selectOnUp = current
+            };
+            fullScreenWindowToggle.navigation = newNavigation;
+
+            oldNavigation = maximizeWindowToggle.navigation;
+            newNavigation = new()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnLeft = oldNavigation.selectOnLeft,
+                selectOnRight = oldNavigation.selectOnRight,
+                selectOnDown = oldNavigation.selectOnDown,
+                selectOnUp = current
+            };
+            maximizeWindowToggle.navigation = newNavigation;
+        }
+
         #endregion
 
         #region Controls
@@ -305,7 +395,7 @@ namespace Main.UI
             useMouseToggle.isOn = UseMouse;
             useIngameKeyboardToggle.isOn = UseIngameKeyboard;
 
-            useMouseToggle.onValueChanged.AddListener((value) => { UseMouse = value; SetOnSelectOnButtonsLayout(!value); });
+            useMouseToggle.onValueChanged.AddListener((value) => { UseMouse = value; SetOnSelectOnButtonsLayout(!value); if (!value) EventSystem.current.SetSelectedGameObject(useMouseToggle.gameObject); });
             useIngameKeyboardToggle.onValueChanged.AddListener((value) => { UseIngameKeyboard = value; });
 
             /*if (generatePrefabsOnRuntime)
@@ -323,7 +413,48 @@ namespace Main.UI
                 }
             }*/
 
-            foreach (var control in controlsLayout.GetGameObjectChildren())
+            var selectableList = new List<Selectable>();
+            int halfColumn = controlRebindGridGroup.transform.childCount / 2;
+
+            for (int i = 0; i < halfColumn; i++)
+            {
+                foreach (GameObject selectableObj in controlRebindGridGroup.transform.GetChild(i).GetGameObjectChildren())
+                {
+                    if (selectableObj.GetComponent<Selectable>() != null)
+                        selectableList.Add(selectableObj.GetComponent<Selectable>());
+                }
+
+                foreach (GameObject selectableObj in controlRebindGridGroup.transform.GetChild(i + halfColumn).GetGameObjectChildren())
+                {
+                    if (selectableObj.GetComponent<Selectable>() != null)
+                        selectableList.Add(selectableObj.GetComponent<Selectable>());
+                }
+            }
+
+            controlRebindSelectablesGrid = new Grid<Selectable>();
+            controlRebindSelectablesGrid.ListToGrid(selectableList, 4);
+
+            int width = controlRebindSelectablesGrid.GetWidth(), height = controlRebindSelectablesGrid.GetHeight();
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    Selectable selectable = controlRebindSelectablesGrid.Get(x, y);
+
+                    Navigation newNavigation = new Navigation()
+                    {
+                        mode = Navigation.Mode.Explicit,
+                        selectOnUp = y == 0 ? controlsCategoryButton : controlRebindSelectablesGrid.Get(x, y - 1),
+                        selectOnDown = y == height - 1 ? selectableBelowControlLayout : controlRebindSelectablesGrid.Get(x, y + 1),
+                        selectOnLeft = x == 0 ? controlRebindSelectablesGrid.Get(width - 1, y) : controlRebindSelectablesGrid.Get(x - 1, y),
+                        selectOnRight = x == width - 1 ? controlRebindSelectablesGrid.Get(0, y) : controlRebindSelectablesGrid.Get(x + 1, y)
+                    };
+
+                    selectable.navigation = newNavigation;
+                }
+            }
+
+            foreach (var control in controlRebindGridGroup.GetGameObjectChildren())
                 rebinders.Add(control.GetComponent<RebindActionUI>());
 
             resetControlsButton.onClick.AddListener(() =>
@@ -331,6 +462,29 @@ namespace Main.UI
                 foreach (var rebinder in rebinders)
                     rebinder.ResetToDefault();
             });
+        }
+
+        private void UpdateSelectedRebinderSelectable()
+        {
+            Navigation oldNavigation = selectableBelowControlLayout.navigation,
+                newNavigation = new()
+                {
+                    mode = Navigation.Mode.Explicit,
+                    selectOnDown = oldNavigation.selectOnDown,
+                    selectOnUp = _currentSelectedControlRebindSelectable
+                };
+            selectableBelowControlLayout.navigation = newNavigation;
+            oldNavigation = controlsCategoryButton.navigation;
+
+            newNavigation = new()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnUp = oldNavigation.selectOnUp,
+                selectOnLeft = oldNavigation.selectOnLeft,
+                selectOnRight = oldNavigation.selectOnRight,
+                selectOnDown = _currentSelectedControlRebindSelectable
+            };
+            controlsCategoryButton.navigation = newNavigation;
         }
 
         #endregion
@@ -452,21 +606,35 @@ namespace Main.UI
 
         public void UpdateCategoryNavigation(Button categoryButton)
         {
-            currentSectionButtonSelected = categoryButton;
+            currentCategoryButtonSelected = categoryButton;
 
-            Navigation exitNavigation = exitButton.navigation;
-
-            exitNavigation.selectOnUp = currentSectionButtonSelected;
-            exitNavigation.selectOnDown = currentSectionButtonSelected;
-            exitNavigation.selectOnRight = currentSectionButtonSelected;
-            exitNavigation.selectOnLeft = currentSectionButtonSelected;
-
-            exitButton.navigation = exitNavigation;
+            exitButton.navigation = new()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnUp = categoryButton,
+                selectOnDown = categoryButton,
+                selectOnRight = categoryButton,
+                selectOnLeft = categoryButton
+            };
 
             SetAllCategoryNavigation();
 
+            foreach (var button in categoryButtonsLayout.GetGameObjectChildren())
+            {
+                button.GetComponent<Outline>().enabled = false;
+            }
+            categoryButton.GetComponent<Outline>().enabled = true;
+        }
+
+        private void SelectFirstSelectable(Button categoryButton)
+        {
             if (InputManager.InputManagerInstance.mouseLocked)
                 EventSystem.current.SetSelectedGameObject(GetFirstSelectable(categoryButton).gameObject);
+        }
+
+        public Selectable GetFirstSelectable(Button categoryButton)
+        {
+            return buttonFirstSelectablePairs[categoryButton];
         }
 
         private Dictionary<Button, Selectable> buttonFirstSelectablePairs;
@@ -480,11 +648,6 @@ namespace Main.UI
             SetCategoryNavigation(controlsCategoryButton, firstSelectableControlBinder);
             SetCategoryNavigation(graphicsCategoryButton, qualityButtonList[GetLastQualityIndex()]);
             SetCategoryNavigation(languageCategoryButton, GetLastLocaleButton());
-        }
-
-        public Selectable GetFirstSelectable(Button categoryButton)
-        {
-            return buttonFirstSelectablePairs[categoryButton];
         }
 
         public void SetCategoryNavigation(Button categoryButton, Selectable firstSelectable)

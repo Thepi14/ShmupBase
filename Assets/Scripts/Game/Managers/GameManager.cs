@@ -75,7 +75,7 @@ namespace Main
             {
                 seed = Time.frameCount;
                 replay = new Replay(seed);
-                replay.dateTime = DateTime.Now;
+                replay.dateTime = DateTime.Now.Ticks;
 
                 highScore = Vars.Highscore;
 
@@ -147,7 +147,7 @@ namespace Main
             Singleton.replay.name = replayName;
             Singleton.replay.playerInput = Singleton.playerInput.ToArray();
             Singleton.replay.framesDuration = Singleton.currentFrameIndex + 1;
-            Singleton.replay.rawEndTime = DateTime.Now;
+            Singleton.replay.rawEndTime = DateTime.Now.Ticks;
 
             if (Vars.SaveReplaysAsJson)
                 ReplayManagement.SaveReplayFileAsJson(Singleton.replay);

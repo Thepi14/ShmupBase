@@ -17,7 +17,6 @@ namespace Main.UI
         [Header("Main Panel")]
         [SerializeField]
         private RectTransform mainSubPanel;
-        private SaveReplayUI saveReplayUI = SaveReplayUI.Instance;
 
         [SerializeField]
         private TMP_Text highScoreText;
@@ -61,7 +60,7 @@ namespace Main.UI
             //pause panel
             unpauseButton.onClick.AddListener(() => SetOpenPanel(false));
             continueButton.onClick.AddListener(() => { GameManager.Continue(); SetOpenPanel(false); });
-            saveReplayButton.onClick.AddListener(() => saveReplayUI.SetOpenPanel(true));
+            saveReplayButton.onClick.AddListener(() => SaveReplayUI.Instance.SetOpenPanel(true));
             restartButton.onClick.AddListener(() => SceneManager.LoadScene(1));
             goBackToMainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(0));
 

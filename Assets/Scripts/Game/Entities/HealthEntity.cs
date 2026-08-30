@@ -116,13 +116,13 @@ namespace Main.EntitySystem
 
         public virtual void Kill()
         {
+            alive = false;
+            diedEvent.Invoke();
             StartCoroutine(KillCoroutine());
         }
 
         public virtual IEnumerator KillCoroutine()
         {
-            alive = false;
-            diedEvent.Invoke();
             yield return new WaitForFixedUpdate();
             Destroy(gameObject);
         }

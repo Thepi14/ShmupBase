@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace ObjectUtils
 {
@@ -211,6 +212,22 @@ namespace ObjectUtils
         public static bool MaskContainsLayer(this LayerMask layerMask, int layer) => layerMask == (layerMask | 1 << layer);
 
         public static bool MaskContainsLayer(this LayerMask layerMask, LayerMask layer) => layerMask == (layerMask | 1 << layer);
+
+        /// <summary>
+        /// Um comparador de cores de 32Bits, que é ausente por algum motivo, então criei o meu.
+        /// </summary>
+        /// <param name="col1">Cor 1.</param>
+        /// <param name="col2">Cor 2.</param>
+        /// <returns>Se as duas cores são iguais retorna true, se não false.</returns>
+        public static bool Color32Equals(Color32 col1, Color32 col2)
+        {
+            if (col1.r == col2.r &&
+                col1.g == col2.g &&
+                col1.b == col2.b &&
+                col1.a == col2.a)
+                return true;
+            return false;
+        }
     }
     public static class UIGeneral
     {
@@ -264,13 +281,63 @@ namespace ObjectUtils
             EventSystem.current.RaycastAll(eventData, raysastResults);
             return raysastResults;
         }
+
+        /// got from https://stackoverflow.com/questions/52353898/get-column-and-row-of-count-from-gridlayoutgroup-programmatically
+        /// <summary>
+        /// Gets column and row count of a grid
+        /// </summary>
+        /// <param name="glg"></param>
+        /// <param name="column"></param>
+        /// <param name="row"></param>
+        public static void GetColumnAndRow(this GridLayoutGroup glg, out int column, out int row)
+        {
+            column = 0;
+            row = 0;
+
+            if (glg.transform.childCount == 0)
+                return;
+
+            //Column and row are now 1
+            column = 1;
+            row = 1;
+
+            //Get the first child GameObject of the GridLayoutGroup
+            RectTransform firstChildObj = glg.transform.
+                GetChild(0).GetComponent<RectTransform>();
+
+            Vector2 firstChildPos = firstChildObj.anchoredPosition;
+            bool stopCountingRow = false;
+
+            //Loop through the rest of the child object
+            for (int i = 1; i < glg.transform.childCount; i++)
+            {
+                //Get the next child
+                RectTransform currentChildObj = glg.transform.
+               GetChild(i).GetComponent<RectTransform>();
+
+                Vector2 currentChildPos = currentChildObj.anchoredPosition;
+
+                //if first child.x == otherchild.x, it is a column, ele it's a row
+                if (firstChildPos.x == currentChildPos.x)
+                {
+                    column++;
+                    //Stop couting row once we find column
+                    stopCountingRow = true;
+                }
+                else
+                {
+                    if (!stopCountingRow)
+                        row++;
+                }
+            }
+        }
     }
 
     public static class LinqEx
     {
         public static void Add<T>(this IList<T> list, params T[] items)
         {
-            foreach (T item in list)
+            foreach (T item in items)
             {
                 list.Add(item);
             }

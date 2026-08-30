@@ -80,13 +80,16 @@ namespace Main.EntitySystem
             //Debug.Log("Replay: " + ReplayManagement.replayMode + ", Controls: " + playerInput.ToString());
         }
 
-        public override IEnumerator KillCoroutine()
+        public override void Kill()
         {
-            alive = false;
+            base.Kill();
             immune = true;
             canMove = false;
             startImmunityTimer = 3f;
+        }
 
+        public override IEnumerator KillCoroutine()
+        {
             /*if (!GameManager.Singleton.gameEnded)
             {*/
                 yield return new WaitForFixedUpdate();

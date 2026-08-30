@@ -30,12 +30,12 @@ namespace Main.UI
         private RectTransform keyboardGrid;
         [SerializeField]
         private GameObject charButtonPrefab;
-        //[SerializeField]
-        //private char[] allAscii;
         [SerializeField]
         private Button keyboardBackspaceButton, keyboardSaveButton;
         [SerializeField]
         private List<Button> keyButtons;
+        [SerializeField]
+        private Grid<Button> keyGrid;
 
         protected override void Awake()
         {
@@ -47,7 +47,7 @@ namespace Main.UI
                 keyboardGrid.gameObject.SetActive(false);
                 replayNameInput.SelectIfMouseInactive();
 
-                replayNameInput.onSubmit.AddListener((string text) => { SubmitName(text); SceneManager.LoadScene(0); });
+                replayNameInput.onSubmit.AddListener((string text) => { SubmitAndSaveReplay(text); SceneManager.LoadScene(0); });
             }
             else
             {
@@ -57,12 +57,10 @@ namespace Main.UI
                 keyboardGrid.transform.GetChild(0).GetComponent<Button>().SelectIfMouseInactive();
 
                 byte startOffset = 33, asciiSize = 94;
-                //allAscii = new char[94];
                 keyButtons = new();
 
                 for (int i = startOffset; i < asciiSize + startOffset; i++)
                 {
-                    //allAscii[i - startOffset] = (char)i;
                     var newChar = (char)i;
                     var newCharButton = Instantiate(charButtonPrefab);
                     newCharButton.transform.SetParent(keyboardGrid.transform);
@@ -75,8 +73,28 @@ namespace Main.UI
                 keyboardBackspaceButton.transform.SetAsLastSibling();
                 keyboardSaveButton.transform.SetAsLastSibling();
 
+                keyButtons.Add(keyboardBackspaceButton, keyboardSaveButton);
+
+                GridLayoutGroup grid = keyboardGrid.GetComponent<GridLayoutGroup>();
+                keyGrid.ListToGrid(keyButtons, grid.constraintCount);
+
+                for (int y = 0; y < keyboardGrid.childCount / grid.constraintCount; y++)
+                {
+                    for (int x = 0; x < grid.constraintCount; x++)
+                    {
+                        keyGrid.Get(x, y).GetComponent<Button>().navigation = new()
+                        {
+                            mode = Navigation.Mode.Explicit,
+                            selectOnLeft = x == 0 ? keyGrid.Get(keyGrid.GetWidth() - 1, y) : keyGrid.Get(x - 1, y),
+                            selectOnRight = x == keyGrid.GetWidth() - 1 ? keyGrid.Get(0, y) : keyGrid.Get(x + 1, y),
+                            selectOnUp = y == 0 ? keyGrid.Get(x, keyGrid.GetHeight() - 1) : keyGrid.Get(x, y - 1),
+                            selectOnDown = y == keyGrid.GetHeight() - 1 ? keyGrid.Get(x, 0) : keyGrid.Get(x, y + 1),
+                        };
+                    }
+                }
+
                 keyboardBackspaceButton.onClick.AddListener(() => { replayNameInput.text.Remove(replayNameInput.text.Length - 1); });
-                keyboardSaveButton.onClick.AddListener(() => { SubmitName(replayNameInput.text); SceneManager.LoadScene(0); });
+                keyboardSaveButton.onClick.AddListener(() => { SubmitAndSaveReplay(replayNameInput.text); SceneManager.LoadScene(0); });
             }
         }
 
@@ -90,7 +108,7 @@ namespace Main.UI
             GameUI.Instance.SetOpenPanel(false);
         }
 
-        public void SubmitName(string text)
+        public void SubmitAndSaveReplay(string text)
         {
             var gameManagerSingleton = GameManager.Singleton;
 

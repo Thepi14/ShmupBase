@@ -1,8 +1,7 @@
+using System;
 using Main.ReplaySystem;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Localization;
-using UnityEngine.Localization.SmartFormat.Utilities;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -24,7 +23,7 @@ namespace Main.UI
             replayName.text = replayReference.name;
             replayHighscore.text = Vars.FormatAsScoreString(replayReference.highScore);
             replayDuration.text = replayReference.ReplayDuration().ToString();
-            replayDate.text = replayReference.dateTime.ToShortDateString();
+            replayDate.text = new DateTime(replayReference.dateTime).ToShortDateString();
         }
 
         public void PlaySelectedReplay()

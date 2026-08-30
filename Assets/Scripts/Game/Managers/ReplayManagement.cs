@@ -160,7 +160,7 @@ namespace Main.ReplaySystem
         /// <summary>
         /// Data e horário do início do replay.
         /// </summary>
-        public DateTime dateTime;
+        public long dateTime;
         public string name;
         /// <summary>
         /// Duração total do replay, em frames, sem contar pausas.
@@ -174,7 +174,7 @@ namespace Main.ReplaySystem
         /// <summary>
         /// Tempo bruto para terminar o replay, contando pausa, sem uso prático.
         /// </summary>
-        public DateTime rawEndTime;
+        public long rawEndTime;
 
         public long highScore = 0;
 
