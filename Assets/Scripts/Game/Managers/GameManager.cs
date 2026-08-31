@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using EditorTools;
-using Main.EntitySystem;
 using Main.InputSystem;
 using Main.ReplaySystem;
 using Main.Stages;
-using Main.UI;
 using UnityEngine;
 using UnityEngine.Events;
 using static Main.EntitySystem.PlayerEntity;
@@ -76,7 +74,6 @@ namespace Main
                 seed = Time.frameCount;
                 replay = new Replay(seed);
                 replay.dateTime = DateTime.Now.Ticks;
-
                 highScore = Vars.Highscore;
 
                 replay.difficulty = StageManager.currentDifficulty;

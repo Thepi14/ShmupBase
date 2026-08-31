@@ -70,6 +70,22 @@ MonoBehaviour:
     m_Localized: "M\xFAsicas"
     m_Metadata:
       m_Items: []
+  - m_Id: 33557120078041088
+    m_Localized: Jogar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33569621142392832
+    m_Localized: Selecione a Dificuldade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33572494240632832
+    m_Localized: Select Character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33622116053012480
+    m_Localized: Selecionar
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

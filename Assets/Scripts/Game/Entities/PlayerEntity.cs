@@ -4,23 +4,28 @@ using System.Collections.Generic;
 using EditorTools;
 using Main.BulletSystem;
 using Main.InputSystem;
-using Main.ReplaySystem;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Localization;
 
 namespace Main.EntitySystem
 {
     public class PlayerEntity : AttackEntity
     {
-        public const string playerPrefabsPath = "Prefabs/Entities/Players/";
+        public const string CHARACTERS_PREFABS_PATH = "Prefabs/Entities/Players/";
         public static readonly Vector2 startPlayerPosition = new(0, -3);
 
         public static PlayerEntity playerEntity;
-        public static byte playerTypeID = 0;
         public static GameObject[] playerEntityPrefabs;
+        public static int selectedCharacterID;
 
         public override float Speed { get => speed * (input.slow ? slowSpeedMultiplier : 1f); set => speed = value; }
+
+        [Space(10f)]
+        [Header("Character")]
+        public LocalizedString characterName;
+        public LocalizedString characterDescription;
+        public Sprite characterPortrait;
 
         [Space(10f)]
         [Header("Player")]
@@ -39,7 +44,7 @@ namespace Main.EntitySystem
 
         public virtual void OnValidate()
         {
-            LoadPlayerList();
+            LoadCharacterList();
             Health = 1;
             if (!Application.isPlaying)
             {
@@ -49,7 +54,7 @@ namespace Main.EntitySystem
 
         protected override void Awake()
         {
-            LoadPlayerList();
+            LoadCharacterList();
             playerEntity = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, playerEntity);
             base.Awake();
             Health = 1;
@@ -106,8 +111,8 @@ namespace Main.EntitySystem
 
         public static PlayerEntity GeneratePlayer()
         {
-            LoadPlayerList();
-            playerEntity = Instantiate(playerEntityPrefabs[playerTypeID]).GetComponent<PlayerEntity>();
+            LoadCharacterList();
+            playerEntity = Instantiate(playerEntityPrefabs[selectedCharacterID]).GetComponent<PlayerEntity>();
             playerEntity.transform.position = startPlayerPosition;
 
             playerEntity.diedEvent.AddListener(() =>
@@ -138,7 +143,7 @@ namespace Main.EntitySystem
 
         public static bool PlayerLostLastLife() => playerEntity.lifes == 0;
 
-        public static void LoadPlayerList() => playerEntityPrefabs = Resources.LoadAll<GameObject>(playerPrefabsPath);
+        public static void LoadCharacterList() => playerEntityPrefabs = Resources.LoadAll<GameObject>(CHARACTERS_PREFABS_PATH);
 
         public static float AngleToPlayer(Vector2 position) => Mathf.Atan2(playerEntity.transform.position.y - position.y, playerEntity.transform.position.x - position.x) * Mathf.Rad2Deg;
     }

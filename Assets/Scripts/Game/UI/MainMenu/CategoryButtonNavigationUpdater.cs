@@ -9,7 +9,7 @@ namespace Main.UI
         public void OnSelect(BaseEventData eventData)
         {
             if (!Vars.UseMouse)
-                SettingsUI.instance.UpdateCategoryNavigation(GetComponent<Button>());
+                SettingsPanel.instance.UpdateCategoryNavigation(GetComponent<Button>());
         }
     }
 }

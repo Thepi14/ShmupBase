@@ -71,6 +71,22 @@ MonoBehaviour:
     m_Key: Musics
     m_Metadata:
       m_Items: []
+  - m_Id: 33557120078041088
+    m_Key: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33569621142392832
+    m_Key: Select Difficulty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33572494240632832
+    m_Key: Select Character
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33622116053012480
+    m_Key: Select
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

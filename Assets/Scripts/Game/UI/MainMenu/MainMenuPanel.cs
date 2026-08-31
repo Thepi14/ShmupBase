@@ -9,10 +9,22 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class MainMenuUI : GenericPanelBehaviour
+    public class MainMenuPanel : GenericPanelBehaviour
     {
-        public Button startButton, replaysButton, musicsButton, settingsButton, exitButton;
-        public PanelBehaviour musicsPanel, replaysPanel, settingsPanel;
+        [Header("Buttons")]
+        public Button playButton;
+        public Button practiceButton;
+        public Button replaysButton;
+        public Button musicsButton;
+        public Button settingsButton;
+        public Button exitButton;
+
+        [Space(10f)]
+        [Header("Panels")]
+        public PanelBehaviour difficultyPanel;
+        public PanelBehaviour musicsPanel;
+        public PanelBehaviour replaysPanel;
+        public PanelBehaviour settingsPanel;
 
         protected override void Awake()
         {
@@ -24,7 +36,8 @@ namespace Main.UI
 
             InputManager.LockMouse(!Vars.UseMouse);
 
-            startButton.onClick.AddListener(() => { ReplayManagement.replayMode = false; StageManager.LoadStageScene(1, Difficulty.Normal); });
+            playButton.onClick.AddListener(() => { difficultyPanel.SetOpenPanel(true); });
+            //practiceButton.onClick.AddListener(() => { difficultyPanel.SetOpenPanel(true); });
             replaysButton.onClick.AddListener(() => { replaysPanel.SetOpenPanel(true); });
             musicsButton.onClick.AddListener(() => { musicsPanel.SetOpenPanel(true); });
             settingsButton.onClick.AddListener(() => { settingsPanel.SetOpenPanel(true); });
@@ -34,18 +47,13 @@ namespace Main.UI
             TimeManager.Pause(false);
         }
 
-        protected void LateUpdate()
-        {
-
-        }
-
         public override void SetOpenPanel(bool open)
         {
             base.SetOpenPanel(open);
 
             if (open)
             {
-                startButton.SelectIfMouseInactive();
+                playButton.SelectIfMouseInactive();
                 SoundManager.PlayMusic("Flower");
             }
         }

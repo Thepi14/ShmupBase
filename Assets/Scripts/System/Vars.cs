@@ -1,13 +1,10 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Main.BulletSystem;
-using Main.EntitySystem;
 using Main.InputSystem;
 using Main.ReplaySystem;
 using Main.Sound;
+using Main.Stages;
+using Main.UI;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
@@ -27,6 +24,13 @@ namespace Main
         {
             if (StartedVars)
                 return;
+
+            if (!HasPrefKey(PrefKey.GameHasEverStarted))
+            {
+                ResetAllPrefs();
+                //setting it to false opens possibility for cutscenes when game first starts.
+                SetPrefBool(PrefKey.GameHasEverStarted, true);
+            }
 
             GenerateFolders();
 
@@ -68,12 +72,6 @@ namespace Main
             StartedVars = true;
         }
 
-        public static void ChangeLocale(int index)
-        {
-            LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
-            SelectedLanguage = index;
-        }
-
         public static void GenerateFolders()
         {
             Directory.CreateDirectory(ReplayManagement.REPLAYS_PATH);
@@ -107,7 +105,10 @@ namespace Main
         public static bool UseLocalDataPath { get => GetPrefBool(PrefKey.UseLocalDataPath); set => SetPrefBool(PrefKey.UseLocalDataPath, value); }
 
         //persistent data
-        public static int Highscore { get => GetPrefInt(PrefKey.Highscore); set => SetPrefInt(PrefKey.Highscore, value); }
+        public static bool GameHasEverStarted { get => GetPrefBool(PrefKey.GameHasEverStarted); set => SetPrefBool(PrefKey.GameHasEverStarted, value); }
+        public static long Highscore { get => long.Parse(GetPrefString(PrefKey.Highscore)); set => SetPrefString(PrefKey.Highscore, value.ToString()); } //made as string because of the limits of int32, so making it as string is just easier
+        public static Difficulty LastDifficulty { get => (Difficulty)GetPrefInt(PrefKey.LastDifficulty); set => SetPrefInt(PrefKey.LastDifficulty, (int)value); }
+        public static int LastCharacterID { get => GetPrefInt(PrefKey.LastCharacterID); set => SetPrefInt(PrefKey.LastCharacterID, value); }
 
         public enum PrefKey : byte
         {
@@ -139,16 +140,19 @@ namespace Main
             UseLocalDataPath,
 
             //others
+            GameHasEverStarted,
             Highscore,
+            LastDifficulty,
+            LastCharacterID
         }
-
-        private static string GetPrefKeyString(PrefKey key) => key.ToString().Prettify().ToUpper().Replace(' ', '_');
 
         public static void ResetAllPrefs()
         {
             ResetGeneralPrefs();
-            ResetVolumePrefs();
+            ResetSoundPrefs();
+            ResetGraphicsPrefs();
             ResetControlsPrefs();
+
             ResetSystemPrefs();
         }
 
@@ -159,7 +163,7 @@ namespace Main
             PlayerPrefs.Save();
         }
 
-        public static void ResetVolumePrefs()
+        public static void ResetSoundPrefs()
         {
             MasterVolume = 0.8f;
             MusicVolume = 0.8f;
@@ -169,18 +173,36 @@ namespace Main
             PlayerPrefs.Save();
         }
 
+        public static void ResetGraphicsPrefs()
+        {
+            FullScreen = false;
+            ScreenMode = FullScreenMode.Windowed;
+            UseCommasOnScores = true;
+
+            PlayerPrefs.Save();
+        }
+
         public static void ResetControlsPrefs()
         {
             UseMouse = false;
             UseIngameKeyboard = true;
+
+            if (SettingsPanel.instance != null)
+            {
+                SettingsPanel.ResetAllBinds();
+            }
 
             PlayerPrefs.Save();
         }
 
         public static void ResetSystemPrefs()
         {
-            SaveReplaysAsJson = false;
+            SaveReplaysAsJson = true;
             UseLocalDataPath = false;
+
+            Highscore = 0L;
+            LastDifficulty = Difficulty.Normal;
+            LastCharacterID = 0;
 
             PlayerPrefs.Save();
         }
@@ -195,6 +217,9 @@ namespace Main
         public static void SetPrefFloat(PrefKey key, float value, bool save = ALWAYS_SAVE_PREFS) { PlayerPrefs.SetFloat(GetPrefKeyString(key), value); if (save) PlayerPrefs.Save(); }
         public static string GetPrefString(PrefKey key) => PlayerPrefs.GetString(GetPrefKeyString(key), "");
         public static void SetPrefString(PrefKey key, string value, bool save = ALWAYS_SAVE_PREFS) { PlayerPrefs.SetString(GetPrefKeyString(key), value); if (save) PlayerPrefs.Save(); }
+
+        public static bool HasPrefKey(PrefKey key) => PlayerPrefs.HasKey(GetPrefKeyString(key));
+        private static string GetPrefKeyString(PrefKey key) => key.ToString().Prettify().ToUpper().Replace(' ', '_');
 
         #endregion
 

@@ -51,6 +51,22 @@ MonoBehaviour:
     m_Key: Continue
     m_Metadata:
       m_Items: []
+  - m_Id: 33570457927012352
+    m_Key: Easy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33570571353575424
+    m_Key: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33570630073831424
+    m_Key: Hard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33570705332228096
+    m_Key: Lunatic
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

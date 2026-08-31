@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using Main.EntitySystem;
 using Main.InputSystem;
 using Main.Stages;
 using ObjectUtils;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace Main.ReplaySystem
 {
@@ -183,7 +181,9 @@ namespace Main.ReplaySystem
         /// </summary>
         public int seed;
 
-        public Difficulty difficulty = Difficulty.None;
+        public int characterID;
+
+        public Difficulty difficulty = Difficulty.Normal;
 
         public int lostLifes = 0;
 

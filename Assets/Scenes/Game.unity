@@ -1199,7 +1199,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 629291496}
+    m_TransformParent: {fileID: 392988765360527554}
     m_Modifications:
     - target: {fileID: 2128542374708239782, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
       propertyPath: m_text
@@ -1314,6 +1314,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 758662450}
   - {fileID: 243941276}
   - {fileID: 1886329787}
   - {fileID: 4161573243565749221}
@@ -3276,8 +3277,10 @@ MonoBehaviour:
   seed: 0
   gameCompleted: 0
   replay:
+    dateTime: 0
     name: 
     framesDuration: 0
+    rawEndTime: 0
     highScore: 0
     seed: 0
     difficulty: 0
@@ -3673,9 +3676,6 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8300587270144348083, guid: 4d96a9616d29d7b488ee16184049c305, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 758662450}
-    - targetCorrespondingSourceObject: {fileID: 8300587270144348083, guid: 4d96a9616d29d7b488ee16184049c305, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 392988765360527554}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2250223729085383714, guid: 4d96a9616d29d7b488ee16184049c305, type: 3}
@@ -3846,7 +3846,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5861077333978111937}
   - {fileID: 296692890150176754}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3904,7 +3903,7 @@ RectTransform:
   - {fileID: 629291496}
   - {fileID: 474343415}
   - {fileID: 1510250288}
-  m_Father: {fileID: 5750079262876844366}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4010,7 +4009,7 @@ GameObject:
   - component: {fileID: 3044516227720782099}
   - component: {fileID: 200881647012513813}
   m_Layer: 5
-  m_Name: SaveReplayNameSelectionSubPanel
+  m_Name: NameSelectionSubPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4258,7 +4257,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 629291495}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 87e039b468ea7b64bb90454ad6450a40, type: 3}
+  m_Script: {fileID: 11500000, guid: f33ddfca3c5512f4ea474ede2d3b909b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   opened: 0
@@ -4271,6 +4270,10 @@ MonoBehaviour:
   keyboardBackspaceButton: {fileID: 1550402357}
   keyboardSaveButton: {fileID: 300102540}
   keyButtons: []
+  keyGrid:
+    width: 0
+    height: 0
+    gridList: []
 --- !u!1001 &7052652646259619964
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5111,7 +5114,7 @@ GameObject:
   - component: {fileID: 1194159043095028408}
   - component: {fileID: 7469650312867823740}
   m_Layer: 5
-  m_Name: GameCanvasUI
+  m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5500,6 +5503,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 5401812150990835652}
+  - {fileID: 5861077333978111937}
   - {fileID: 5750079262876844366}
   - {fileID: 3129930195755818931}
   - {fileID: 1476584503}

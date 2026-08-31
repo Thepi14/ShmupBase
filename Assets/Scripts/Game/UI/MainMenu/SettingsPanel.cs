@@ -16,9 +16,9 @@ using static Main.Vars;
 
 namespace Main.UI
 {
-    public class SettingsUI : GenericPanelBehaviour
+    public class SettingsPanel : GenericPanelBehaviour
     {
-        public static SettingsUI instance;
+        public static SettingsPanel instance;
 
         [Header("Status")]
         [Space(20f)]
@@ -215,7 +215,7 @@ namespace Main.UI
 
             resetVolumeButton.onClick.AddListener(() =>
             {
-                ResetVolumePrefs();
+                ResetSoundPrefs();
 
                 masterVolume.value = MasterVolume;
                 musicVolume.value = MusicVolume;
@@ -457,11 +457,13 @@ namespace Main.UI
             foreach (var control in controlRebindGridGroup.GetGameObjectChildren())
                 rebinders.Add(control.GetComponent<RebindActionUI>());
 
-            resetControlsButton.onClick.AddListener(() =>
-            {
-                foreach (var rebinder in rebinders)
-                    rebinder.ResetToDefault();
-            });
+            resetControlsButton.onClick.AddListener(() => { ResetAllBinds(); });
+        }
+
+        public static void ResetAllBinds()
+        {
+            foreach (var rebinder in instance.rebinders)
+                rebinder.ResetToDefault();
         }
 
         private void UpdateSelectedRebinderSelectable()
@@ -592,6 +594,11 @@ namespace Main.UI
                     button.gameObject.SetActive(true);
                 languageSelectionActive = false;
             }
+        }
+        public static void ChangeLocale(int index)
+        {
+            LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
+            SelectedLanguage = index;
         }
 
         #endregion

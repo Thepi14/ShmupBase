@@ -1,23 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Main.ReplaySystem;
 using ObjectUtils;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class SaveReplayUI : PanelBehaviour
+    public class SaveReplayPanel : PanelBehaviour
     {
-        public static SaveReplayUI Instance;
-
-        [SerializeField]
-        private RectTransform title;
+        public static SaveReplayPanel Instance;
 
         [Header("Replay Name Sub Panel")]
         [SerializeField]
@@ -105,7 +98,7 @@ namespace Main.UI
             background.enabled = false;
 
             //TODO: put this piece of code in a more intuive place
-            GameUI.Instance.SetOpenPanel(false);
+            GamePanel.Instance.SetOpenPanel(false);
         }
 
         public void SubmitAndSaveReplay(string text)
@@ -123,12 +116,18 @@ namespace Main.UI
         public override void SetOpenPanel(bool open)
         {
             base.SetOpenPanel(open);
-            title.gameObject.SetActive(open);
             nameSelectionSubPanel.gameObject.SetActive(open);
 
             if (open)
             {
-                keyButtons[0].SelectIfMouseInactive();
+                if (!Vars.UseIngameKeyboard)
+                {
+                    replayNameInput.SelectIfMouseInactive();
+                }
+                else
+                {
+                    keyButtons[0].SelectIfMouseInactive();
+                }
                 background.enabled = true;
             }
         }

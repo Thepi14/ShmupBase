@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class ReplayUI : GenericPanelBehaviour
+    public class ReplayPanel : GenericPanelBehaviour
     {
         [SerializeField]
         public Button exitButton;
@@ -44,9 +44,6 @@ namespace Main.UI
                 buttonObj.transform.SetParent(replayContent);
                 buttonObj.GetComponent<ReplayButton>().SetupButton(i);
                 replayButtons.Add(buttonObj.GetComponent<Button>());
-
-                /*var replay = buttonObj.GetComponent<ReplayButton>().replayReference;
-                Debug.Log(replay.name + ", " + (true ? replay.ReplayDuration().ToString() : replay.ReplayDuration().ToTimeString(TimeSpanFormatOptions.RangeHours | TimeSpanFormatOptions.RangeMilliSeconds, CommonLanguagesTimeTextInfo.English)) + ", frames: " + replay.framesDuration);*/
             }
         }
 

@@ -54,6 +54,22 @@ MonoBehaviour:
     m_Localized: Continuar
     m_Metadata:
       m_Items: []
+  - m_Id: 33570457927012352
+    m_Localized: "F\xE1cil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33570571353575424
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33570630073831424
+    m_Localized: "Dif\xEDcil"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33570705332228096
+    m_Localized: "Lun\xE1tico"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

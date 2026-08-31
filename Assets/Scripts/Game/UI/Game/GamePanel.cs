@@ -10,9 +10,9 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class GameUI : PanelBehaviour
+    public class GamePanel : PanelBehaviour
     {
-        public static GameUI Instance;
+        public static GamePanel Instance;
 
         [Header("Main Panel")]
         [SerializeField]
@@ -60,7 +60,7 @@ namespace Main.UI
             //pause panel
             unpauseButton.onClick.AddListener(() => SetOpenPanel(false));
             continueButton.onClick.AddListener(() => { GameManager.Continue(); SetOpenPanel(false); });
-            saveReplayButton.onClick.AddListener(() => SaveReplayUI.Instance.SetOpenPanel(true));
+            saveReplayButton.onClick.AddListener(() => SaveReplayPanel.Instance.SetOpenPanel(true));
             restartButton.onClick.AddListener(() => SceneManager.LoadScene(1));
             goBackToMainMenuButton.onClick.AddListener(() => SceneManager.LoadScene(0));
 

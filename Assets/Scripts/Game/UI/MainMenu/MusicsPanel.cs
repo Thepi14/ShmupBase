@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class MusicsUI : GenericPanelBehaviour
+    public class MusicsPanel : GenericPanelBehaviour
     {
         [SerializeField]
         private GameObject musicButtonPrefab;

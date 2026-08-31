@@ -35,7 +35,7 @@ namespace Main.Stages
         [Header("Stage")]
         public StageBehaviour currentStage;
 
-        public static Difficulty currentDifficulty = Difficulty.None;
+        public static Difficulty currentDifficulty = Difficulty.Normal;
         public static GameMode currentGameMode = GameMode.MainGame;
 
         public static void SetupStages()
@@ -74,7 +74,6 @@ namespace Main.Stages
     [Serializable]
     public enum Difficulty : byte
     {
-        None,
         Easy,
         Normal,
         Hard,

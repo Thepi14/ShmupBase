@@ -9,7 +9,7 @@ namespace Main.UI
     {
         public void OnSelect(BaseEventData eventData)
         {
-            SettingsUI.CurrentSelectedControlRebindSelectable = gameObject.GetComponent<Selectable>();
+            SettingsPanel.CurrentSelectedControlRebindSelectable = gameObject.GetComponent<Selectable>();
         }
     }
 }
