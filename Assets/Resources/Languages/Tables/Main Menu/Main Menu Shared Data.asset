@@ -87,6 +87,14 @@ MonoBehaviour:
     m_Key: Select
     m_Metadata:
       m_Items: []
+  - m_Id: 33980731800670208
+    m_Key: Confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33982690536443904
+    m_Key: Reset to factory settings
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,5 +1,6 @@
 using System;
 using Main.ReplaySystem;
+using Main.Stages;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class ReplayButton : MonoBehaviour
+    public sealed class ReplayButton : MonoBehaviour
     {
         public int replayID;
         public Replay replayReference;
@@ -30,7 +31,7 @@ namespace Main.UI
         {
             ReplayManagement.replayMode = true;
             ReplayManagement.replayFilePath = ReplayManagement.replaysFilesPaths[replayID];
-            SceneManager.LoadScene(1);
+            StageManager.LoadStageScene(replayReference.characterID, replayReference.difficulty, replayReference.gameMode);
         }
     }
 }

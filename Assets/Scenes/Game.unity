@@ -469,6 +469,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5695690003289237843, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
   m_PrefabInstance: {fileID: 8675832546633988805}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &694018752 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6962423380529262218, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
+  m_PrefabInstance: {fileID: 8675832546633988805}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &738266541 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5361296259249866122, guid: 6fac9cd31955d06439f4556905f374d8, type: 3}
@@ -1841,7 +1852,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2650573444933303916, guid: 6fac9cd31955d06439f4556905f374d8, type: 3}
       propertyPath: m_Name
-      value: UnpauseButton
+      value: ResumeButton
       objectReference: {fileID: 0}
     - target: {fileID: 4899355434498788137, guid: 6fac9cd31955d06439f4556905f374d8, type: 3}
       propertyPath: m_Name
@@ -3283,6 +3294,7 @@ MonoBehaviour:
     rawEndTime: 0
     highScore: 0
     seed: 0
+    characterID: 0
     difficulty: 0
     lostLifes: 0
     playerInput: []
@@ -3357,8 +3369,20 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
+  bossHealthBar: {fileID: 0}
+  bossHealthBarFill: {fileID: 0}
+  pauseTitle: {fileID: 694018752}
+  gameEndedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:926220aebf69a1f48b966a3180de426c
+    m_TableEntryReference:
+      m_KeyId: 33973775224524800
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
   pauseSubPanel: {fileID: 6363299184538726927}
-  unpauseButton: {fileID: 738266542}
+  resumeButton: {fileID: 738266542}
   continueButton: {fileID: 884756730}
   saveReplayButton: {fileID: 1245239028}
   restartButton: {fileID: 1356943386}
@@ -3990,6 +4014,7 @@ GameObject:
   - component: {fileID: 2074458088917314729}
   - component: {fileID: 2154890624986098288}
   - component: {fileID: 6759018053112637163}
+  - component: {fileID: 6759018053112637164}
   m_Layer: 3
   m_Name: GameManager
   m_TagString: GameController
@@ -4232,7 +4257,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02562e11d26e9d447b9f692c01817d64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentBosses: []
   entities: []
+  onEntityAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  onEntityRemoved:
+    m_PersistentCalls:
+      m_Calls: []
+  onHealthEntityAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  onHealthEntityRemoved:
+    m_PersistentCalls:
+      m_Calls: []
+  onBossAdded:
+    m_PersistentCalls:
+      m_Calls: []
+  onBossRemoved:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &6759018053112637164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6107765351518629623}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7b2d9155ae991a46ba5ec05f4229267, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  items: []
 --- !u!4 &6922797114606451463
 Transform:
   m_ObjectHideFlags: 0
@@ -4262,7 +4319,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   opened: 0
   main: 0
-  title: {fileID: 758662450}
   nameSelectionSubPanel: {fileID: 392988765360527554}
   replayNameInput: {fileID: 1886329788}
   keyboardGrid: {fileID: 4161573243565749221}

@@ -73,6 +73,8 @@ namespace Main.Stages
                 }
             }
 
+            yield return WaitFixedFrames(60 * 10);
+
             yield break;
         }
 

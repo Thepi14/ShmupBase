@@ -7,7 +7,7 @@ namespace Main.UI
 {
     public sealed class CharactersPanel : GenericPanelBehaviour
     {
-        public static CharactersPanel instance;
+        public static CharactersPanel Instance { get; private set; }
 
         [SerializeField]
         private GameObject characterSubPanelPrefab;
@@ -30,7 +30,7 @@ namespace Main.UI
         {
             base.Awake();
 
-            instance = this;
+            Instance = this;
             characterSubPanels = new List<CharacterSubPanel>();
             currentPanelIndex = (byte)Vars.LastCharacterID;
 
@@ -65,23 +65,23 @@ namespace Main.UI
 
         public static void SelectLeft()
         {
-            instance.currentPanelIndex--;
-            instance.currentPanelIndex = instance.currentPanelIndex == -1 ? instance.characterSubPanels.Count - 1 : instance.currentPanelIndex;
+            Instance.currentPanelIndex--;
+            Instance.currentPanelIndex = Instance.currentPanelIndex == -1 ? Instance.characterSubPanels.Count - 1 : Instance.currentPanelIndex;
 
-            instance.SelectCharacterPanelByIndex();
+            Instance.SelectCharacterPanelByIndex();
         }
 
         public static void SelectRight()
         {
-            instance.currentPanelIndex++;
-            instance.currentPanelIndex = instance.currentPanelIndex == instance.characterSubPanels.Count ? 0 : instance.currentPanelIndex;
+            Instance.currentPanelIndex++;
+            Instance.currentPanelIndex = Instance.currentPanelIndex == Instance.characterSubPanels.Count ? 0 : Instance.currentPanelIndex;
 
-            instance.SelectCharacterPanelByIndex();
+            Instance.SelectCharacterPanelByIndex();
         }
 
         private void SelectCharacterPanelByIndex()
         {
-            foreach (var characterPanel in instance.characterSubPanels)
+            foreach (var characterPanel in Instance.characterSubPanels)
             {
                 characterPanel.gameObject.SetActive(false);
             }

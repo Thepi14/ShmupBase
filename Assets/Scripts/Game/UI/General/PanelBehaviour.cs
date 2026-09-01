@@ -19,6 +19,7 @@ namespace Main.UI
         {
             panels ??= new();
             background = GetComponent<Image>();
+
             AddThisPanel();
         }
 
@@ -26,7 +27,8 @@ namespace Main.UI
         {
             if (panels.Count == 1)
                 main = true;
-            ReturnToMain();
+
+            ReturnToMain(true);
         }
 
         public virtual void AddThisPanel() => panels.Add(this);
@@ -42,14 +44,14 @@ namespace Main.UI
             }
         }
 
-        public static void ReturnToMain()
+        public static void ReturnToMain(bool closeAll = false)
         {
             var copyPanels = panels.ToArray();
             foreach (var panel in copyPanels)
                 if (panel == null)
                     panels.Remove(panel);
 
-            panels.ForEach((panel) => { panel.SetOpenPanel(panel.main); });
+            panels.ForEach((panel) => { if (panel.opened || closeAll) panel.SetOpenPanel(panel.main); });
         }
     }
 }

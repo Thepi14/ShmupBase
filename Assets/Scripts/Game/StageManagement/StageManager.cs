@@ -35,7 +35,7 @@ namespace Main.Stages
         [Header("Stage")]
         public StageBehaviour currentStage;
 
-        public static Difficulty currentDifficulty = Difficulty.Normal;
+        public static Difficulty currentDifficulty { get; set; } = Difficulty.Normal;
         public static GameMode currentGameMode = GameMode.MainGame;
 
         public static void SetupStages()

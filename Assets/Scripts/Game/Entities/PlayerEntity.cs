@@ -15,9 +15,9 @@ namespace Main.EntitySystem
         public const string CHARACTERS_PREFABS_PATH = "Prefabs/Entities/Players/";
         public static readonly Vector2 startPlayerPosition = new(0, -3);
 
-        public static PlayerEntity playerEntity;
+        public static PlayerEntity PlayerInstance;
         public static GameObject[] playerEntityPrefabs;
-        public static int selectedCharacterID;
+        public static byte selectedCharacterID;
 
         public override float Speed { get => speed * (input.slow ? slowSpeedMultiplier : 1f); set => speed = value; }
 
@@ -40,11 +40,10 @@ namespace Main.EntitySystem
         public List<CustomFloatValue> customValues = new();
         public PlayerInput input;
 
-        public static UnityEvent PlayerLostLifeEvent = new(), PlayerLostAllLifesEvent = new();
+        public static UnityEvent onPlayerLoseLife = new(), oPlayerLostAllLifes = new();
 
         public virtual void OnValidate()
         {
-            LoadCharacterList();
             Health = 1;
             if (!Application.isPlaying)
             {
@@ -54,10 +53,15 @@ namespace Main.EntitySystem
 
         protected override void Awake()
         {
-            LoadCharacterList();
-            playerEntity = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, playerEntity);
+            PlayerInstance = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, PlayerInstance);
             base.Awake();
+
             Health = 1;
+        }
+
+        protected override void Start()
+        {
+            base.Start();
         }
 
         protected override void Update()
@@ -112,40 +116,49 @@ namespace Main.EntitySystem
         public static PlayerEntity GeneratePlayer()
         {
             LoadCharacterList();
-            playerEntity = Instantiate(playerEntityPrefabs[selectedCharacterID]).GetComponent<PlayerEntity>();
-            playerEntity.transform.position = startPlayerPosition;
+            PlayerInstance = Instantiate(playerEntityPrefabs[selectedCharacterID]).GetComponent<PlayerEntity>();
+            PlayerInstance.transform.position = startPlayerPosition;
 
-            playerEntity.diedEvent.AddListener(() =>
+            PlayerInstance.onDie.AddListener(() =>
             {
                 LoseLife();
             });
 
-            return playerEntity;
+            return PlayerInstance;
         }
 
-        public static void AddLifes(int amount = 1) => playerEntity.lifes = Mathf.Clamp(playerEntity.lifes + amount, 0, playerEntity.maxLifes);
-        public static void SetLifes(int amount = 1) => playerEntity.lifes = Mathf.Clamp(amount, 0, playerEntity.maxLifes);
+        public List<string> arguments = new();
+
+        public static void AddArgument(string argument)
+        {
+            PlayerInstance.arguments.Add(argument);
+        }
+
+        public static void AddLifes(int amount = 1) => PlayerInstance.lifes = Mathf.Clamp(PlayerInstance.lifes + amount, 0, PlayerInstance.maxLifes);
+        public static void SetLifes(int amount = 1) => PlayerInstance.lifes = Mathf.Clamp(amount, 0, PlayerInstance.maxLifes);
 
         public static void LoseLife(bool invokeEvents = true)
         {
-            playerEntity.lifes = Mathf.Clamp(playerEntity.lifes - 1, 0, playerEntity.maxLifes);
-            playerEntity.lostLifes++;
+            PlayerInstance.lifes = Mathf.Clamp(PlayerInstance.lifes - 1, 0, PlayerInstance.maxLifes);
+            PlayerInstance.lostLifes++;
 
-            if (playerEntity.lifes == 0)
+            if (PlayerInstance.lifes == 0)
             {
                 if (invokeEvents)
-                    PlayerLostAllLifesEvent.Invoke();
+                    oPlayerLostAllLifes.Invoke();
                 //CompleteGame();
             }
             else if (invokeEvents)
-                PlayerLostLifeEvent.Invoke();
+                onPlayerLoseLife.Invoke();
         }
 
-        public static bool PlayerLostLastLife() => playerEntity.lifes == 0;
+        public static bool PlayerLostLastLife() => PlayerInstance.lifes == 0;
 
         public static void LoadCharacterList() => playerEntityPrefabs = Resources.LoadAll<GameObject>(CHARACTERS_PREFABS_PATH);
 
-        public static float AngleToPlayer(Vector2 position) => Mathf.Atan2(playerEntity.transform.position.y - position.y, playerEntity.transform.position.x - position.x) * Mathf.Rad2Deg;
+        public static Vector2 PlayerPosition() => PlayerInstance.transform.position;
+
+        public static float AngleToPlayer(Vector2 position) => Mathf.Atan2(PlayerInstance.transform.position.y - position.y, PlayerInstance.transform.position.x - position.x) * Mathf.Rad2Deg;
     }
 }
 

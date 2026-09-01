@@ -106,6 +106,12 @@ MonoBehaviour:
     m_Localized: Save Replays as JSON
     m_Metadata:
       m_Items: []
+  - m_Id: 33977558218297344
+    m_Localized: Resetting to factory settings will erase all current preferences,
+      the game will automatically close to apply all changes. Confirm your verdict
+      below.
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

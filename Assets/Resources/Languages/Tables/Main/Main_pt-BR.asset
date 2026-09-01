@@ -66,6 +66,10 @@ MonoBehaviour:
     m_Localized: "Sem descri\xE7\xE3o"
     m_Metadata:
       m_Items: []
+  - m_Id: 33982176599986176
+    m_Localized: Cancelar
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

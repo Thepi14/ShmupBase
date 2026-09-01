@@ -9,31 +9,27 @@ namespace Main.UI
 {
     public sealed class DifficultyPanel : GenericPanelBehaviour
     {
-        public PanelBehaviour charactersPanel;
-
         [SerializeField]
         private Button exitButton;
         [SerializeField]
         private GameObject difficultyButtonsLayout;
-        [SerializeField]
-        private List<Button> difficultyButtons;
+
+        public List<Button> difficultyButtons;
 
         protected override void Awake()
         {
             base.Awake();
 
-            for (int i = 0; i < difficultyButtonsLayout.transform.childCount; i++)
+            for (int i = 0; i < difficultyButtons.Count; i++)
             {
-                var button = difficultyButtonsLayout.transform.GetChild(i).GetComponent<Button>();
-                button.onClick.AddListener(() =>
+                int j = i;
+                difficultyButtons[i].onClick.AddListener(() =>
                 {
-                    StageManager.currentDifficulty = (Difficulty)i;
-                    charactersPanel.SetOpenPanel(true);
+                    StageManager.currentDifficulty = (Difficulty)j;
+                    CharactersPanel.Instance.SetOpenPanel(true);
+                    Debug.Log("Button: " + (byte)StageManager.currentDifficulty + ", " +(byte)Vars.LastDifficulty);
                 });
-                difficultyButtons.Add(button);
             }
-
-            difficultyButtonsLayout.transform.GetChild((int)Difficulty.Normal).GetComponent<Button>().SelectIfMouseInactive();
 
             exitButton.onClick.AddListener(() =>
             {
@@ -47,7 +43,7 @@ namespace Main.UI
 
             if (open)
             {
-                difficultyButtons[(int)Vars.LastDifficulty].SelectIfMouseInactive();
+                difficultyButtons[(byte)Vars.LastDifficulty].SelectIfMouseInactive();
             }
         }
     }

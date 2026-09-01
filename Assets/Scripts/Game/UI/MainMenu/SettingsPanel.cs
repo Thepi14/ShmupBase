@@ -18,7 +18,7 @@ namespace Main.UI
 {
     public class SettingsPanel : GenericPanelBehaviour
     {
-        public static SettingsPanel instance;
+        public static SettingsPanel Instance { get; private set; }
 
         [Header("Status")]
         [Space(20f)]
@@ -66,9 +66,18 @@ namespace Main.UI
         [Space(20f)]
 
         [SerializeField]
-        private Toggle toggleFPS;
+        private Toggle FPSToggle;
         [SerializeField]
-        private Toggle saveAsJson;
+        private Toggle saveAsJsonToggle;
+        [SerializeField]
+        private Button resetToFactorySettingsButton;
+
+        [SerializeField]
+        private RectTransform resetSettingsOverlay;
+        [SerializeField]
+        private Button resetSettingsCancelationButton;
+        [SerializeField]
+        private Button resetSettingsConfirmationButton;
 
         [Header("Sound")]
         [Space(20f)]
@@ -134,12 +143,12 @@ namespace Main.UI
         { 
             get
             {
-                return instance._currentSelectedControlRebindSelectable;
+                return Instance._currentSelectedControlRebindSelectable;
             }
             set
             {
-                instance._currentSelectedControlRebindSelectable = value;
-                instance.UpdateSelectedRebinderSelectable();
+                Instance._currentSelectedControlRebindSelectable = value;
+                Instance.UpdateSelectedRebinderSelectable();
             }
         }
         [SerializeField]
@@ -173,7 +182,7 @@ namespace Main.UI
         {
             base.Awake();
 
-            instance = this;
+            Instance = this;
 
             //exit
             if (exitButton != null)
@@ -196,11 +205,17 @@ namespace Main.UI
             SetOnSelectOnButtonsLayout(!UseMouse);
 
             //general
-            toggleFPS.isOn = ShowFPS;
-            saveAsJson.isOn = SaveReplaysAsJson;
+            FPSToggle.isOn = ShowFPS;
+            saveAsJsonToggle.isOn = SaveReplaysAsJson;
 
-            toggleFPS.onValueChanged.AddListener((value) => { ShowFPS = value; });
-            saveAsJson.onValueChanged.AddListener((value) => { SaveReplaysAsJson = value; });
+            FPSToggle.onValueChanged.AddListener((value) => ShowFPS = value);
+            saveAsJsonToggle.onValueChanged.AddListener((value) => SaveReplaysAsJson = value);
+            resetToFactorySettingsButton.onClick.AddListener(() => { resetSettingsOverlay.gameObject.SetActive(true); resetSettingsCancelationButton.SelectIfMouseInactive(); });
+
+            resetSettingsCancelationButton.onClick.AddListener(() => { resetToFactorySettingsButton.SelectIfMouseInactive(); resetSettingsOverlay.gameObject.SetActive(false); });
+            resetSettingsConfirmationButton.onClick.AddListener(() => { resetToFactorySettingsButton.SelectIfMouseInactive(); ResetAllPrefs(); resetSettingsOverlay.gameObject.SetActive(false); Application.Quit(); });
+
+            resetSettingsOverlay.gameObject.SetActive(false);
 
             //sound
             masterVolume.value = MasterVolume;
@@ -208,10 +223,10 @@ namespace Main.UI
             soundEffectVolume.value = SoundEffectVolume;
             UIVolume.value = Vars.UIVolume;
 
-            masterVolume.onValueChanged.AddListener((value) => { SetKeySoundVolume(PrefKey.MasterVolume, value); });
-            musicVolume.onValueChanged.AddListener((value) => { SetKeySoundVolume(PrefKey.MusicVolume, value); });
-            soundEffectVolume.onValueChanged.AddListener((value) => { SetKeySoundVolume(PrefKey.SoundEffectVolume, value); });
-            UIVolume.onValueChanged.AddListener((value) => { SetKeySoundVolume(PrefKey.UIVolume, value); });
+            masterVolume.onValueChanged.AddListener((value) => SetKeySoundVolume(PrefKey.MasterVolume, value));
+            musicVolume.onValueChanged.AddListener((value) => SetKeySoundVolume(PrefKey.MusicVolume, value));
+            soundEffectVolume.onValueChanged.AddListener((value) => SetKeySoundVolume(PrefKey.SoundEffectVolume, value));
+            UIVolume.onValueChanged.AddListener((value) => SetKeySoundVolume(PrefKey.UIVolume, value));
 
             resetVolumeButton.onClick.AddListener(() =>
             {
@@ -396,7 +411,7 @@ namespace Main.UI
             useIngameKeyboardToggle.isOn = UseIngameKeyboard;
 
             useMouseToggle.onValueChanged.AddListener((value) => { UseMouse = value; SetOnSelectOnButtonsLayout(!value); if (!value) EventSystem.current.SetSelectedGameObject(useMouseToggle.gameObject); });
-            useIngameKeyboardToggle.onValueChanged.AddListener((value) => { UseIngameKeyboard = value; });
+            useIngameKeyboardToggle.onValueChanged.AddListener((value) => UseIngameKeyboard = value);
 
             /*if (generatePrefabsOnRuntime)
             {
@@ -457,12 +472,12 @@ namespace Main.UI
             foreach (var control in controlRebindGridGroup.GetGameObjectChildren())
                 rebinders.Add(control.GetComponent<RebindActionUI>());
 
-            resetControlsButton.onClick.AddListener(() => { ResetAllBinds(); });
+            resetControlsButton.onClick.AddListener(() => ResetAllBinds());
         }
 
         public static void ResetAllBinds()
         {
-            foreach (var rebinder in instance.rebinders)
+            foreach (var rebinder in Instance.rebinders)
                 rebinder.ResetToDefault();
         }
 
@@ -523,7 +538,7 @@ namespace Main.UI
                         selected = j;
 
                     Button buttonObj = Instantiate(languageButtonPrefab).GetComponent<Button>();
-                    buttonObj.onClick.AddListener(() => { SelectLocale(j); });
+                    buttonObj.onClick.AddListener(() => SelectLocale(j));
                     RawImage img = buttonObj.GetGameObjectComponent<RawImage>("Flag");
                     Texture2D texture = Resources.Load<Texture2D>(RESOURCE_FLAG_PATH + locale.Identifier.Code);
 
@@ -650,7 +665,7 @@ namespace Main.UI
         {
             buttonFirstSelectablePairs = new();
 
-            SetCategoryNavigation(generalCategoryButton, toggleFPS);
+            SetCategoryNavigation(generalCategoryButton, FPSToggle);
             SetCategoryNavigation(soundCategoryButton, masterVolume);
             SetCategoryNavigation(controlsCategoryButton, firstSelectableControlBinder);
             SetCategoryNavigation(graphicsCategoryButton, qualityButtonList[GetLastQualityIndex()]);

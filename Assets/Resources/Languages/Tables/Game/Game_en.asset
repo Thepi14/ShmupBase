@@ -70,6 +70,10 @@ MonoBehaviour:
     m_Localized: Lunatic
     m_Metadata:
       m_Items: []
+  - m_Id: 33973775224524800
+    m_Localized: Game Ended
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

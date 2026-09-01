@@ -25,11 +25,11 @@ namespace Main
             if (StartedVars)
                 return;
 
-            if (!HasPrefKey(PrefKey.GameHasEverStarted))
+            if (!HasPrefKey(PrefKey.HasGameEverStarted))
             {
                 ResetAllPrefs();
                 //setting it to false opens possibility for cutscenes when game first starts.
-                SetPrefBool(PrefKey.GameHasEverStarted, true);
+                SetPrefBool(PrefKey.HasGameEverStarted, true);
             }
 
             GenerateFolders();
@@ -105,7 +105,7 @@ namespace Main
         public static bool UseLocalDataPath { get => GetPrefBool(PrefKey.UseLocalDataPath); set => SetPrefBool(PrefKey.UseLocalDataPath, value); }
 
         //persistent data
-        public static bool GameHasEverStarted { get => GetPrefBool(PrefKey.GameHasEverStarted); set => SetPrefBool(PrefKey.GameHasEverStarted, value); }
+        public static bool HasGameEverStarted { get => GetPrefBool(PrefKey.HasGameEverStarted); set => SetPrefBool(PrefKey.HasGameEverStarted, value); }
         public static long Highscore { get => long.Parse(GetPrefString(PrefKey.Highscore)); set => SetPrefString(PrefKey.Highscore, value.ToString()); } //made as string because of the limits of int32, so making it as string is just easier
         public static Difficulty LastDifficulty { get => (Difficulty)GetPrefInt(PrefKey.LastDifficulty); set => SetPrefInt(PrefKey.LastDifficulty, (int)value); }
         public static int LastCharacterID { get => GetPrefInt(PrefKey.LastCharacterID); set => SetPrefInt(PrefKey.LastCharacterID, value); }
@@ -140,7 +140,7 @@ namespace Main
             UseLocalDataPath,
 
             //others
-            GameHasEverStarted,
+            HasGameEverStarted,
             Highscore,
             LastDifficulty,
             LastCharacterID
@@ -187,7 +187,7 @@ namespace Main
             UseMouse = false;
             UseIngameKeyboard = true;
 
-            if (SettingsPanel.instance != null)
+            if (SettingsPanel.Instance != null)
             {
                 SettingsPanel.ResetAllBinds();
             }

@@ -9,8 +9,8 @@ namespace Main.EntitySystem
     {
         public Coroutine customCoroutineInstance;
         public CustomCoroutine customCoroutine;
-
-        public UnityEvent entityCreatedEvent = new();
+        [HideInInspector]
+        public UnityEvent onEntityCreate = new();
 
         protected virtual void Start()
         {
@@ -20,6 +20,8 @@ namespace Main.EntitySystem
 
         protected virtual void Awake()
         {
+            EntityManager.AddEntity(this);
+
             /*{
                 customCoroutine = Wait;
                 IEnumerator Wait(GameObject gameObject)
@@ -29,11 +31,6 @@ namespace Main.EntitySystem
             }*/
 
             //func = Wait;
-        }
-
-        protected virtual void Update()
-        {
-
         }
 
         protected virtual void FixedUpdate()

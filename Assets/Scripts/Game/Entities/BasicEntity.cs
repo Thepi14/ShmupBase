@@ -28,7 +28,8 @@ namespace Main.EntitySystem
 
         public override IEnumerator AttackCoroutine(GameObject gameObject)
         {
-            yield return null;
+            Debug.LogWarning($"This {gameObject.name} entityBehaviour does not have a AttackCoroutine overrided and defined.");
+            yield break;
         }
     }
 }

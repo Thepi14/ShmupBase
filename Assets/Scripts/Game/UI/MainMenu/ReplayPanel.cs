@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Main.ReplaySystem;
 using Main.UI;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Main.UI
 {
-    public class ReplayPanel : GenericPanelBehaviour
+    public sealed class ReplayPanel : GenericPanelBehaviour
     {
         [SerializeField]
         public Button exitButton;
@@ -38,6 +39,13 @@ namespace Main.UI
             setup = true;
 
             ReplayManagement.LoadAllReplayFiles();
+
+            if (!ReplayManagement.replays.Any())
+                return;
+
+            ReplayManagement.OrderReplays();
+            replayButtons = new();
+
             for (int i = 0; i < ReplayManagement.replays.Count; i++)
             {
                 GameObject buttonObj = Instantiate(replayButtonPrefab);
@@ -45,16 +53,27 @@ namespace Main.UI
                 buttonObj.GetComponent<ReplayButton>().SetupButton(i);
                 replayButtons.Add(buttonObj.GetComponent<Button>());
             }
+
+            exitButton.navigation = new()
+            {
+                mode = Navigation.Mode.Explicit,
+                selectOnDown = replayButtons.First(),
+                selectOnUp = replayButtons.Last()
+            };
         }
 
         public override void SetOpenPanel(bool open)
         {
             base.SetOpenPanel(open);
 
-            SetupReplaysList();
             if (open)
             {
-                replayButtons[0].SelectIfMouseInactive();
+                SetupReplaysList();
+
+                if (ReplayManagement.replays.Any())
+                    replayButtons[0].SelectIfMouseInactive();
+                else
+                    exitButton.SelectIfMouseInactive();
             }
         }
     }

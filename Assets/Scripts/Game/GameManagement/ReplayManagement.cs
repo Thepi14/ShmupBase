@@ -27,20 +27,11 @@ namespace Main.ReplaySystem
 
         #region Load Files
 
-        public static long GetHighestScore()
-        {
-            return replays.Max(replay => replay.highScore);
-        }
+        public static long GetHighestScore() => replays.Max(replay => replay.highScore);
 
-        public static Replay GetHighestScoreReplay()
-        {
-            return replays.MaxBy(replay => replay.highScore);
-        }
+        public static Replay GetHighestScoreReplay() => replays.MaxBy(replay => replay.highScore);
 
-        public static void OrderReplays()
-        {
-            replays.OrderByDescending(replay => replay.highScore);
-        }
+        public static void OrderReplays() => replays.OrderByDescending(replay => replay.highScore);
 
         public static Replay LoadReplayFile(string path)
         {
@@ -181,9 +172,10 @@ namespace Main.ReplaySystem
         /// </summary>
         public int seed;
 
-        public int characterID;
-
+        public byte stageID = 1;
+        public byte characterID;
         public Difficulty difficulty = Difficulty.Normal;
+        public GameMode gameMode;
 
         public int lostLifes = 0;
 

@@ -13,7 +13,7 @@ namespace Main.UI
     {
         public GameObject characterPrefab;
         [ShowOnly]
-        public int characterID;
+        public byte characterID;
 
         [SerializeField]
         private LocalizeStringEvent characterName;
@@ -29,7 +29,7 @@ namespace Main.UI
             GetComponent<Selectable>().navigation = new Navigation()
             {
                 mode = Navigation.Mode.Explicit,
-                selectOnDown = CharactersPanel.instance.exitButton
+                selectOnDown = CharactersPanel.Instance.exitButton
             };
 
             selectCharacterButton.onClick.AddListener(() =>
@@ -58,7 +58,7 @@ namespace Main.UI
             }
             else if (eventData.moveDir == MoveDirection.Down)
             {
-                CharactersPanel.instance.exitButton.SelectIfMouseInactive();
+                CharactersPanel.Instance.exitButton.SelectIfMouseInactive();
             }
         }
 

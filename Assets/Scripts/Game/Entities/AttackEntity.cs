@@ -15,7 +15,7 @@ namespace Main.EntitySystem
         public virtual float ReloadSpeedMultiplier { get => reloadSpeedMultiplier; set => reloadSpeedMultiplier = value; }
 
         [HideInInspector]
-        public UnityEvent attackedEvent = new();
+        public UnityEvent onAttack = new();
 
         protected override void Awake()
         {
@@ -34,7 +34,7 @@ namespace Main.EntitySystem
 
         public virtual void Attack()
         {
-            attackedEvent.Invoke();
+            onAttack.Invoke();
             StartCoroutine(AttackCoroutine(gameObject));
         }
 

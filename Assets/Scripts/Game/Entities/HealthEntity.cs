@@ -26,17 +26,17 @@ namespace Main.EntitySystem
         protected float startImmunityTimer = 0f;
 
         [HideInInspector]
-        public UnityEvent diedEvent = new();
+        public UnityEvent onDie = new();
         /// <summary>
         /// T0 = Damage, T1 = Entity Health.
         /// </summary>
         [HideInInspector]
-        public UnityEvent<float, float> damagedEvent = new();
+        public UnityEvent<float, float> onDamage = new();
         /// <summary>
         /// T0 = Damage, T1 = Entity Shield.
         /// </summary>
         [HideInInspector]
-        public UnityEvent<float, float> shieldDamagedEvent = new();
+        public UnityEvent<float, float> onShieldDamage = new();
 
         [HideInInspector]
         public SpriteRenderer spriteRenderer;
@@ -51,10 +51,8 @@ namespace Main.EntitySystem
             immune = true;
         }
 
-        protected override void Update()
+        protected virtual void Update()
         {
-            base.Update();
-
             if (spriteRenderer != null)
             {
                 if (immune)
@@ -94,12 +92,12 @@ namespace Main.EntitySystem
             {
                 if (Shield > 0)
                 {
-                    shieldDamagedEvent.Invoke(damage, health);
+                    onShieldDamage.Invoke(damage, health);
                     Shield -= damage;
                 }
                 else
                 {
-                    damagedEvent.Invoke(damage, health);
+                    onDamage.Invoke(damage, health);
                     Health -= damage;
                 }
             }
@@ -109,7 +107,7 @@ namespace Main.EntitySystem
         {
             if (!Immune)
             {
-                shieldDamagedEvent.Invoke(damage, health);
+                onShieldDamage.Invoke(damage, health);
                 Shield -= damage;
             }
         }
@@ -117,7 +115,7 @@ namespace Main.EntitySystem
         public virtual void Kill()
         {
             alive = false;
-            diedEvent.Invoke();
+            onDie.Invoke();
             StartCoroutine(KillCoroutine());
         }
 

@@ -106,6 +106,12 @@ MonoBehaviour:
     m_Localized: Salvar Replays como JSON
     m_Metadata:
       m_Items: []
+  - m_Id: 33977558218297344
+    m_Localized: "Voltar para as configura\xE7\xF5es de f\xE1brica ir\xE1 apagar
+      todas as prefer\xEAncias atuais, o jogo ir\xE1 fechar automaticamente para
+      aplicar as mudan\xE7as. Confirme seu veredito abaixo."
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

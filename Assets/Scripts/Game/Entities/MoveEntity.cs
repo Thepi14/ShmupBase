@@ -19,7 +19,7 @@ namespace Main.EntitySystem
         protected new Rigidbody2D rigidbody;
 
         [HideInInspector]
-        public UnityEvent moveEvent;
+        public UnityEvent onMove;
 
         [ShowOnly]
         public Vector2 previousPosition;
@@ -56,7 +56,7 @@ namespace Main.EntitySystem
                     speed = Speed;
 
                 transform.position += (Vector3)PredictMovement(movement, speed);
-                moveEvent.Invoke();
+                onMove.Invoke();
             }
         }
 

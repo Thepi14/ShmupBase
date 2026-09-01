@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using EditorTools;
 using Main.BulletSystem;
@@ -30,7 +31,7 @@ namespace Main.Stages
         {
             var result = BulletManager.KillAllBulletsEnemy();
             //Debug.Log("Stage started, result: " + result);
-            stageCoroutine = StartCoroutine(StageCoroutine());
+            stageCoroutine = StartCoroutine(StageStartCoroutine());
             backgroundCoroutine = StartCoroutine(BackgroundCoroutine());
         }
 
@@ -56,16 +57,24 @@ namespace Main.Stages
             Debug.Log("(Background Coroutine invoked)");
         }
 
+        [Obsolete("Don't really work i think, use TimeManager.WaitFixedFrames().")]
         public IEnumerator WaitFrames(int frames)
         {
             int endFrame = currentFrame + frames;
             yield return new WaitUntil(() => currentFrame > endFrame);
         }
 
+        protected virtual IEnumerator StageStartCoroutine()
+        {
+            yield return StageCoroutine();
+
+            EndStage();
+        }
+
         protected virtual void EndStage()
         {
             ended = true;
-            GameManager.stageEndedEvent.Invoke();
+            GameManager.onStageEnd.Invoke();
 
             if (StageManager.currentGameMode == GameMode.Practice || finalStage || nextStage == null)
             {

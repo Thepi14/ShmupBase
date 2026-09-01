@@ -47,10 +47,10 @@ namespace Main
         public List<PlayerInput> playerInput = new();
 
         public static UnityEvent 
-            unpauseEvent = new(), 
-            stageEndedEvent = new(), 
-            gameEndedEvent = new(), 
-            endingEvent = new();
+            onResume = new(), 
+            onStageEnd = new(), 
+            onGameEnd = new(), 
+            onEnding = new();
 
         private void Awake()
         {
@@ -67,14 +67,21 @@ namespace Main
                 seed = replay.seed;
                 highScore = replay.highScore;
 
+                StageManager.stageID = replay.stageID;
+                selectedCharacterID = replay.characterID;
+
                 StageManager.currentDifficulty = replay.difficulty;
             }
             else
             {
-                seed = Time.frameCount;
                 replay = new Replay(seed);
                 replay.dateTime = DateTime.Now.Ticks;
+
+                seed = Time.frameCount;
                 highScore = Vars.Highscore;
+
+                replay.stageID = StageManager.stageID;
+                replay.characterID = selectedCharacterID;
 
                 replay.difficulty = StageManager.currentDifficulty;
             }
@@ -87,23 +94,23 @@ namespace Main
             //useless indeed
             UnityEngine.Random.InitState(seed);
 
-            GeneratePlayer();
+            Debug.Log("GameManager: " + (byte)StageManager.currentDifficulty + ", " + (byte)Vars.LastDifficulty);
         }
 
         private void Start()
         {
-
+            GeneratePlayer();
         }
 
         public static void CompleteGame()
         {
             Singleton.gameCompleted = true;
-            gameEndedEvent.Invoke();
+            onGameEnd.Invoke();
         }
 
         public static void StartEnding()
         {
-            endingEvent.Invoke();
+            onEnding.Invoke();
         }
 
         public static bool CanContinue() => Singleton.continues < Singleton.maxContinues && !ReplayManagement.replayMode;
@@ -114,8 +121,8 @@ namespace Main
             if (!CanContinue())
                 return;
 
-            SetLifes(playerEntity.startingLifes);
-            unpauseEvent.Invoke();
+            SetLifes(PlayerInstance.startingLifes);
+            onResume.Invoke();
         }
 
         private void FixedUpdate()

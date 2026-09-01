@@ -67,6 +67,10 @@ MonoBehaviour:
     m_Key: Lunatic
     m_Metadata:
       m_Items: []
+  - m_Id: 33973775224524800
+    m_Key: Game Ended
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
