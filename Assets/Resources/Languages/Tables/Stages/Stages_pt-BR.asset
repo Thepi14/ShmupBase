@@ -17,7 +17,23 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 984a47727a01b3a408cf07cc31a85613, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 153846009856
+    m_Localized: "Est\xE1gio 1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224868159488
+    m_Localized: "Descri\xE7\xE3o de teste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203583608836096
+    m_Localized: "Est\xE1gio 2"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203639015591936
+    m_Localized: "Descri\xE7\xE3o de teste. 2"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

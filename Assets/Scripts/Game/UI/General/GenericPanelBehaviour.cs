@@ -6,7 +6,7 @@ namespace Main.UI
     {
         public RectTransform subPanel;
 
-        public override void SetOpenPanel(bool open)
+        public override void SetOpenPanel(bool open, bool overridePrevious = false)
         {
             if (open)
                 foreach (PanelBehaviour panel in panels)

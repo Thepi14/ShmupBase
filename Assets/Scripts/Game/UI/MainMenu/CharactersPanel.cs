@@ -98,7 +98,7 @@ namespace Main.UI
             selected.GetComponent<Selectable>().SelectIfMouseInactive();
         }
 
-        public override void SetOpenPanel(bool open)
+        public override void SetOpenPanel(bool open, bool overridePrevious = false)
         {
             base.SetOpenPanel(open);
 

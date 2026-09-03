@@ -11,6 +11,9 @@ namespace Main.UI
         public static PanelBehaviour currentPanel, previousPanel;
         protected Image background;
 
+        [HideInInspector]
+        public PanelBehaviour thisPanelPreviousPanel;
+
         [ShowOnly]
         public bool opened = false;
         public bool main = false;
@@ -35,15 +38,30 @@ namespace Main.UI
 
         public static void AddPanel(PanelBehaviour panel) => panels.Add(panel);
 
-        public virtual void SetOpenPanel(bool open)
+        public virtual void SetOpenPanel(bool open, bool overridePrevious = false)
         {
             opened = open;
 
             if (open)
             {
+                if (thisPanelPreviousPanel == null || overridePrevious)
+                    thisPanelPreviousPanel = currentPanel;
+
                 previousPanel = currentPanel;
                 currentPanel = this;
             }
+        }
+
+        public virtual void ReturnToPrevious()
+        {
+            SetOpenPanel(false);
+
+            if (previousPanel.main)
+                ReturnToMain();
+            else
+                thisPanelPreviousPanel.SetOpenPanel(true);
+
+            thisPanelPreviousPanel = null;
         }
 
         public static void ReturnToMain(bool closeAll = false)
@@ -56,7 +74,7 @@ namespace Main.UI
             panels.ForEach((panel) => { if (panel.opened || closeAll) panel.SetOpenPanel(panel.main); });
         }
 
-        public static void ReturnToPrevious()
+        public static void ReturnToStaticPrevious()
         {
             currentPanel.SetOpenPanel(false);
 

@@ -62,7 +62,7 @@ namespace Main.UI
             };
         }
 
-        public override void SetOpenPanel(bool open)
+        public override void SetOpenPanel(bool open, bool overridePrevious = false)
         {
             base.SetOpenPanel(open);
 

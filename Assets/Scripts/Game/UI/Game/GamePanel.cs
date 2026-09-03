@@ -117,7 +117,7 @@ namespace Main.UI
             highScoreText.text = text;
         }
 
-        public override void SetOpenPanel(bool open)
+        public override void SetOpenPanel(bool open, bool overridePrevious = false)
         {
             bool
                 gameCompleted = GameManager.Singleton.gameCompleted,

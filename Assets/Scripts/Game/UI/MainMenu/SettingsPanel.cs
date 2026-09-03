@@ -433,7 +433,7 @@ namespace Main.UI
 
             for (int i = 0; i < halfColumn; i++)
             {
-                foreach (Transform selectableObj in controlRebindGridGroup.transform)
+                foreach (Transform selectableObj in controlRebindGridGroup.transform.GetChild(i))
                 {
                     if (selectableObj.GetComponent<Selectable>() != null)
                         selectableList.Add(selectableObj.GetComponent<Selectable>());
@@ -641,7 +641,7 @@ namespace Main.UI
 
             SetAllCategoryNavigation();
 
-            foreach (GameObject button in categoryButtonsLayout.transform)
+            foreach (Transform button in categoryButtonsLayout.transform)
             {
                 button.GetComponent<Outline>().enabled = false;
             }
@@ -690,7 +690,7 @@ namespace Main.UI
             buttonFirstSelectablePairs.Add(categoryButton, firstSelectable);
         }
 
-        public override void SetOpenPanel(bool open)
+        public override void SetOpenPanel(bool open, bool overridePrevious = false)
         {
             base.SetOpenPanel(open);
 

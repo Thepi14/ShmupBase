@@ -28,6 +28,12 @@ MonoBehaviour:
     - Locale-pt-BR
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 60f0a4d4a2d2f2d46b204f2378a71910
+    m_Address: Stages_pt-BR
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pt-BR
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 8d483c800502aee4fb77a37987deacea
     m_Address: Settings_pt-BR
     m_ReadOnly: 1

@@ -13,8 +13,24 @@ MonoBehaviour:
   m_Name: Stages Shared Data
   m_EditorClassIdentifier: 
   m_TableCollectionName: Stages
-  m_TableCollectionNameGuidString: 00000000000000000000000000000000
-  m_Entries: []
+  m_TableCollectionNameGuidString: 984a47727a01b3a408cf07cc31a85613
+  m_Entries:
+  - m_Id: 153846009856
+    m_Key: Stage 1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 224868159488
+    m_Key: Stage 1 Description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203583608836096
+    m_Key: Stage 2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 203639015591936
+    m_Key: Stage 2 Description
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
