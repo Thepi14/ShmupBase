@@ -31,7 +31,8 @@ namespace Main.UI
         {
             ReplayManagement.replayMode = true;
             ReplayManagement.replayFilePath = ReplayManagement.replaysFilesPaths[replayID];
-            StageManager.LoadStageScene(replayReference.characterID, replayReference.difficulty, replayReference.gameMode);
+            StageManager.currentGameMode = replayReference.gameMode;
+            StageManager.LoadStageScene(replayReference.stageID, replayReference.difficulty);
         }
     }
 }

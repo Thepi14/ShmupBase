@@ -8,7 +8,7 @@ namespace Main.UI
     public abstract class PanelBehaviour : MonoBehaviour
     {
         public static List<PanelBehaviour> panels = new();
-        public static PanelBehaviour currentPanel;
+        public static PanelBehaviour currentPanel, previousPanel;
         protected Image background;
 
         [ShowOnly]
@@ -38,8 +38,10 @@ namespace Main.UI
         public virtual void SetOpenPanel(bool open)
         {
             opened = open;
+
             if (open)
             {
+                previousPanel = currentPanel;
                 currentPanel = this;
             }
         }
@@ -52,6 +54,16 @@ namespace Main.UI
                     panels.Remove(panel);
 
             panels.ForEach((panel) => { if (panel.opened || closeAll) panel.SetOpenPanel(panel.main); });
+        }
+
+        public static void ReturnToPrevious()
+        {
+            currentPanel.SetOpenPanel(false);
+
+            if (previousPanel.main)
+                ReturnToMain();
+            else
+                previousPanel.SetOpenPanel(true);
         }
     }
 }

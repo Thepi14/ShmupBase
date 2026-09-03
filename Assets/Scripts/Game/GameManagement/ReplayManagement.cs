@@ -86,7 +86,7 @@ namespace Main.ReplaySystem
             name = name.Filter(symbols: false, punctuation: false);
             while (name.EndsWith(' ') || name.EndsWith('.'))
                 name = name.Remove(name.Length - 1);
-            //Debug.Log("Compatible file name: " + name);
+
             return name;
         }
 

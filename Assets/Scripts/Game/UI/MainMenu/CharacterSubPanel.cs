@@ -81,7 +81,7 @@ namespace Main.UI
             ReplayManagement.replayMode = false;
             Vars.LastDifficulty = StageManager.currentDifficulty;
             Vars.LastCharacterID = PlayerEntity.selectedCharacterID = characterID;
-            StageManager.LoadStageScene(1, Vars.LastDifficulty);
+            StageManager.LoadStageScene(Vars.LastDifficulty);
         }
     }
 }

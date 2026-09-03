@@ -40,7 +40,8 @@ namespace Main.EntitySystem
         public List<CustomFloatValue> customValues = new();
         public PlayerInput input;
 
-        public static UnityEvent onPlayerLoseLife = new(), oPlayerLostAllLifes = new();
+        public static UnityEvent onPlayerLoseLife = new(), onPlayerLostAllLifes = new();
+        public static UnityEvent<string> onArgumentAdded = new();
 
         public virtual void OnValidate()
         {
@@ -55,6 +56,10 @@ namespace Main.EntitySystem
         {
             PlayerInstance = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, PlayerInstance);
             base.Awake();
+
+            onPlayerLoseLife = new();
+            onPlayerLostAllLifes = new();
+            onArgumentAdded = new();
 
             Health = 1;
         }
@@ -80,13 +85,7 @@ namespace Main.EntitySystem
 
         protected virtual void UpdateControls()
         {
-            /*
-            if (GameManager.Singleton.gameEnded)
-                return;
-            */
             input = GameManager.GetCurrentPlayerInput();
-
-            //Debug.Log("Replay: " + ReplayManagement.replayMode + ", Controls: " + playerInput.ToString());
         }
 
         public override void Kill()
@@ -99,16 +98,13 @@ namespace Main.EntitySystem
 
         public override IEnumerator KillCoroutine()
         {
-            /*if (!GameManager.Singleton.gameEnded)
-            {*/
-                yield return new WaitForFixedUpdate();
+            yield return new WaitForFixedUpdate();
 
-                BulletManager.DestroyAllBulletsEnemy();
-                Health = 1;
-                transform.position = startPlayerPosition;
-                alive = true;
-                canMove = true;
-            //}
+            BulletManager.DestroyAllBulletsEnemy();
+            Health = 1;
+            transform.position = startPlayerPosition;
+            alive = true;
+            canMove = true;
 
             yield break;
         }
@@ -132,6 +128,7 @@ namespace Main.EntitySystem
         public static void AddArgument(string argument)
         {
             PlayerInstance.arguments.Add(argument);
+            onArgumentAdded.Invoke(argument);
         }
 
         public static void AddLifes(int amount = 1) => PlayerInstance.lifes = Mathf.Clamp(PlayerInstance.lifes + amount, 0, PlayerInstance.maxLifes);
@@ -145,7 +142,7 @@ namespace Main.EntitySystem
             if (PlayerInstance.lifes == 0)
             {
                 if (invokeEvents)
-                    oPlayerLostAllLifes.Invoke();
+                    onPlayerLostAllLifes.Invoke();
                 //CompleteGame();
             }
             else if (invokeEvents)

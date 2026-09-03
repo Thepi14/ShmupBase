@@ -126,27 +126,15 @@ namespace ObjectUtils
         /// <exception cref="System.ArgumentNullException"></exception>
         public static T FindComponentInChild<T>(this Component parent, string childName) => FindComponentInChild<T>(parent.gameObject, childName);
 
-        public static GameObject[] GetGameObjectChildren(this GameObject gameObject)
+        public static void DestroyGameObjectChildren(this GameObject gameObject)
         {
-            var list = new List<GameObject>();
-            for (int i = 0; i < gameObject.transform.childCount; i++)
-            {
-                list.Add(gameObject.transform.GetChild(i).gameObject);
-            }
-            return list.ToArray();
-        }
-
-        public static GameObject[] GetGameObjectChildren(this Component gameObject) => GetGameObjectChildren(gameObject.gameObject);
-
-        public static void DestroyGameObjecyChildren(this GameObject gameObject)
-        {
-            foreach (GameObject gameObjectChild in GetGameObjectChildren(gameObject))
+            foreach (GameObject gameObjectChild in gameObject.transform)
             {
                 UnityEngine.Object.Destroy(gameObject);
             }
         }
 
-        public static void DestroyGameObjectChildren(this Component gameObject) => DestroyGameObjecyChildren(gameObject.gameObject);
+        public static void DestroyGameObjectChildren(this Component gameObject) => DestroyGameObjectChildren(gameObject.gameObject);
 
         public static List<GameObject> FindObjects(Vector3 point, LayerMask layerMask, Func<GameObject, bool> condition, FindObjectsSortMode findObjectsSortMode = FindObjectsSortMode.None)
         {

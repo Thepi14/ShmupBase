@@ -29,7 +29,7 @@ namespace Main
             {
                 ResetAllPrefs();
                 //setting it to false opens possibility for cutscenes when game first starts.
-                SetPrefBool(PrefKey.HasGameEverStarted, true);
+                HasGameEverStarted = true;
             }
 
             GenerateFolders();
@@ -57,6 +57,9 @@ namespace Main
 
             //controls
             InputManager.LockMouse(!UseMouse);
+
+            //stages
+            StageManager.SetupStages();
 
             //time
             TimeManager.Start();
@@ -106,6 +109,7 @@ namespace Main
 
         //persistent data
         public static bool HasGameEverStarted { get => GetPrefBool(PrefKey.HasGameEverStarted); set => SetPrefBool(PrefKey.HasGameEverStarted, value); }
+        public static bool HasGameEverBeenWinned { get => GetPrefBool(PrefKey.HasGameEverBeenWinned); set => SetPrefBool(PrefKey.HasGameEverBeenWinned, value); }
         public static long Highscore { get => long.Parse(GetPrefString(PrefKey.Highscore)); set => SetPrefString(PrefKey.Highscore, value.ToString()); } //made as string because of the limits of int32, so making it as string is just easier
         public static Difficulty LastDifficulty { get => (Difficulty)GetPrefInt(PrefKey.LastDifficulty); set => SetPrefInt(PrefKey.LastDifficulty, (int)value); }
         public static int LastCharacterID { get => GetPrefInt(PrefKey.LastCharacterID); set => SetPrefInt(PrefKey.LastCharacterID, value); }
@@ -141,6 +145,7 @@ namespace Main
 
             //others
             HasGameEverStarted,
+            HasGameEverBeenWinned,
             Highscore,
             LastDifficulty,
             LastCharacterID

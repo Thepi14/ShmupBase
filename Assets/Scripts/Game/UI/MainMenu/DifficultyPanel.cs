@@ -9,6 +9,8 @@ namespace Main.UI
 {
     public sealed class DifficultyPanel : GenericPanelBehaviour
     {
+        public static DifficultyPanel instance;
+
         [SerializeField]
         private Button exitButton;
         [SerializeField]
@@ -19,6 +21,7 @@ namespace Main.UI
         protected override void Awake()
         {
             base.Awake();
+            instance = this;
 
             for (int i = 0; i < difficultyButtons.Count; i++)
             {
@@ -27,13 +30,12 @@ namespace Main.UI
                 {
                     StageManager.currentDifficulty = (Difficulty)j;
                     CharactersPanel.Instance.SetOpenPanel(true);
-                    Debug.Log("Button: " + (byte)StageManager.currentDifficulty + ", " +(byte)Vars.LastDifficulty);
                 });
             }
 
             exitButton.onClick.AddListener(() =>
             {
-                ReturnToMain();
+                ReturnToPrevious();
             });
         }
 

@@ -94,6 +94,10 @@ MonoBehaviour:
     m_Localized: "Voltar \xE0s configura\xE7\xF5es de f\xE1brica"
     m_Metadata:
       m_Items: []
+  - m_Id: 34330566273781760
+    m_Localized: Praticar
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

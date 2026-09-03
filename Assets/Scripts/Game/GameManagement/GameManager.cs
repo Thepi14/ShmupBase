@@ -102,29 +102,6 @@ namespace Main
             GeneratePlayer();
         }
 
-        public static void CompleteGame()
-        {
-            Singleton.gameCompleted = true;
-            onGameEnd.Invoke();
-        }
-
-        public static void StartEnding()
-        {
-            onEnding.Invoke();
-        }
-
-        public static bool CanContinue() => Singleton.continues < Singleton.maxContinues && !ReplayManagement.replayMode;
-
-        public static void Continue()
-        {
-            Singleton.continues++;
-            if (!CanContinue())
-                return;
-
-            SetLifes(PlayerInstance.startingLifes);
-            onResume.Invoke();
-        }
-
         private void FixedUpdate()
         {
             if (ReplayManagement.replayMode)
@@ -144,6 +121,39 @@ namespace Main
             //Debug.Log(currentPlayerInput.ToString());
 
             currentFrameIndex++;
+        }
+
+        public static void AddScore(long points)
+        {
+            Singleton.score += points;
+            if (Singleton.score > Singleton.highScore)
+            {
+                Singleton.highScore = Singleton.score;
+            }
+        }
+
+        public static void CompleteGame()
+        {
+            Singleton.gameCompleted = true;
+            onGameEnd.Invoke();
+        }
+
+        public static void StartEnding()
+        {
+            Vars.HasGameEverBeenWinned = true;
+            onEnding.Invoke();
+        }
+
+        public static bool CanContinue() => Singleton.continues < Singleton.maxContinues && !ReplayManagement.replayMode;
+
+        public static void Continue()
+        {
+            Singleton.continues++;
+            if (!CanContinue())
+                return;
+
+            SetLifes(PlayerInstance.startingLifes);
+            onResume.Invoke();
         }
 
         public static void SaveReplay(string replayName)

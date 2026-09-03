@@ -47,13 +47,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextStage: {fileID: 0}
   previousStage: {fileID: 0}
-  currentFrame: 0
-  currentFixedFrame: 0
+  stageName:
+    m_TableReference:
+      m_TableCollectionName: GUID:984a47727a01b3a408cf07cc31a85613
+    m_TableEntryReference:
+      m_KeyId: 153846009856
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  stageDescription:
+    m_TableReference:
+      m_TableCollectionName: GUID:984a47727a01b3a408cf07cc31a85613
+    m_TableEntryReference:
+      m_KeyId: 224868159488
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  id: 1
+  hasBoss: 1
   finalStage: 0
   ended: 0
+  currentFrame: 0
+  currentFixedFrame: 0
   scenario: {fileID: 0}
   enemy: {fileID: 6551061036041011188, guid: 40a901f1d2b08a3498a9a963a7f9b47a, type: 3}
   bullet: {fileID: 6207182091671927860, guid: 35312d1860f84bd46b0841fc89db105c, type: 3}
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1936310764619513338
 GameObject:
   m_ObjectHideFlags: 0

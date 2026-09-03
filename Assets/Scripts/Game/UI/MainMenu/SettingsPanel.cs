@@ -433,13 +433,13 @@ namespace Main.UI
 
             for (int i = 0; i < halfColumn; i++)
             {
-                foreach (GameObject selectableObj in controlRebindGridGroup.transform.GetChild(i).GetGameObjectChildren())
+                foreach (Transform selectableObj in controlRebindGridGroup.transform)
                 {
                     if (selectableObj.GetComponent<Selectable>() != null)
                         selectableList.Add(selectableObj.GetComponent<Selectable>());
                 }
 
-                foreach (GameObject selectableObj in controlRebindGridGroup.transform.GetChild(i + halfColumn).GetGameObjectChildren())
+                foreach (Transform selectableObj in controlRebindGridGroup.transform.GetChild(i + halfColumn))
                 {
                     if (selectableObj.GetComponent<Selectable>() != null)
                         selectableList.Add(selectableObj.GetComponent<Selectable>());
@@ -469,7 +469,7 @@ namespace Main.UI
                 }
             }
 
-            foreach (var control in controlRebindGridGroup.GetGameObjectChildren())
+            foreach (Transform control in controlRebindGridGroup.transform)
                 rebinders.Add(control.GetComponent<RebindActionUI>());
 
             resetControlsButton.onClick.AddListener(() => ResetAllBinds());
@@ -622,7 +622,7 @@ namespace Main.UI
 
         public void SetOnSelectOnButtonsLayout(bool enable)
         {
-            foreach (var button in categoryButtonsLayout.GetGameObjectChildren())
+            foreach (Transform button in categoryButtonsLayout.transform)
                 button.GetComponent<EventTrigger>().enabled = enable;
         }
 
@@ -641,7 +641,7 @@ namespace Main.UI
 
             SetAllCategoryNavigation();
 
-            foreach (var button in categoryButtonsLayout.GetGameObjectChildren())
+            foreach (GameObject button in categoryButtonsLayout.transform)
             {
                 button.GetComponent<Outline>().enabled = false;
             }

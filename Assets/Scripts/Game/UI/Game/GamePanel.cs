@@ -77,7 +77,7 @@ namespace Main.UI
             //GameManager.gameEndedEvent.AddListener(() => SetOpenPanel(true));
             GameManager.onResume.AddListener(() => SetOpenPanel(false));
             GameManager.onGameEnd.AddListener(() => SetOpenPanel(true));
-            PlayerEntity.oPlayerLostAllLifes.AddListener(() => SetOpenPanel(true));
+            PlayerEntity.onPlayerLostAllLifes.AddListener(() => SetOpenPanel(true));
             InputManager.UIEscapeEvent.AddListener(() => SetOpenPanel(!TimeManager.GameIsPaused));
         }
 

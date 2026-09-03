@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EditorTools;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -55,18 +56,21 @@ namespace Main.Stages
             Singleton.currentStage = Instantiate(mainStagesPrefabs[stageID - 1]).GetComponent<StageBehaviour>();
         }
 
-        public static void LoadStageScene(byte id, Difficulty difficulty, GameMode gameMode = GameMode.MainGame)
+        public static void LoadStageScene(Difficulty difficulty)
+        {
+            currentDifficulty = difficulty;
+            SceneManager.LoadScene(1);
+        }
+
+        public static void LoadStageScene(byte id, Difficulty difficulty)
         {
             stageID = id;
-            currentDifficulty = difficulty;
-            currentGameMode = gameMode;
-            SceneManager.LoadScene(1);
+            LoadStageScene(difficulty);
         }
 
         private void Awake()
         {
             Singleton = ObjectUtils.MonoBehaviourGeneral.DeclareSingleton(this, Singleton);
-            SetupStages();
             LoadStage();
         }
     }
@@ -85,7 +89,7 @@ namespace Main.Stages
     public enum GameMode : byte
     {
         MainGame,
-        Practice,
+        StagePractice,
         BossPractice,
     }
 }
