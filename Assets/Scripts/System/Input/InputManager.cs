@@ -1,6 +1,7 @@
 using System;
 using EditorTools;
 using Main.ReplaySystem;
+using Main.UI;
 using ObjectUtils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -42,6 +43,7 @@ namespace Main.InputSystem
             UIEscapeEvent = new();
 
             playerInputSystem.UI.Escape.started += ctx => { UIEscapeEvent.Invoke(); };
+            UIEscapeEvent.AddListener(() => PanelBehaviour.ReturnToPreviousOfCurrentPanel());
 
             SetControlsEvents();
         }

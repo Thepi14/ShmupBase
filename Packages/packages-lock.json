@@ -1,12 +1,5 @@
 {
   "dependencies": {
-    "com.intothedev.multitags": {
-      "version": "https://github.com/IntoTheDev/MultiTag-System-for-Unity.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "dd807fb2688a5f19d671928f243c70f66f4acf55"
-    },
     "com.unity.2d.animation": {
       "version": "10.2.1",
       "depth": 1,
@@ -178,7 +171,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.localization": {
-      "version": "1.5.12",
+      "version": "1.5.13",
       "depth": 0,
       "source": "registry",
       "dependencies": {

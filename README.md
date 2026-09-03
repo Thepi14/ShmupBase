@@ -24,7 +24,6 @@ A Unity project that can be used as a base for making shmups, the project featur
 - An full screen switch manager that fixes screen scaling when changing resolutions;
 - A complete prefab based UI, which can speedup UI customization and configuration considerably;
 - TextMeshPro package;
-- Multi Tagging system;
 - An already implemented localization package, with all UI texts having Localize String Events components to update when localization changes;
 - The Unity's "new" Input System, with (almost) all controls already defined;
 - Custom function libraries, that each gives helping functions for varied uses;

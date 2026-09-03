@@ -488,6 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0e5e21faa7e6f147b21789d2d059f6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 0
   subPanel: {fileID: 103884249}
@@ -4159,6 +4160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16e3029216434f64caab0939a53c7e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 1
   subPanel: {fileID: 1255302739680456188, guid: 4d96a9616d29d7b488ee16184049c305, type: 3}
@@ -6710,6 +6712,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b2d68418d001ef4b921f2f4ff600841, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 0
   subPanel: {fileID: 1048588603}
@@ -9364,6 +9367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 348df38497a3d9f49b30270c014a5021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 0
   subPanel: {fileID: 1343114668}
@@ -10210,6 +10214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93f9ca42b4aa2624aaed415b8ade1986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 0
   subPanel: {fileID: 1466707983}
@@ -10840,6 +10845,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c7f5e585851cd4cb0a58e1a41a982b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 0
   subPanel: {fileID: 1554841427}
@@ -13212,7 +13218,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2128542374708239782, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
       propertyPath: m_text
-      value: Select Difficulty
+      value: Select Stage
       objectReference: {fileID: 0}
     - target: {fileID: 2128542374708239782, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
       propertyPath: m_fontSize
@@ -13312,7 +13318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6962423380529262218, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
       propertyPath: m_StringReference.m_TableEntryReference.m_KeyId
-      value: 33569621142392832
+      value: 35098856310951936
       objectReference: {fileID: 0}
     - target: {fileID: 6962423380529262218, guid: 0bdcdc75f33851d49afd52c565ad08b2, type: 3}
       propertyPath: m_StringReference.m_TableReference.m_TableCollectionName
@@ -14585,6 +14591,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07e575f5047bce941bff2c22c9879cc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisPanelPreviousPanel: {fileID: 0}
   opened: 0
   main: 0
   subPanel: {fileID: 1907009209}

@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 7815606280341000485}
   - component: {fileID: 8560007077112079168}
   - component: {fileID: 3049608883188420553}
-  - component: {fileID: -7354401410274185285}
   m_Layer: 8
   m_Name: Enemy
   m_TagString: Untagged
@@ -138,7 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db5e8eb99a6a5344d8f45012283ce161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityCreatedEvent:
+  onEntityCreate:
     m_PersistentCalls:
       m_Calls: []
   health: 5
@@ -146,41 +145,28 @@ MonoBehaviour:
   alive: 1
   immune: 0
   startImmunityTime: 0
-  diedEvent:
+  onDie:
     m_PersistentCalls:
       m_Calls: []
-  damagedEvent:
+  onDamage:
     m_PersistentCalls:
       m_Calls: []
-  shieldDamagedEvent:
+  onShieldDamage:
     m_PersistentCalls:
       m_Calls: []
   spriteRenderer: {fileID: 0}
   collider: {fileID: 0}
   speed: 1
   canMove: 1
-  moveEvent:
+  onMove:
     m_PersistentCalls:
       m_Calls: []
   previousPosition: {x: 0, y: 0}
   canAttack: 0
   reloadSpeedMultiplier: 1
-  attackedEvent:
+  onAttack:
     m_PersistentCalls:
       m_Calls: []
   reload: 1
   attacking: 0
   initialAttackDelay: 1
---- !u!114 &-7354401410274185285
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6551061036041011188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7daa1e9731588e479a5142d62caf786, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tags: []

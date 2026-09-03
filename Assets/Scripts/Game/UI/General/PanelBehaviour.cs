@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using EditorTools;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Main.UI
@@ -54,6 +55,9 @@ namespace Main.UI
 
         public virtual void ReturnToPrevious()
         {
+            if (currentPanel.main || currentPanel.thisPanelPreviousPanel == null)
+                return;
+
             SetOpenPanel(false);
 
             if (previousPanel.main)
@@ -74,9 +78,19 @@ namespace Main.UI
             panels.ForEach((panel) => { if (panel.opened || closeAll) panel.SetOpenPanel(panel.main); });
         }
 
+        public static void ReturnToPreviousOfCurrentPanel()
+        {
+            if (SceneManager.GetActiveScene().buildIndex == 1 || currentPanel.main) return;
+                currentPanel.ReturnToPrevious();
+        }
+
         public static void ReturnToStaticPrevious()
         {
-            currentPanel.SetOpenPanel(false);
+            if (previousPanel == null)
+                return;
+
+            if (!currentPanel.main)
+                currentPanel.SetOpenPanel(false);
 
             if (previousPanel.main)
                 ReturnToMain();
