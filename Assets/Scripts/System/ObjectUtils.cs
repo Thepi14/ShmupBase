@@ -915,7 +915,10 @@ namespace ObjectUtils
         {
             if (instance != null)
             {
-                UnityEngine.Object.Destroy(@object);
+                if (@object is MonoBehaviour behaviour)
+                    UnityEngine.Object.Destroy(behaviour.gameObject);
+                else
+                    UnityEngine.Object.Destroy(@object);
                 return instance;
             }
 
@@ -926,11 +929,11 @@ namespace ObjectUtils
         {
             if (instance != null)
             {
-                UnityEngine.Object.Destroy(monoBehaviour);
+                UnityEngine.Object.Destroy(monoBehaviour.gameObject);
                 return instance as T;
             }
 
-            MonoBehaviour.DontDestroyOnLoad(monoBehaviour);
+            MonoBehaviour.DontDestroyOnLoad(monoBehaviour.gameObject);
             return monoBehaviour as T;
         }
     }

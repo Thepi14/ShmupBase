@@ -102,6 +102,10 @@ MonoBehaviour:
     m_Localized: Select Stage
     m_Metadata:
       m_Items: []
+  - m_Id: 35110131803869184
+    m_Localized: Hold {0} to fight only against the boss
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

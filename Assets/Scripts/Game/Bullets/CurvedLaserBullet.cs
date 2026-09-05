@@ -32,7 +32,7 @@ namespace Main.BulletSystem
         public List<Vector2> storedPositions = new List<Vector2>();
 
         [HideInInspector]
-        public CurveFunction widthValueFunction = (curvedLaser, index) => 1f;
+        public CurveFunction widthValueFunction = (curvedLaser, index) => MathEx.SinDeg(((index + 1) / (float)curvedLaser.storedPositions.Count) * 180f);
         public delegate float CurveFunction(CurvedLaserBullet curvedLaser, int index);
 
         protected virtual bool Loop => false;
@@ -67,7 +67,6 @@ namespace Main.BulletSystem
         protected override void Start()
         {
             base.Start();
-            widthValueFunction = (curvedLaser, index) => MathEx.SinDeg(((index + 1) / (float)storedPositions.Count) * 180f);
         }
 
         protected virtual void Update()

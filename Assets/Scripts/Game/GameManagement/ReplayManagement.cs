@@ -182,7 +182,7 @@ namespace Main.ReplaySystem
         /// <summary>
         /// O que o player fez frame por frame.
         /// </summary>
-        public PlayerInput[] playerInput = new PlayerInput[0];
+        public InputControl[] playerInput = new InputControl[0];
 
         public Replay(int seed)
         {

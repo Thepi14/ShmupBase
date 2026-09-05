@@ -118,15 +118,6 @@ namespace Main
                     ""id"": ""852140f2-7766-474d-8707-702459ba45f3"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": ""Hold"",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Slow"",
-                    ""type"": ""Button"",
-                    ""id"": ""27c5f898-bc57-4ee1-8800-db469aca5fe3"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },
@@ -134,6 +125,15 @@ namespace Main
                     ""name"": ""Action"",
                     ""type"": ""Button"",
                     ""id"": ""f1ba0d36-48eb-4cd5-b651-1c94a6531f70"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slow"",
+                    ""type"": ""Button"",
+                    ""id"": ""27c5f898-bc57-4ee1-8800-db469aca5fe3"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -302,11 +302,11 @@ namespace Main
                 },
                 {
                     ""name"": """",
-                    ""id"": ""886e731e-7071-4ae4-95c0-e61739dad6fd"",
-                    ""path"": ""<Touchscreen>/primaryTouch/tap"",
+                    ""id"": ""b3c1c7f0-bd20-4ee7-a0f1-899b24bca6d7"",
+                    ""path"": ""<Keyboard>/z"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": "";Touch"",
+                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -318,17 +318,6 @@ namespace Main
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Joystick"",
-                    ""action"": ""Attack"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""b3c1c7f0-bd20-4ee7-a0f1-899b24bca6d7"",
-                    ""path"": ""<Keyboard>/z"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -379,6 +368,17 @@ namespace Main
                 },
                 {
                     ""name"": """",
+                    ""id"": ""01005ba8-3cf7-4ea4-88ca-2793cb136f16"",
+                    ""path"": ""<HID::USB Gamepad >/button3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""eb40bb66-4559-4dfa-9a2f-820438abb426"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -395,6 +395,17 @@ namespace Main
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
+                    ""action"": ""Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e788e19b-4173-43a2-8d5d-2ac852a37726"",
+                    ""path"": ""<HID::USB Gamepad >/button4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -445,6 +456,17 @@ namespace Main
                 },
                 {
                     ""name"": """",
+                    ""id"": ""c6a1bc1b-103e-44fa-83ef-873462d8196a"",
+                    ""path"": ""<HID::USB Gamepad >/button2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Bomb"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""4f4649ac-64a8-4a73-af11-b3faef356a4d"",
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
@@ -461,6 +483,17 @@ namespace Main
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse;Touch"",
+                    ""action"": ""Slow"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""48086e78-ed05-4836-bef8-52b7eda876b3"",
+                    ""path"": ""<HID::USB Gamepad >/button5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Slow"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -971,6 +1004,17 @@ namespace Main
                     ""action"": ""Escape"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""97b47fba-8754-42d0-bfe7-cc186f54de04"",
+                    ""path"": ""<HID::USB Gamepad >/button10"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1043,8 +1087,8 @@ namespace Main
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_Attack = m_Player.FindAction("Attack", throwIfNotFound: true);
             m_Player_Bomb = m_Player.FindAction("Bomb", throwIfNotFound: true);
-            m_Player_Slow = m_Player.FindAction("Slow", throwIfNotFound: true);
             m_Player_Action = m_Player.FindAction("Action", throwIfNotFound: true);
+            m_Player_Slow = m_Player.FindAction("Slow", throwIfNotFound: true);
             m_Player_Action2 = m_Player.FindAction("Action2", throwIfNotFound: true);
             m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
             m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
@@ -1143,8 +1187,8 @@ namespace Main
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_Attack;
         private readonly InputAction m_Player_Bomb;
-        private readonly InputAction m_Player_Slow;
         private readonly InputAction m_Player_Action;
+        private readonly InputAction m_Player_Slow;
         private readonly InputAction m_Player_Action2;
         private readonly InputAction m_Player_Previous;
         private readonly InputAction m_Player_Next;
@@ -1172,13 +1216,13 @@ namespace Main
             /// </summary>
             public InputAction @Bomb => m_Wrapper.m_Player_Bomb;
             /// <summary>
-            /// Provides access to the underlying input action "Player/Slow".
-            /// </summary>
-            public InputAction @Slow => m_Wrapper.m_Player_Slow;
-            /// <summary>
             /// Provides access to the underlying input action "Player/Action".
             /// </summary>
             public InputAction @Action => m_Wrapper.m_Player_Action;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/Slow".
+            /// </summary>
+            public InputAction @Slow => m_Wrapper.m_Player_Slow;
             /// <summary>
             /// Provides access to the underlying input action "Player/Action2".
             /// </summary>
@@ -1226,12 +1270,12 @@ namespace Main
                 @Bomb.started += instance.OnBomb;
                 @Bomb.performed += instance.OnBomb;
                 @Bomb.canceled += instance.OnBomb;
-                @Slow.started += instance.OnSlow;
-                @Slow.performed += instance.OnSlow;
-                @Slow.canceled += instance.OnSlow;
                 @Action.started += instance.OnAction;
                 @Action.performed += instance.OnAction;
                 @Action.canceled += instance.OnAction;
+                @Slow.started += instance.OnSlow;
+                @Slow.performed += instance.OnSlow;
+                @Slow.canceled += instance.OnSlow;
                 @Action2.started += instance.OnAction2;
                 @Action2.performed += instance.OnAction2;
                 @Action2.canceled += instance.OnAction2;
@@ -1261,12 +1305,12 @@ namespace Main
                 @Bomb.started -= instance.OnBomb;
                 @Bomb.performed -= instance.OnBomb;
                 @Bomb.canceled -= instance.OnBomb;
-                @Slow.started -= instance.OnSlow;
-                @Slow.performed -= instance.OnSlow;
-                @Slow.canceled -= instance.OnSlow;
                 @Action.started -= instance.OnAction;
                 @Action.performed -= instance.OnAction;
                 @Action.canceled -= instance.OnAction;
+                @Slow.started -= instance.OnSlow;
+                @Slow.performed -= instance.OnSlow;
+                @Slow.canceled -= instance.OnSlow;
                 @Action2.started -= instance.OnAction2;
                 @Action2.performed -= instance.OnAction2;
                 @Action2.canceled -= instance.OnAction2;
@@ -1587,19 +1631,19 @@ namespace Main
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnBomb(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "Slow" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-            /// </summary>
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnSlow(InputAction.CallbackContext context);
-            /// <summary>
             /// Method invoked when associated input action "Action" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnAction(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Slow" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSlow(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Action2" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>

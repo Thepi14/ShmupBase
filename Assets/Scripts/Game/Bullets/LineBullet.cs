@@ -66,10 +66,13 @@ namespace Main.BulletSystem
         protected override void Start()
         {
             base.Start();
-            positionValueFunction = (lineBullet, value) => MathEx.CosSinDegPos(value * 360f, 2f);
+
+            //TODO: a lot of examples (maybe not the cruciform one)
+
+            //positionValueFunction = (lineBullet, value) => MathEx.CosSinDegPos(value * 360f, 2f);
             //positionValueFunction = (lineBullet, value) => MathEx.LemniscateDeg(2f, value * 360f);
             //positionValueFunction = (lineBullet, value) => MathEx.Cruciform(1f, 1f, value * 360f, 50f, 50f);
-            positionValueFunction = (lineBullet, value) => MathEx.Hypocycloid(3f, 1f, value);
+            //positionValueFunction = (lineBullet, value) => MathEx.Hypocycloid(3f, 1f, value);
         }
 
         public virtual Vector2 GetPosition(float value) => (positionValueFunction(this, value) * transform.localScale) + (includeLocalPositionInFunction ? transform.position : Vector2.zero);

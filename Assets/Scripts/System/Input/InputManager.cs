@@ -15,17 +15,22 @@ namespace Main.InputSystem
         public static InputManager InputManagerInstance { get; private set; }
         public static PlayerInputSystem playerInputSystem;
 
+        [ShowOnly]
         [SerializeField]
         private Vector2 moveInput;
+        [ShowOnly]
         [SerializeField]
         private bool attack;
+        [ShowOnly]
         [SerializeField]
         private bool bomb;
+        [ShowOnly]
         [SerializeField]
         private bool slow;
 
-        public static PlayerInput playerInput;
+        public static InputControl playerInput;
 
+        [ShowOnly]
         public bool mouseLocked = false;
         public GameObject lastSelect;
 
@@ -82,7 +87,7 @@ namespace Main.InputSystem
 
         private void FixedUpdate()
         {
-            playerInput = new PlayerInput()
+            playerInput = new InputControl()
             {
                 moveInput = moveInput,
                 attack = attack,
@@ -157,7 +162,7 @@ namespace Main.InputSystem
     /// Struct que descreve o que o player fez e o que o replay deve fazer no replay.
     /// </summary>
     [Serializable]
-    public struct PlayerInput
+    public struct InputControl
     {
         //actions
         [ShowOnly]

@@ -38,7 +38,7 @@ namespace Main.EntitySystem
         public float slowSpeedMultiplier = 0.5f;
 
         public List<CustomFloatValue> customValues = new();
-        public PlayerInput input;
+        public InputControl input;
 
         public static UnityEvent onPlayerLoseLife = new(), onPlayerLostAllLifes = new();
         public static UnityEvent<string> onArgumentAdded = new();

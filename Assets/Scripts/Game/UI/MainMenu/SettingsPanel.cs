@@ -133,9 +133,9 @@ namespace Main.UI
         private GameObject rebindPrefab;
 
         [SerializeField]
-        private GridLayoutGroup controlRebindGridGroup;
+        private List<GridLayoutGroup> controlRebindGridGroups;
         [SerializeField]
-        private Grid<Selectable> controlRebindSelectablesGrid;
+        private GridLayoutGroup currentControlRebindGridGroup;
 
         [SerializeField]
         private Selectable _currentSelectedControlRebindSelectable;
@@ -257,11 +257,18 @@ namespace Main.UI
             if (!Application.isMobilePlatform)
                 SetupControlSubPanel();
 
+            InputDeviceWatcher.onControlsChanged.AddListener((playerInput) => SetControlScheme(playerInput));
+
             //localization
             SetLocalizationButtons();
 
             //post configuration
             StartCoroutine(UpdateAllCategoryNavigationCoroutine());
+        }
+
+        protected override void Start()
+        {
+            base.Start();
         }
 
         IEnumerator UpdateAllCategoryNavigationCoroutine()
@@ -413,66 +420,31 @@ namespace Main.UI
             useMouseToggle.onValueChanged.AddListener((value) => { UseMouse = value; SetOnSelectOnButtonsLayout(!value); if (!value) EventSystem.current.SetSelectedGameObject(useMouseToggle.gameObject); });
             useIngameKeyboardToggle.onValueChanged.AddListener((value) => UseIngameKeyboard = value);
 
-            /*if (generatePrefabsOnRuntime)
+            resetControlsButton.onClick.AddListener(() => ResetAllBinds());
+        }
+
+        public void SetControlScheme(PlayerInput playerInput)
+        {
+            string currentSelectedGameObjectName = EventSystem.current.currentSelectedGameObject.name;
+
+            foreach (GridLayoutGroup group in controlRebindGridGroups)
             {
-                foreach (var control in controlsLayout.GetGameObjectChildren())
-                    Destroy(control);
-
-                foreach (var bind in InputManager.playerInputSystem.asset.actionMaps[0])
+                if (playerInput.currentControlScheme + "Layout" == group.gameObject.name)
                 {
-                    var newRebinder = Instantiate(rebindPrefab);
-                    newRebinder.GetComponent<RectTransform>().SetParent(controlsLayout);
-                    newRebinder.name = bind.name;
-
-                    newRebinder.GetComponent<RebindActionUI>().actionReference.Set(bind);
+                    currentControlRebindGridGroup = group;
+                    group.gameObject.SetActive(true);
                 }
-            }*/
-
-            var selectableList = new List<Selectable>();
-            int halfColumn = controlRebindGridGroup.transform.childCount / 2;
-
-            for (int i = 0; i < halfColumn; i++)
-            {
-                foreach (Transform selectableObj in controlRebindGridGroup.transform.GetChild(i))
-                {
-                    if (selectableObj.GetComponent<Selectable>() != null)
-                        selectableList.Add(selectableObj.GetComponent<Selectable>());
-                }
-
-                foreach (Transform selectableObj in controlRebindGridGroup.transform.GetChild(i + halfColumn))
-                {
-                    if (selectableObj.GetComponent<Selectable>() != null)
-                        selectableList.Add(selectableObj.GetComponent<Selectable>());
-                }
+                else
+                    group.gameObject.SetActive(false);
             }
 
-            controlRebindSelectablesGrid = new Grid<Selectable>();
-            controlRebindSelectablesGrid.ListToGrid(selectableList, 4);
+            rebinders.Clear();
 
-            int width = controlRebindSelectablesGrid.GetWidth(), height = controlRebindSelectablesGrid.GetHeight();
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    Selectable selectable = controlRebindSelectablesGrid.Get(x, y);
-
-                    Navigation newNavigation = new Navigation()
-                    {
-                        mode = Navigation.Mode.Explicit,
-                        selectOnUp = y == 0 ? controlsCategoryButton : controlRebindSelectablesGrid.Get(x, y - 1),
-                        selectOnDown = y == height - 1 ? selectableBelowControlLayout : controlRebindSelectablesGrid.Get(x, y + 1),
-                        selectOnLeft = x == 0 ? controlRebindSelectablesGrid.Get(width - 1, y) : controlRebindSelectablesGrid.Get(x - 1, y),
-                        selectOnRight = x == width - 1 ? controlRebindSelectablesGrid.Get(0, y) : controlRebindSelectablesGrid.Get(x + 1, y)
-                    };
-
-                    selectable.navigation = newNavigation;
-                }
-            }
-
-            foreach (Transform control in controlRebindGridGroup.transform)
+            foreach (Transform control in currentControlRebindGridGroup.transform)
                 rebinders.Add(control.GetComponent<RebindActionUI>());
 
-            resetControlsButton.onClick.AddListener(() => ResetAllBinds());
+            if (currentSelectedGameObjectName == "TriggerRebindButton" || currentSelectedGameObjectName == "ResetToDefaultButton")
+                currentControlRebindGridGroup.transform.GetChild(0).GetGameObjectComponent<Button>("TriggerRebindButton").SelectIfMouseInactive();
         }
 
         public static void ResetAllBinds()

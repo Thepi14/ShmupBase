@@ -102,6 +102,10 @@ MonoBehaviour:
     m_Localized: "Selecione o Est\xE1gio"
     m_Metadata:
       m_Items: []
+  - m_Id: 35110131803869184
+    m_Localized: Segure {0} para lutar somente contra o boss
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

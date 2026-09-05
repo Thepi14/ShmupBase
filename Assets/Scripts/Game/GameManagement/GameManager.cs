@@ -43,8 +43,8 @@ namespace Main
         [ShowOnly]
         public int currentFrameIndex = 0;
         [SerializeField]
-        private PlayerInput currentPlayerInput;
-        public List<PlayerInput> playerInput = new();
+        private InputControl currentPlayerInput;
+        public List<InputControl> playerInput = new();
 
         public static UnityEvent 
             onResume = new(), 
@@ -169,6 +169,6 @@ namespace Main
                 ReplayManagement.SaveReplayFile(Singleton.replay);
         }
 
-        public static PlayerInput GetCurrentPlayerInput() => Singleton.currentPlayerInput;
+        public static InputControl GetCurrentPlayerInput() => Singleton.currentPlayerInput;
     }
 }

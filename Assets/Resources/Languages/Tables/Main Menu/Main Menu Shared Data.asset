@@ -103,6 +103,10 @@ MonoBehaviour:
     m_Key: Select Stage
     m_Metadata:
       m_Items: []
+  - m_Id: 35110131803869184
+    m_Key: Press slow button to fight only against the boss
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
