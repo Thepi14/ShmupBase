@@ -131,7 +131,7 @@ namespace Main.UI
                 canContinue = !replayMode && playerLostLastLife && continueEnabled && !gameCompleted,
                 canSaveReplay = !replayMode && (playerLostLastLife || gameCompleted) && !continued;
 
-            if (!canUnpause && opened && !open)
+            if ((!canUnpause && opened && !open) || playerLostLastLife)
                 open = true;
 
             base.SetOpenPanel(open);
@@ -150,11 +150,10 @@ namespace Main.UI
 
                 if (canUnpause)
                     resumeButton.SelectIfMouseInactive();
-                if (canContinue)
-                    continueButton.SelectIfMouseInactive();
                 if (canSaveReplay)
                     saveReplayButton.SelectIfMouseInactive();
-            }
+                if (canContinue)
+                    continueButton.SelectIfMouseInactive();
         }
     }
 }
